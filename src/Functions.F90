@@ -18,9 +18,9 @@ endfunction mainsgfunc
 
 SUBROUTINE LEEPAR (J,IREC1,IPAREQ,NGRUPA,ENASST,RKASST) 
 !c-----------------------------------------------------------------
-!c     Lee los parámetros de las bases de datos PARVOLAS.MDS 
-!c     (volumen de asociación, UNIT=15) y PARENEAS.MDS (energía de 
-!c     asociación, UNIT=16)  
+!c     Lee los parï¿½metros de las bases de datos PARVOLAS.MDS 
+!c     (volumen de asociaciï¿½n, UNIT=15) y PARENEAS.MDS (energï¿½a de 
+!c     asociaciï¿½n, UNIT=16)  
 !c-----------------------------------------------------------------
 IMPLICIT real*8 (A-H,O-Z)
 PARAMETER (NMG=150)
@@ -48,30 +48,30 @@ subroutine ab_ban1(model)
    
       
     !CALL MODEL(mod)
-    if(model /= 3)then
-        if(model==1)then
-            open (unit=13,file='Database\intrcn.mds',status='old',&
-                  access='direct',form='formatted',recl=850,CARRIAGECONTROL='LIST')   
-        else     
-            open (unit=13,file='Database\intrcnas.mds',status='old',&
-                  access='direct',form='formatted',recl=850,CARRIAGECONTROL='LIST')        
+      if(model /= 3)then
+            if(model==1)then
+                open (unit=13,file='src/database/intrcn.mds',status='old',&
+                      access='direct',form='formatted',recl=850)   
+            else     
+                open (unit=13,file='src/database/intrcnas.mds',status='old',&
+                      access='direct',form='formatted',recl=850)        
+            endif
+            open (unit=14,file='src/database/gruposram.mds',status='old',&
+                     access='direct',form='formatted',recl=300)
+            open (unit=15,file='src/database/parvolas.mds',status='old',&
+                  access='direct',form='formatted',recl=850)
+            open (unit=16,file='src/database/pareneas.mds',status='old',&
+                  access='direct',form='formatted',recl=850)    
+        else
+    
+            open (unit=14,file='src/database/gruposramgc.mds',status='old',&
+                     access='direct',form='formatted',recl=263)
+            open (unit=13,file='src/database/intrcngcalpha.mds',status='old',&
+                  access='direct',form='formatted',recl=730)
+            open (unit=16,file='src/database/intrcngckapa.mds',status='old',&
+                  access='direct',form='formatted',recl=730)    
+            
         endif
-        open (unit=14,file='Database\gruposram.mds',status='old',&
-     	      access='direct',form='formatted',recl=300,CARRIAGECONTROL='LIST')
-        open (unit=15,file='Database\parvolas.mds',status='old',&
-              access='direct',form='formatted',recl=850,CARRIAGECONTROL='LIST')
-        open (unit=16,file='Database\pareneas.mds',status='old',&
-              access='direct',form='formatted',recl=850,CARRIAGECONTROL='LIST')    
-    else
-
-        open (unit=14,file='Database\gruposramgc.mds',status='old',&
-     	      access='direct',form='formatted',recl=263,CARRIAGECONTROL='LIST')
-        open (unit=13,file='Database\intrcngcalpha.mds',status='old',&
-              access='direct',form='formatted',recl=730,CARRIAGECONTROL='LIST')
-        open (unit=16,file='Database\intrcngckapa.mds',status='old',&
-              access='direct',form='formatted',recl=730,CARRIAGECONTROL='LIST')    
-        
-    endif
       
 
       return

@@ -14,12 +14,12 @@ subroutine LeerBases(name)
     open (unit=2,FILE=name,status='OLD',FORM='FORMATTED')
     open (unit=3,FILE="parameters.dat",FORM='FORMATTED')
     
-    read(2,"(3i)") model, ipareq, Ncomp
+    read(2,"(3i1)") model, ipareq, Ncomp
     call ab_ban1(model)
 
     ms(:,:,:)=0
     do i=1,Ncomp
-        read(2,"(20i)") (ms(I,J,1),ms(I,J,2),j=1,size(ms(1,:,1)))   
+        read(2,*) (ms(I,J,1),ms(I,J,2),j=1,size(ms(1,:,1)))   
         j=1
         do while (ms(i,j,1)/=0)
             call cr_puntf (ms(i,j,1),NPUNT,NGRUP,NPINT,NINTT)
@@ -35,7 +35,7 @@ subroutine LeerBases(name)
         j=j+1
     enddo
     write(3,*)"end"
-!Escritura de parámetros grupales
+!Escritura de parï¿½metros grupales
     j=1
     
     do while (ngrup(j)/=0)
@@ -46,7 +46,7 @@ subroutine LeerBases(name)
         j=j+1
     enddo      
     write(3,*)"end"    
-!Escritura parámetros interacción    
+!Escritura parï¿½metros interacciï¿½n    
     I=1
     do while (ngrup(I)/=0)
        J=1
@@ -60,7 +60,7 @@ subroutine LeerBases(name)
        I=I+1
     enddo
     write(3,*)"endint"   
-!Escritura composición grupal
+!Escritura composiciï¿½n grupal
     do i=1,Ncomp
         k=1
         do while (ngrup(k)/=0)
@@ -83,7 +83,7 @@ subroutine LeerBases(name)
         write(3,*)"end"
     enddo  
     
-!Averigua cuáles grupos son asociativos    
+!Averigua cuï¿½les grupos son asociativos    
     if (model==2) then
         NUM = 0
         NGA = 0
@@ -356,15 +356,15 @@ SUBROUTINE CR_PUNTF (IGRUP,NPUNT,NGRUP,NPINT,NINTT)
     integer,external::mainsgfunc
 
 !SENTENCIAS
-    if(npunt(igrup)==0)then             !PREGUNTA SI ESTÁ CARGADO EL SUBGRUPO
-      do j=1,NMG                        !BUSCA PRIMER POSICIÓN VACÍA
+    if(npunt(igrup)==0)then             !PREGUNTA SI ESTï¿½ CARGADO EL SUBGRUPO
+      do j=1,NMG                        !BUSCA PRIMER POSICIï¿½N VACï¿½A
           if(ngrup(J)==0)exit
       enddo
       npunt(igrup) = J
       ngrup(J) = igrup
-      maingrup = mainsgfunc(ngrup(J),ipareq)!BUSCA A QUÉ GRUPO PPAL PERTENECE
-      if(npint(maingrup)==0)then        !PREGUNTA SI ESTÁ CARGADO EL GRUPO PPAL
-          do K=1,NINT                   !BUSCA PRIMER POSICIÓN VACÍA
+      maingrup = mainsgfunc(ngrup(J),ipareq)!BUSCA A QUï¿½ GRUPO PPAL PERTENECE
+      if(npint(maingrup)==0)then        !PREGUNTA SI ESTï¿½ CARGADO EL GRUPO PPAL
+          do K=1,NINT                   !BUSCA PRIMER POSICIï¿½N VACï¿½A
               if(nintt(K)==0)exit
           enddo
           npint(maingrup) = k

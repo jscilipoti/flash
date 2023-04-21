@@ -5,8 +5,8 @@ program llecalas
 !C  *                                      para el calculo de flash y *  
 !C  *                                      curva binodal (icalc 0 y 1)*
 !C  *                                                                 *
-!C  *                          ASOCIACIÓN CRUZADA					   *		  
-!C  *                       VERSIÓN GENERALIZADA                      *        
+!C  *                          ASOCIACIï¿½N CRUZADA					   *		  
+!C  *                       VERSIï¿½N GENERALIZADA                      *        
 !C  *              FEBRERO 2006 MODIFICADA POR                        *
 !C  *                   ALFONSINA  ESTER ANDREATTA                    *        
 !C  *        BASADA EN LAS SIMPLLIFICACIONES DE LOS PAPERS:           *
@@ -15,14 +15,14 @@ program llecalas
 !c  * Michelsen, et al. (Fluid Phase Equilibria, 180(2001)165-174 )   *		
 !C  * Tan, et al.  (Ind. Eng. Chem. Res, 2004,43,203-208).			   *	   	
 !C  *																   *	   	
-!C  *        Esto permitió  que todos los casos particulares          *         
-!c  *       de asociación se puedan simplificar a un único cálculo. 
+!C  *        Esto permitiï¿½  que todos los casos particulares          *         
+!c  *       de asociaciï¿½n se puedan simplificar a un ï¿½nico cï¿½lculo. 
 !c
-!c   Válido para un máximo número grupo asociativo de 12
-!c   Con la implementación en el cálculo de la fracción no asociada en el componente puro 
-!c   por  el metodo iterativo aquí implementado se permite que una molécula
-!c   tenga más de un grupo asociativo 14/07/06
-!C  El cálculo se limita a que el número máximo de sitios sea 2(por razones matemáticas)
+!c   Vï¿½lido para un mï¿½ximo nï¿½mero grupo asociativo de 12
+!c   Con la implementaciï¿½n en el cï¿½lculo de la fracciï¿½n no asociada en el componente puro 
+!c   por  el metodo iterativo aquï¿½ implementado se permite que una molï¿½cula
+!c   tenga mï¿½s de un grupo asociativo 14/07/06
+!C  El cï¿½lculo se limita a que el nï¿½mero mï¿½ximo de sitios sea 2(por razones matemï¿½ticas)
 !c                                                       
 !C  *******************************************************************  
 !C  *                                           DATE: 24/3 - 1982 /TJ *  
@@ -331,11 +331,11 @@ program llecalas
  1132       agam(i,j)=actgam(i)
  1130 continue
       write (output,*) NF
-      do i=1,NF !escribe resultados para el output que será leído por excel
+      do i=1,NF !escribe resultados para el output que serï¿½ leï¿½do por excel
         write(output,2613) (XM(j,i),J=1,N)
         write(output,2613) (agam(j,i),j=1,N)  
       enddo
-!      do i=1,NF !escribe resultados para el output que será leído por excel
+!      do i=1,NF !escribe resultados para el output que serï¿½ leï¿½do por excel
 !        write(output,2613) (agam(j,i),j=1,N)      
 !      enddo
       
@@ -547,8 +547,8 @@ program llecalas
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCALFONSINACCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 	!***********************************calculo de xoh**************************
-!c Cálculo de la  fracción no asociada Paper:Ind. Eng. Chem. Res, 2004,43,203-208   
-!c !Inicializació
+!c Cï¿½lculo de la  fracciï¿½n no asociada Paper:Ind. Eng. Chem. Res, 2004,43,203-208   
+!c !Inicializaciï¿½
       if(nga.ne.0) then
       xoh=1.0d0 
       del=1.d0
@@ -580,7 +580,7 @@ program llecalas
  
 	 
 
-!cc Fin del Cálculo de la  fracción no asociada 
+!cc Fin del Cï¿½lculo de la  fracciï¿½n no asociada 
 !c	!*****************************calculo de xohi0**************************************
 !C	xohi0=1d0
 !c	do i=1, nc
@@ -602,9 +602,9 @@ program llecalas
 !C		end do
 !c	end do
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCALFONSINACCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-!c****************************calculo de xohi0(esta implementación permite que una molécula
-!c tenga más de un grupo asociativo 14/07/06**************************************
-!c !Inicializació
+!c****************************calculo de xohi0(esta implementaciï¿½n permite que una molï¿½cula
+!c tenga mï¿½s de un grupo asociativo 14/07/06**************************************
+!c !Inicializaciï¿½
      
       if(nga.ne.0) then
       xohi0=1.D0
@@ -634,8 +634,8 @@ program llecalas
       end if
 
 !c*****************************fin del calculo de xohi0**************************************
-!Cálculo del gama de asociación ALFONSINA CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-!C actas(M) = LOGARITMO NATURAL DEL GAMA DE ASOCIACIÓN DEL COMPONENTE I  
+!Cï¿½lculo del gama de asociaciï¿½n ALFONSINA CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+!C actas(M) = LOGARITMO NATURAL DEL GAMA DE ASOCIACIï¿½N DEL COMPONENTE I  
 
        if(nga.ne.0) then	
 
@@ -680,8 +680,8 @@ program llecalas
 !********************************calculo de dxkdni Alfonsina**************************************
 
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCALFONSINA CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-!cCalcula los elementos de la matriz deltapq para el cálculo de la derivada de la fracción 
-!c no asociada respecto a la fracción molar del componente
+!cCalcula los elementos de la matriz deltapq para el cï¿½lculo de la derivada de la fracciï¿½n 
+!c no asociada respecto a la fracciï¿½n molar del componente
       psin=0.0d0
 	if(nga.ne.0) then
 	m_lambda1=0.0d0
@@ -706,8 +706,8 @@ program llecalas
 	end if 
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCALFONSINA CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 !
-!c Calculo de  los elementos de la matriz [Yp] para el cálculo de la derivada de la fracción 
-!c no asociada respecto a la fracción molar del componente
+!c Calculo de  los elementos de la matriz [Yp] para el cï¿½lculo de la derivada de la fracciï¿½n 
+!c no asociada respecto a la fracciï¿½n molar del componente
       if(nga.ne.0) then
       do k=1,nga
 
@@ -741,7 +741,7 @@ program llecalas
       m_lambda1=m_lambda
       call  ludcmp(m_lambda1,N,NP,indx,d1)
        call lubksb(m_lambda1,N,NP,indx,psin)
-!c colectando las derivadas en su correspondiente subíndice
+!c colectando las derivadas en su correspondiente subï¿½ndice
       z=0
 	do m=1,2
 	do l=1, nga
@@ -762,10 +762,10 @@ program llecalas
       end do
 	end do
 
-!c fin del cálculo de la derivada de la fracción no asociada respecto a la 
-!c fracción molar del componente
+!c fin del cï¿½lculo de la derivada de la fracciï¿½n no asociada respecto a la 
+!c fracciï¿½n molar del componente
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCALFONSINACCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-!C dgasdx(M) = derivada LOGARITMO NATURAL DEL GAMA DE ASOCIACIÓN DEL COMPONENTE I
+!C dgasdx(M) = derivada LOGARITMO NATURAL DEL GAMA DE ASOCIACIï¿½N DEL COMPONENTE I
       if(nga.ne.0) then
    
       DO l=1,NGA 
@@ -857,73 +857,108 @@ program llecalas
      ,A18(32),A19(32),A20(32),A21(32),A22(32),A23(32),A24(32),A25(32)&
      ,A26(32),A27(32),A28(32),A29(32),A30(32),A31(32),A32(32)        
    !   DATA MAINSG/4*1,4*2,2*3,3*4,5,6,7,8,9,2*10,11,12,2*13,2*14,4*15,3*16,3*17,2*18,19,20,2*21,22,3*23,24,25,26,3*27,28,29,30,31,32/     
-      DATA RR/.9011,.6744,.4469,.2195,1.3454,1.1167,.8886,1.1173,.5313,.3652,1.2663,1.0396,.8121,1.,3.2499,3.2491,.92,.8952,1.6724,1.4457,&
-     .998,3.168,1.3013,1.528,1.9031,1.6764,1.145,.9183,.6908,.9183,1.4654,1.238,1.006,2.2564,2.0606,1.8016,2.87,2.6401,3.39,1.1562,1.870132&
-     ,1.6434,1.06,2.0086,1.7818,1.5544,1.4199,2.4088,4.0013,2.9993,2.83&
-     ,2.667,3.3092,2.4317,3.0856,4.0358,2.8266/                      
-      DATA QQ/.848,.54,.228,0.,1.176,.867,.676,.988,.4,.12,.968,.66,.348&
-     ,1.2,3.128,3.124,1.4,.68,1.488,1.18,.948,2.484,1.224,1.532,1.728,1.42&
-     ,1.088,.78,.468,1.1,1.264,.952,.724,1.988,1.684,1.448,2.41,2.184&
-     ,2.91,.844,1.724,1.416,.816,1.868,1.56,1.248,1.104,2.248,3.568,2.113&
-     ,1.833,1.553,2.86,2.192,2.736,3.2,2.472/                       
-      DATA A1/0.,292.3,156.5,104.4,328.2,-136.7,-131.9,342.4,-159.8,66.56&
-     ,146.1,14.78,1744.,-320.1,1571.,73.8,27.9,21.23,89.97,-59.06,29.08&
-     ,175.8,94.34,193.6,108.5,81.49,-128.8,147.3,-11.91,14.91,67.84,36.42/                                                              
-      DATA A2/74.54,0.,-94.78,-269.7,470.7,-135.7,-135.7,220.6,1.,306.1,&
-     517.,1.,-48.52,485.6,76.44,-24.36,-52.71,-185.1,-293.7,1.,34.78,1.&
-     ,375.4,5*1.,176.7,132.1,42.73,60.82/                              
-      DATA A3/-114.8,340.7,0.,-146.8,-9.21,-223.,-252.,372.8,-473.2,-78.31&
-     ,-75.3,-10.44,75.49,114.8,52.13,4.68,1.,288.5,-4.7,777.8,56.41,-218.9&
-     ,113.6,7.18,247.3,-50.71,-255.3,1.,-80.48,-17.78,59.16,29.77/
-      DATA A4/-115.7,4102.,167.,0.,1.27,-162.6,-273.6,203.7,-470.4,-73.87&
-     ,223.2,-184.9,147.3,-170.,65.69,122.9,1.,33.61,134.7,-47.13,-53.29&
-     ,-15.41,-97.05,-127.1,453.4,-30.28,-124.6,3*1.,26.59,55.97      /
-      DATA A5/644.6,724.4,703.9,4000.,0.,-281.1,-268.8,-122.4,-63.15,216.&
-     ,-431.3,444.7,118.4,180.6,137.1,455.1,669.2,418.4,713.5,1989.,2011.&
-     ,529.,483.8,332.6,-289.3,-99.56,-319.2,837.9,4*1.              /
-      DATA A6/329.6,1731.,511.5,136.6,937.3,2*0.,247.,-547.,401.7,643.4,&
-     -94.64,728.7,-76.64,-218.1,351.5,-186.1,-465.7,-260.3,3*1.,264.7,9*1./                                                              
-      DATA A7/310.7,1731.,577.3,906.8,991.3,2*0.,104.9,-547.2,-127.6,231.4&
-     ,732.3,349.1,-152.8,-218.1,351.5,-401.6,-465.7,512.2,3*1.,264.7,9*1./                                                             
-      DATA A8/1300.,896.,859.4,5695.,28.73,-61.29,5.89,0.,-595.9,634.8,623.7&
-     ,211.6,652.3,385.9,212.8,770.,740.4,793.2,1205.,390.7,63.48,-239.8&
-     ,13.32,439.9,-424.3,1.,203.,1153.,-311.,-262.6,1.11,1.       /
-      DATA A9/2255.,1.,1649.,292.6,-195.5,-153.2,-153.2,344.5,0.,-568.,3*1.&
-     ,-337.3,4*1.,1616.,2*1.,-860.3,1.,-230.4,523.,1.,-222.7,5*1.  /
-      DATA A10/472.6,343.7,593.7,916.7,67.07,-47.41,353.8,-171.8,-825.7,&
-     0.,128.,48.93,-101.3,58.84,52.38,483.9,550.6,342.2,550.,190.5,-349.2&
-     ,857.7,377.,211.6,82.77,2*1.,417.4,4*1.          /              
-      DATA A11/158.1,-214.7,362.3,1218.,1409.,-344.1,-338.6,-349.9,1.,-37.36,0.,-311.6,1051.,1090.,1.,-47.51,16*1./                       
-      DATA A12/383.,1.,31.14,715.6,-140.3,299.3,-241.8,66.95,1.,120.3,1724.&
-     ,0.,-115.7,-46.13,2*1.,808.8,203.1,70.14,5*1.,-75.23,1.,-201.9,123.2,1.,-281.9,2*1./                                             
-      DATA A13/139.4,1647.,461.8,339.1,-104.,244.4,-57.98,-465.7,1.,1247.&
-     ,.75,1919.,0.,1417.,1402.,337.1,437.7,370.4,438.1,1349.,1.,681.4,&
-     152.4,1.,-1707.,2*1.,639.7,4*1.          /                        
-      DATA A14/972.4,-577.5,6.,5688.,195.6,19.57,487.1,-6.32,-898.3,258.70&
-     ,-245.8,57.7,-117.6,0.,461.3,1.,-132.9,176.5,129.5,-246.3,2.41,3*1.,29.86,7*1./                      
-      DATA A15/662.1,289.3,32.14,213.1,262.5,1970.,1970.,64.42,1.,5.202,2*1.&
-     ,-96.62,-235.7,0.,225.4,-197.7,-20.93,113.9,3*1.,-94.49,9*1. /
-      DATA A16/42.14,99.61,-18.81,-114.1,62.05,-166.4,-166.4,315.9,1.,1000.&
-     ,751.8,1.,19.77,1.,301.1,0.,-21.35,-157.1,11.8,13*1.       /   
-      DATA A17/-243.9,337.1,2*1.,272.2,128.6,507.8,370.7,1.,-301.,1.,-347.9,1670.,108.9,137.8,110.5,0.,1.,17.97,13*1.         /           
-      DATA A18/7.5,4583.,-231.9,-12.14,-61.57,2*1544.,356.8,1.,12.01,1.,&
-     -249.3,48.15,-209.7,-154.3,249.2,1.,0.,51.9,1.,-15.62,-216.3,4*1.,-114.7,5*1. /                                                     
-      DATA A19/-5.55,5831.,3000.,-141.3,-41.75,224.6,-207.,502.9,4894.,&
-     -10.88,1.,61.59,43.83,54.57,47.67,62.42,56.33,-30.1,0.,-255.4,-54.86,8455.,-34.68,514.6,8*1. /                                       
-      DATA A20/924.8,1.,-878.1,-107.3,-597.1,2*1.,-97.27,1.,902.6,2*1.,&
-     874.3,629.,4*1.,475.8,0.,-465.2,1.,794.4,1.,-241.7,1.,-906.5,5*1. /
-      DATA A21/696.8,405.9,29.13,1208.,-189.3,2*1.,198.3,1.,430.6,3*1.,-149.2,3*1.,70.04,492.,346.2,0.,5*1.,-169.7,5*1.        /          
-      DATA A22/902.2,1.,1.64,689.6,-348.2,1.,1.,-109.8,-851.6,1010.,2*1.,942.2,4*1.,-75.5,1302.,2*1.,0.,1.,175.8,164.4,1.,-944.9,5*1./    
-      DATA A23/556.7,425.7,-1.77,3629.,-30.7,150.8,150.8,1538.6,1.,400.,2*1.,446.3,1.,95.18,3*1.,490.9,-154.5,2*1.,0.,1.,481.3,7*1.      /
-      DATA A24/575.7,1.,-11.19,-175.6,-159.,2*1.,32.92,-16.13,-328.6,8*1.,534.7,2*1.,179.9,1.,0.,-246.,7*1.           /                   
-      DATA A25/527.5,1.,358.9,337.7,536.6,2*1.,-269.2,-538.6,211.6,1.,-278.2,572.7,343.1,5*1.,124.8,1.,125.3,139.8,963.,0.,7*1.    /      
-      DATA A26/269.2,1.,363.5,1023.,53.37,20*1.,0.,6*1.          /      
-      DATA A27/-300.,1.,-578.2,-390.7,183.3,2*1.,-873.6,-637.3,2*1.,-208.4,5*1.,18.98,1.,-387.7,134.3,924.5,4*1.,0.,5*1.     /            
-      DATA A28/-63.6,3*1.,-44.44,2*1.,1429.,1.,148.,1.,-13.91,-2.16,14*1.,0.,4*1./                                                        
-      DATA A29/928.3,500.7,364.2,4*1.,-364.2,20*1.,0.,3*1.    /         
-      DATA A30/331.,115.4,-58.1,4*1.,-117.4,3*1.,173.8,17*1.,0.,2*1.   /
-      DATA A31/561.4,784.4,21.97,238.,3*1.,18.41,22*1.,0.,1.       /    
-      DATA A32/956.5,265.4,84.16,132.2,27*1.,0./                        
+     DATA RR/.9011,.6744,.4469,.2195,1.3454,1.1167,.8886,1.1173,.5313,.3652,&
+     1.2663,1.0396,.8121,1.,3.2499,3.2491,.92,.8952,1.6724,1.4457,&
+    .998,3.168,1.3013,1.528,1.9031,1.6764,1.145,.9183,.6908,.9183,1.4654,&
+    1.238,1.006,2.2564,2.0606,1.8016,2.87,2.6401,3.39,1.1562,1.870132&
+    ,1.6434,1.06,2.0086,1.7818,1.5544,1.4199,2.4088,4.0013,2.9993,2.83&
+    ,2.667,3.3092,2.4317,3.0856,4.0358,2.8266,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0/                    
+    DATA QQ/.848,.54,.228,0.,1.176,.867,.676,.988,.4,.12,.968,.66,.348&
+    ,1.2,3.128,3.124,1.4,.68,1.488,1.18,.948,2.484,1.224,1.532,1.728,1.42&
+    ,1.088,.78,.468,1.1,1.264,.952,.724,1.988,1.684,1.448,2.41,2.184&
+    ,2.91,.844,1.724,1.416,.816,1.868,1.56,1.248,1.104,2.248,3.568,2.113&
+    ,1.833,1.553,2.86,2.192,2.736,3.2,2.472,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,&
+    0.0,0.0,0.0/                      
+    DATA A1/0.,292.3,156.5,104.4,328.2,-136.7,-131.9,342.4,-159.8,66.56&
+    ,146.1,14.78,1744.,-320.1,1571.,73.8,27.9,21.23,89.97,-59.06,29.08&
+    ,175.8,94.34,193.6,108.5,81.49,-128.8,147.3,-11.91,14.91,67.84,36.42/                                                              
+     DATA A2/74.54,0.,-94.78,-269.7,470.7,-135.7,-135.7,220.6,1.,306.1,&
+    517.,1.,-48.52,485.6,76.44,-24.36,-52.71,-185.1,-293.7,1.,34.78,1.&
+    ,375.4,5*1.,176.7,132.1,42.73,60.82/                              
+     DATA A3/-114.8,340.7,0.,-146.8,-9.21,-223.,-252.,372.8,-473.2,-78.31&
+    ,-75.3,-10.44,75.49,114.8,52.13,4.68,1.,288.5,-4.7,777.8,56.41,-218.9&
+    ,113.6,7.18,247.3,-50.71,-255.3,1.,-80.48,-17.78,59.16,29.77/
+     DATA A4/-115.7,4102.,167.,0.,1.27,-162.6,-273.6,203.7,-470.4,-73.87&
+    ,223.2,-184.9,147.3,-170.,65.69,122.9,1.,33.61,134.7,-47.13,-53.29&
+    ,-15.41,-97.05,-127.1,453.4,-30.28,-124.6,3*1.,26.59,55.97      /
+     DATA A5/644.6,724.4,703.9,4000.,0.,-281.1,-268.8,-122.4,-63.15,216.&
+    ,-431.3,444.7,118.4,180.6,137.1,455.1,669.2,418.4,713.5,1989.,2011.&
+    ,529.,483.8,332.6,-289.3,-99.56,-319.2,837.9,4*1.              /
+     DATA A6/329.6,1731.,511.5,136.6,937.3,2*0.,247.,-547.,401.7,643.4,&
+    -94.64,728.7,-76.64,-218.1,351.5,-186.1,-465.7,-260.3,3*1.,264.7,9*1./                                                              
+     DATA A7/310.7,1731.,577.3,906.8,991.3,2*0.,104.9,-547.2,-127.6,231.4&
+    ,732.3,349.1,-152.8,-218.1,351.5,-401.6,-465.7,512.2,3*1.,264.7,9*1./                                                             
+     DATA A8/1300.,896.,859.4,5695.,28.73,-61.29,5.89,0.,-595.9,634.8,623.7&
+    ,211.6,652.3,385.9,212.8,770.,740.4,793.2,1205.,390.7,63.48,-239.8&
+    ,13.32,439.9,-424.3,1.,203.,1153.,-311.,-262.6,1.11,1.       /
+     DATA A9/2255.,1.,1649.,292.6,-195.5,-153.2,-153.2,344.5,0.,-568.,3*1.&
+    ,-337.3,4*1.,1616.,2*1.,-860.3,1.,-230.4,523.,1.,-222.7,5*1.  /
+     DATA A10/472.6,343.7,593.7,916.7,67.07,-47.41,353.8,-171.8,-825.7,&
+    0.,128.,48.93,-101.3,58.84,52.38,483.9,550.6,342.2,550.,190.5,-349.2&
+    ,857.7,377.,211.6,82.77,2*1.,417.4,4*1.          /              
+     DATA A11/158.1,-214.7,362.3,1218.,1409.,-344.1,-338.6,-349.9,1.,-37.36,&
+     0.,-311.6,1051.,1090.,1.,-47.51,16*1./                       
+     DATA A12/383.,1.,31.14,715.6,-140.3,299.3,-241.8,66.95,1.,120.3,1724.&
+    ,0.,-115.7,-46.13,2*1.,808.8,203.1,70.14,5*1.,-75.23,1.,-201.9,123.2,1.,&
+    -281.9,2*1./                                             
+     DATA A13/139.4,1647.,461.8,339.1,-104.,244.4,-57.98,-465.7,1.,1247.&
+    ,.75,1919.,0.,1417.,1402.,337.1,437.7,370.4,438.1,1349.,1.,681.4,&
+    152.4,1.,-1707.,2*1.,639.7,4*1.          /                        
+     DATA A14/972.4,-577.5,6.,5688.,195.6,19.57,487.1,-6.32,-898.3,258.70&
+    ,-245.8,57.7,-117.6,0.,461.3,1.,-132.9,176.5,129.5,-246.3,2.41,3*1.,&
+    29.86,7*1./                      
+     DATA A15/662.1,289.3,32.14,213.1,262.5,1970.,1970.,64.42,1.,5.202,2*1.&
+    ,-96.62,-235.7,0.,225.4,-197.7,-20.93,113.9,3*1.,-94.49,9*1. /
+     DATA A16/42.14,99.61,-18.81,-114.1,62.05,-166.4,-166.4,315.9,1.,1000.&
+    ,751.8,1.,19.77,1.,301.1,0.,-21.35,-157.1,11.8,13*1.       /   
+     DATA A17/-243.9,337.1,2*1.,272.2,128.6,507.8,370.7,1.,-301.,1.,-347.9,&
+     1670.,108.9,137.8,110.5,0.,1.,17.97,13*1.         /           
+     DATA A18/7.5,4583.,-231.9,-12.14,-61.57,2*1544.,356.8,1.,12.01,1.,&
+    -249.3,48.15,-209.7,-154.3,249.2,1.,0.,51.9,1.,-15.62,-216.3,4*1.,&
+    -114.7,5*1. /                                                     
+     DATA A19/-5.55,5831.,3000.,-141.3,-41.75,224.6,-207.,502.9,4894.,&
+    -10.88,1.,61.59,43.83,54.57,47.67,62.42,56.33,-30.1,0.,-255.4,-54.86,&
+    8455.,-34.68,514.6,8*1. /                                       
+     DATA A20/924.8,1.,-878.1,-107.3,-597.1,2*1.,-97.27,1.,902.6,2*1.,&
+    874.3,629.,4*1.,475.8,0.,-465.2,1.,794.4,1.,-241.7,1.,-906.5,5*1. /
+     DATA A21/696.8,405.9,29.13,1208.,-189.3,2*1.,198.3,1.,430.6,3*1.,&
+     -149.2,3*1.,70.04,492.,346.2,0.,5*1.,-169.7,5*1.        /          
+     DATA A22/902.2,1.,1.64,689.6,-348.2,1.,1.,-109.8,-851.6,1010.,2*1.,&
+     942.2,4*1.,-75.5,1302.,2*1.,0.,1.,175.8,164.4,1.,-944.9,5*1./    
+     DATA A23/556.7,425.7,-1.77,3629.,-30.7,150.8,150.8,1538.6,1.,400.,&
+     2*1.,446.3,1.,95.18,3*1.,490.9,-154.5,2*1.,0.,1.,481.3,7*1.      /
+     DATA A24/575.7,1.,-11.19,-175.6,-159.,2*1.,32.92,-16.13,-328.6,8*1.,&
+     534.7,2*1.,179.9,1.,0.,-246.,7*1.           /                   
+     DATA A25/527.5,1.,358.9,337.7,536.6,2*1.,-269.2,-538.6,211.6,1.,&
+     -278.2,572.7,343.1,5*1.,124.8,1.,125.3,139.8,963.,0.,7*1.    /      
+     DATA A26/269.2,1.,363.5,1023.,53.37,20*1.,0.,6*1.          /      
+     DATA A27/-300.,1.,-578.2,-390.7,183.3,2*1.,-873.6,-637.3,2*1.,-208.4,&
+     5*1.,18.98,1.,-387.7,134.3,924.5,4*1.,0.,5*1.     /            
+     DATA A28/-63.6,3*1.,-44.44,2*1.,1429.,1.,148.,1.,-13.91,-2.16,14*1.,0.,&
+     4*1./                                                        
+     DATA A29/928.3,500.7,364.2,4*1.,-364.2,20*1.,0.,3*1.    /         
+     DATA A30/331.,115.4,-58.1,4*1.,-117.4,3*1.,173.8,17*1.,0.,2*1.   /
+     DATA A31/561.4,784.4,21.97,238.,3*1.,18.41,22*1.,0.,1.       /    
+     DATA A32/956.5,265.4,84.16,132.2,27*1.,0./                        
       DO 5 I=1,32                                                       
       A(I,1)=A1(I)                                                      
       A(I,2)=A2(I)                                                      
@@ -974,12 +1009,12 @@ program llecalas
       IF(MODEL.EQ.1) GOTO 21                                            
 !C     READ(2,501) IOWNRQ,IOWNP                                          
 
-!Lectura de parámetros R, Q, int
+!Lectura de parï¿½metros R, Q, int
     read(2,*) IOWNRQ,IOWNP                                            
 
     if(IOWNRQ/=0)then
         do I=1,IOWNRQ                                                   
-            read(2,*) K,RR(K),QQ(K)  !K= núm de grupo                                     
+            read(2,*) K,RR(K),QQ(K)  !K= nï¿½m de grupo                                     
         enddo
     endif            
 
@@ -987,7 +1022,7 @@ program llecalas
   
     if(IOWNP/=0)then
         do I=1,IOWNP                                                   
-            read(2,*) J,K,par !A(J,K) !j y k= núm de grupos
+            read(2,*) J,K,par !A(J,K) !j y k= nï¿½m de grupos
             j=mainsgfunc(j,ipareq)
             k=mainsgfunc(k,ipareq)
             a(j,k)=par
@@ -1016,7 +1051,7 @@ program llecalas
     JH(:)=0                                                           
     DO 50 I=1,NK
        ! do j=1,10
-            READ(2,"(20i)") (MS(I,J,1),MS(I,J,2),j=1,size(ms(1,:,1)))    
+            READ(2,*) (MS(I,J,1),MS(I,J,2),j=1,size(ms(1,:,1)))    
        ! enddo
       !  READ(2,*) NGI,(MS(I,J,1),MS(I,J,2),J=1,NGI)    
         do 50 j=1,size(ms(1,:,1))
@@ -1077,9 +1112,9 @@ program llecalas
 
 
 !C....................................................................................
-!C.....Genera las matrices ENASS Y RKASS con los parámetros de energía y volumen 
-!c.....de asociación, respectivamente, según los grupos asociativos de los componentes
-!c.....del sistema que se esté corriendo. (si el modelo elegido es A-UNIFAC)
+!C.....Genera las matrices ENASS Y RKASS con los parï¿½metros de energï¿½a y volumen 
+!c.....de asociaciï¿½n, respectivamente, segï¿½n los grupos asociativos de los componentes
+!c.....del sistema que se estï¿½ corriendo. (si el modelo elegido es A-UNIFAC)
 !C....................................................................................     
     enass(:,:,:,:)=0.0
     rkass(:,:,:,:)=0.0
@@ -1111,7 +1146,7 @@ program llecalas
 
 
 !!C
-!!c     lectura parametros ENERGÉTICOS DE asociacion
+!!c     lectura parametros ENERGï¿½TICOS DE asociacion
 !!c
 !	DO J=1,NGA
 !			IF(MASS(J).EQ.0) GO TO 201
@@ -1127,7 +1162,7 @@ program llecalas
 !  201		   CONTINUE
 !	END DO
 !!C
-!!c     lectura parametros VOLUMÉTRICOS DE asociacion
+!!c     lectura parametros VOLUMï¿½TRICOS DE asociacion
 !!C
 !      DO J=1,NGA
 !			IF(MASS(J).EQ.0) GO TO 3330
@@ -1250,15 +1285,15 @@ program llecalas
    27 WRITE(IOUT,603) (P(I,J),J=1,NG)                                   
 
 
-!ccccccccccccccccc Escritura de los parámetros de asociación ALFONSINAccccccccccccccccc
+!ccccccccccccccccc Escritura de los parï¿½metros de asociaciï¿½n ALFONSINAccccccccccccccccc
        IF (NGA.GT.0) THEN
 
 	WRITE(1,218) (I, I=1,NC)
- 218	FORMAT(/,X,'"ASSOC GROUP COMPOSITION" ',/,23X,'COMPONENTES',/,' GRUPO 	  #  SIT ASOC  ',<NC>I5,/) 
+ 218	FORMAT(/,X,'"ASSOC GROUP COMPOSITION" ',/,23X,'COMPONENTES',/,' GRUPO 	  #  SIT ASOC  ',I5,/) 
 
 	DO ja=1,NGA
 	WRITE(1,219) ja,MASS(ja)  , (rngoh(i,ja),i=1,nc) 
- 219	FORMAT(3X,I3,9X,I3,6X,<NC>f5.1)
+ 219	FORMAT(3X,I3,9X,I3,6X,f5.1)
 	END DO
 
 	WRITE(1,220)
@@ -1283,7 +1318,7 @@ program llecalas
 
 
 	WRITE(1,222)
-  222	FORMAT (/,X,'PARAMETROS DE VOLUMEN DE ASOCIACIÓN (cm3/mol) ',/)
+  222	FORMAT (/,X,'PARAMETROS DE VOLUMEN DE ASOCIACIï¿½N (cm3/mol) ',/)
 
 	DO J=1,NGA
 			IF(MASS(J).EQ.0) GO TO 301
@@ -2046,9 +2081,9 @@ program llecalas
       DIMENSION Y(4),DY(4),AMAT(3,5)                                    
       DIMENSION INO(3)                                                  
       common/nga/nga,mass(12)
-      NK=1000  !cambié de 3 a 100 !Alfonsina                            
+      NK=1000  !cambiï¿½ de 3 a 100 !Alfonsina                            
       NITER=0                                                           
-      NT=1000  !cambié de 3 a 100 !Alfonsina                            
+      NT=1000  !cambiï¿½ de 3 a 100 !Alfonsina                            
       DO 1 I=1,3                                                        
     1 IF(Y(I).LT.1.D-14) NT=1000    !Cambie de 10 iteraciones a100 !Alfonsina 0
 11    NITER=NITER+1                                                     
