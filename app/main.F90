@@ -91,9 +91,9 @@ program llecalas
   
    
       call ab_ban1(model)
-	  IF (IOUT.EQ.1) OPEN (UNIT=1,FILE='lleasoccuzada.OUT',FORM='FORMATTED')
-	  OPEN (UNIT=3,FILE='output.OUT',FORM='FORMATTED')
-	  output=3
+	IF (IOUT.EQ.1) OPEN (UNIT=1,FILE='lleasoccuzada.OUT',FORM='FORMATTED')
+	OPEN (UNIT=3,FILE='output.OUT',FORM='FORMATTED')
+	output=3
       WRITE(6,608)                                                      
       WRITE(6,628) IOUT                                                 
       WRITE(6,610)                                                      
