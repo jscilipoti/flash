@@ -14,7 +14,9 @@ program check
     
     if (.true.) then
         if (pause_test) pause
-        call llecalas
+
+        !call llecalas ! Disabled since llecalas has a STOP somewhere
+        
         call open_textfile("lleasoccuzada.OUT",&
             &lleasoccuzada_new,70,86)
         !print "(A)",lleasoccuzada_new
