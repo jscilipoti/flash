@@ -1,52 +1,67 @@
-SUBROUTINE llecalas
-   
-    !C  *******************************************************************  
-    !C  *                                                                 *  
-    !C  *           PROGRAM   L L E C A L A S  (asociacion incorporada    *  
-    !C  *                                      para el calculo de flash y *  
-    !C  *                                      curva binodal (icalc 0 y 1)*
-    !C  *                                                                 *
-    !C  *                          ASOCIACI�N CRUZADA					   *		  
-    !C  *                       VERSI�N GENERALIZADA                      *        
-    !C  *              FEBRERO 2006 MODIFICADA POR                        *
-    !C  *                   ALFONSINA  ESTER ANDREATTA                    *        
-    !C  *        BASADA EN LAS SIMPLLIFICACIONES DE LOS PAPERS:           *
-    !c  *       Revisada en Octubre del 2007 en el chequeo de estabilidad *
-    !C  *																   *   	
-    !c  * Michelsen, et al. (Fluid Phase Equilibria, 180(2001)165-174 )   *		
-    !C  * Tan, et al.  (Ind. Eng. Chem. Res, 2004,43,203-208).			   *	   	
-    !C  *																   *	   	
-    !C  *        Esto permiti�  que todos los casos particulares          *         
-    !c  *       de asociaci�n se puedan simplificar a un �nico c�lculo. 
-    !c
-    !c   V�lido para un m�ximo n�mero grupo asociativo de 12
-    !c   Con la implementaci�n en el c�lculo de la fracci�n no asociada en el componente puro 
-    !c   por  el metodo iterativo aqu� implementado se permite que una mol�cula
-    !c   tenga m�s de un grupo asociativo 14/07/06
-    !C  El c�lculo se limita a que el n�mero m�ximo de sitios sea 2(por razones matem�ticas)
-    !c                                                       
-    !C  *******************************************************************  
-    !C  *                                           DATE: 24/3 - 1982 /TJ *  
-          use InputData
-          IMPLICIT REAL*8(A-H,O-Z)                                          
-          EXTERNAL STABIL,GMIX,FUNC                                         
-          COMMON/CVAP/NOVAP,NDUM,IDUM(4),PRAT(10)                           
-          COMMON/CGIBBS/NF,MAXZ,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),DA(10,10),XM(10,4)                                       
-          COMMON/CUFAC/N,NG,P(10,10),T                                      
-          COMMON/CY/Y13,Y21,STEP                                            
-          COMMON/CA/XC(5),GE(5,2),GC(5,2)                                   
-          COMMON/CIPR/IPR                                                   
-          COMMON/CQT/QT(10,10),Q(10),R(10)                                  
-          COMMON/CACT/Y1(10),Y2(10),ACT1(10),ACT2(10),DACT1(10,10),DACT2(10,10),PACT(2,2)                                                     
-          COMMON/CMODEL/MODEL                                               
-          COMMON/COUT/IOUT                                                  
-          common/nga/nga,mass(12)
-          common/ig/ig
-          DIMENSION DLX(10),YVAL(30),Y(10),GRAD(30),XMAT(30,30),WORK(30,5)  
-          DIMENSION NTEXT(36),X(2),ANT(10,3)          
-          integer::ICALC,MODEL,IPR,IOUT,NOVAP,ig            
-          character(len=36)::name, name1 
-          integer:: parameters 
+! *****************************************************************************
+! *   Subroutine: llecalas(Tf, Pf, Zf)                                        *
+! *****************************************************************************
+!
+subroutine llecalas!(Tf, Pf, Zf) 
+!
+! *****************************************************************************
+! *                                                                           *
+! *  PROGRAM   L L E C A L A S                                                *
+! *  (asociacion incorporada para el calculo de flash y                       *
+! *  curva binodal (icalc 0 y 1)                                              *
+! *                                                                           *
+! *                           ASOCIACION CRUZADA                              *
+! *                          VERSION GENERALIZADA                             *
+! *                              Junio 2023                                   *
+! *   Modificada por:                                                         *
+! *                        ALFONSINA ESTER ANDREATTA                          *
+! *                          JOSE ANTONIO SCILIPOTI                           *
+! *                           JUAN PABLO ROVEZZI                              *
+! *   Revisada en Octubre del 2007 en el chequeo de estabilidad               *
+! *                                                                           *
+! *   Basada en las simplificaciones de los papers:                           *
+! *      # Michelsen, et al. (Fluid Phase Equilibria, 180(2001)165-174 )      *
+! *      # Tan, et al.  (Ind. Eng. Chem. Res, 2004, 43, 203-208).             *
+! *                                                                           *
+! *   Esto permitio  que todos los casos particulares de asociacion se puedan *
+! *   simplificar a un unico calculo.                                         *
+! *                                                                           *
+! *   Valido para un maximo numero grupo asociativo de 12.                    *
+! *   Con la implementacion en el calculo de la fraccion no asociada en el    *
+! *   componente puro por  el metodo iterativo aqui implementado se permite   *
+! *   que una molecula tenga mas de un grupo asociativo (14/07/06).           *
+! *                                                                           * 
+! *   El calculo se limita a que el numero maximo de sitios sea dos           * 
+! *   (por razones matematicas).                                              *
+! *                                                                           *                                                   
+! *****************************************************************************  
+! *                        DATE: 24/3/1982 /TJ                                *
+! *****************************************************************************
+! 
+!  Tf: Temperatura,
+!  Pf: presion,
+!  Zf: composicion, nro de componentes
+
+   use InputData
+   IMPLICIT REAL*8(A-H,O-Z)                                          
+   EXTERNAL STABIL,GMIX,FUNC                                         
+   COMMON/CVAP/NOVAP,NDUM,IDUM(4),PRAT(10)                           
+   COMMON/CGIBBS/NF,MAXZ,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),DA(10,10),XM(10,4)                                       
+   COMMON/CUFAC/N,NG,P(10,10),T                                      
+   COMMON/CY/Y13,Y21,STEP                                            
+   COMMON/CA/XC(5),GE(5,2),GC(5,2)                                   
+   COMMON/CIPR/IPR                                                   
+   COMMON/CQT/QT(10,10),Q(10),R(10)                                  
+   COMMON/CACT/Y1(10),Y2(10),ACT1(10),ACT2(10),DACT1(10,10),DACT2(10,10),PACT(2,2)                                                     
+   COMMON/CMODEL/MODEL                                               
+   COMMON/COUT/IOUT                                                  
+   common/nga/nga,mass(12)
+   common/ig/ig
+   DIMENSION DLX(10),YVAL(30),Y(10),GRAD(30),XMAT(30,30),WORK(30,5)  
+   DIMENSION NTEXT(36),X(2),ANT(10,3)          
+   integer::ICALC,MODEL,IPR,IOUT,NOVAP,ig            
+   character(len=36)::name, name1 
+   integer:: parameters 
        
     
     !c-----
@@ -74,7 +89,7 @@ SUBROUTINE llecalas
           READ(2,501) NTEXT                                                 
     !C     READ(2,503) ICALC,MODEL,IPR,IOUT,NOVAP                            
           READ(2,*) ICALC,MODEL,IPR,IOUT,NOVAP,ig, ipareq 
-    
+
     !   icalc:  0-' **** FLASH CALCULATION ****'                            
     !           1-' **** BINODAL CURVE CALCULATION ****'
     !           2-' **** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **** '
