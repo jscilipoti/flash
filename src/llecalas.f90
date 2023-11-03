@@ -52,43 +52,58 @@ IMPLICIT REAL*8(A-H,O-Z)
 EXTERNAL STABIL,GMIX,FUNC                                         
 
 ! Common blocks that are meant to be removed
-COMMON/CVAP/NOVAP,NDUM,IDUM(4),PRAT(10)                           
-COMMON/CGIBBS/NF,MAXZ,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),DA(10,10),XM(10,4)                                       
+                          
+COMMON/CGIBBS/NF,MAXZ,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),&
+    & DA(10,10),XM(10,4)                                       
 COMMON/CUFAC/N,NG,P(10,10),T                                      
 COMMON/CY/Y13,Y21,STEP                                            
 COMMON/CA/XC(5),GE(5,2),GC(5,2)                                   
-COMMON/CIPR/IPR                                                   
+                                                  
 COMMON/CQT/QT(10,10),Q(10),R(10)                                  
-COMMON/CACT/Y1(10),Y2(10),ACT1(10),ACT2(10),DACT1(10,10),DACT2(10,10),PACT(2,2)                                                     
-COMMON/CMODEL/MODEL                                               
-COMMON/COUT/IOUT                                                  
+COMMON/CACT/Y1(10),Y2(10),ACT1(10),ACT2(10),DACT1(10,10),DACT2(10,10),PACT(2,2)                                                                             
 common/nga/nga,mass(12)
-common/ig/ig
+
+
+
+
+COMMON/CMODEL/model_common 
+COMMON/CIPR/ipr_common 
+COMMON/COUT/iout_common
+COMMON/CVAP/novap_common,NDUM,IDUM(4),PRAT(10) 
+common/ig/ig_common
 
 !   
 DIMENSION DLX(10),YVAL(30),Y(10),GRAD(30),XMAT(30,30),WORK(30,5)  
-DIMENSION NTEXT(36),X(2),ANT(10,3)
+!DIMENSION NTEXT(36),
+DIMENSION X(2),ANT(10,3)
 dimension xmj(10),actgam(10),agam(10,4),de(10,10),pe(2,2)          
 
-integer::ICALC,MODEL,IPR,IOUT,NOVAP,ig            
-character(len=36)::name, name1 
-integer:: parameters 
+integer::ICALC_common,MODEL_common,IPR_common,IOUT_common,NOVAP_common,ig_common            
+character(len=36)::name!, name1 
+!integer:: parameters 
     
-
-    OPEN (UNIT=1,FILE ='name.dat',status='OLD',FORM='FORMATTED')
-    read(1,*)parameters 
-    read(1,"(A36)") name
-    name = name(2:len_trim(name)-1)
-    if (parameters==1)then
-        call get_database_data(name)
-        !stop
-        return
-    endif    
-    CLOSE (UNIT=1)
+call read_input_flash("name.dat")
+    ! OPEN (UNIT=1,FILE ='name.dat',status='OLD',FORM='FORMATTED')
+    ! read(1,*)parameters 
+    ! read(1,"(A36)") name
+    ! name = name(2:len_trim(name)-1)
+    ! if (parameters==1)then
+    !     call get_database_data(name)
+    !     !stop
+    !     return
+    ! endif    
+    ! CLOSE (UNIT=1)
             
-    OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
-    READ(2,501) NTEXT                                                                             
-    READ(2,*) ICALC,MODEL,IPR,IOUT,NOVAP,ig, ipareq 
+    ! OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
+    ! READ(2,501) NTEXT                                                                             
+    ! READ(2,*) ICALC,MODEL,IPR,IOUT,NOVAP,ig, ipareq 
+ICALC_common = icalc
+MODEL_common = model
+IPR_common = ipr
+IOUT_common = iout
+NOVAP_common = novap
+ig_common = ig
+
 
     call open_database(model)
 

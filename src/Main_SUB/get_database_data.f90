@@ -1,7 +1,12 @@
 subroutine get_database_data(name)
     use InputData
     implicit none
-    integer::model,  Ncomp, i, j, k,cant,parameters, irec, mgr,ICS,ITS1,ITS2,num,nga,ng,aa,bb
+    integer :: &
+        !& model, &
+        & Ncomp, i, j, k,cant, &
+        !& parameters, &
+        & irec, &
+        & mgr,ICS,ITS1,ITS2,num,nga,ng,aa,bb
     integer,dimension(:,:,:):: ms(10,10,2)
     character(len=36)::name
     integer,dimension(NMG)::NPUNT,NGRUP,ngrupa,cs

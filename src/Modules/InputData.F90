@@ -8,17 +8,16 @@ module inputData
     implicit none
 
     private :: &
-        & icalc, model, ipr, iout, novap, ig, &
-        & name_maxlen, &
-        & flash_input_filename, &
-        & ntext, &
         & ant
     
 
     public :: &
         & nms, nmg, nint, &
+        & icalc, model, ipr, iout, novap, ig, &
+        & flash_input_filename, name_maxlen, &
         & ipareq, &
         & output, &
+        & ntext, &
         & aint1
 
     ! Max site number per group.
@@ -86,9 +85,7 @@ module inputData
 
     ! A string with the first line of the flash calc input file. It is usually
     ! the same name in the namefile
-    !integer(kind=int32), dimension(name_maxlen) :: NTEXT
-    !characterlen=2), dimension(name_maxlen) :: NTEXT
-    character(len=name_maxlen) :: ntext
+    character(len=2), dimension(name_maxlen) :: ntext
     
     real(kind=real64), dimension(10,3):: ant = 0.D0
     

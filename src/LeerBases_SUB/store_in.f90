@@ -4,7 +4,7 @@ SUBROUTINE Store_In (model,nintt)
     !C      USAN EN MOLDES. LAS PROPIEDADES SE ALMACENAN EN COMMONS.
     !C-----------------------------------------------------------------------
     !C
-       use InputData
+       use InputData, only: nint, ipareq, aint1
        !PARAMETER (NG=70,NMG=150)
         implicit none
     

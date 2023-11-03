@@ -12,8 +12,8 @@ SUBROUTINE PARIN2
 !c------
     COMMON/CUFAC/NK,NG,P(10,10),T                                     
     COMMON/CQT/QT(10,10),Q(10),R(10)                                  
-    COMMON/CMODEL/MODEL                                               
-    COMMON/COUT/IOUT                                                  
+    !COMMON/CMODEL/MODEL                                               
+    !COMMON/COUT/IOUT                                                  
     DIMENSION RT(10,10),A(100,100),NGM(10) !,MAINSG(57)                   
     DIMENSION MS(10,10,2),NY(10,20),JH(150),IH(20)  
 
