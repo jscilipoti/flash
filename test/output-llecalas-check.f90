@@ -10,9 +10,9 @@ program check
     integer(kind=int32) :: i, j
 
     print *,""
-    print *, test_run//"output-check"
+    print *, test_run//"output-llecalas-check"
     
-    if (.true.) then
+    if (output_llecalas_check) then
         if (pause_test) pause
 
         call llecalas 

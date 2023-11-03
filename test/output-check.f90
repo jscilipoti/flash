@@ -12,7 +12,7 @@ program check
     print *,""
     print *, test_run//"output-check"
     
-    if (.true.) then
+    if (output_check) then
         if (pause_test) pause
 
         !call llecalas 

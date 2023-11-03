@@ -1,36 +1,39 @@
 program check
     !ANT, NGG, Pxx, Txx: No fueron checkeados
     use do_tests
-    use InputData_Conv, only:&
-    &flash_input_filename, name_maxlen, ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
-    &ANT,NTEXT
-    use flash, only: P, T, Z
-    use CUFAC, only: NKK, NGG, Pxx, Txx
+    use InputData, only:&
+    & flash_input_filename, name_maxlen, &
+    & ICALC, model, IPR, IOUT, NOVAP, ig, ipareq, &
+    !& ANT, &
+    & NTEXT
+    !use flash, only: P, T, Z
+    !use CUFAC, only: NKK, NGG, Pxx, Txx
     
     implicit none
     real*8,dimension(10) :: z_check
     integer :: i 
 
     print *,""
-    print *, test_run//"leer_input_flash-Test"
+    print *, test_run//"read_input_flash-Test"
     if (leer_input_flash_check) then
         if (pause_test) pause
-        call leer_input_flash("test/name.dat")
+        call read_input_flash("test/name.dat")
         !Check if everything went OK
+        print *, flash_input_filename
         if (flash_input_filename /= "test/llecalas2.dat")& 
             &ERROR STOP "'flash_input_filename' was not read correctly."
-        if (abs(ICALC - 0) > 1E-8)&
+        if (abs(icalc - 0) > 1E-8)&
             &ERROR STOP "'ICALC' was not read correctly."
-        if (abs(modelo - 0) > 1E-8)&
-            &ERROR STOP "'modelo' was not read correctly."
-        if (abs(IPRm - 0) > 1E-8)&
-            &ERROR STOP "'IPRm' was not read correctly."
-        if (abs(IOUTm - 1) > 1E-8)&
-            &ERROR STOP "'IOUTm' was not read correctly."
-        if (abs(NOVAPm - 0) > 1E-8)&
-            &ERROR STOP "'NOVAPm' was not read correctly."
-        if (abs(igm - 1) > 1E-8)&
-            &ERROR STOP "'igm' was not read correctly."
+        if (abs(model - 0) > 1E-8)&
+            &ERROR STOP "'model' was not read correctly."
+        if (abs(ipr - 0) > 1E-8)&
+            &ERROR STOP "'IPR' was not read correctly."
+        if (abs(iout - 1) > 1E-8)&
+            &ERROR STOP "'IOUT' was not read correctly."
+        if (abs(novap - 0) > 1E-8)&
+            &ERROR STOP "'NOVAP' was not read correctly."
+        if (abs(ig - 1) > 1E-8)&
+            &ERROR STOP "'ig' was not read correctly."
         if (abs(ipareq - 2) > 1E-8)&
             &ERROR STOP "'ipareq' was not read correctly."
         ! Disables since there are more errors bellow

@@ -13,7 +13,9 @@ module do_tests
     !&ULV7_check,&
     &open_file_check,&
     &leer_input_flash_check,&
-    &open_database_check
+    &open_database_check,&
+    &output_llecalas_check,&
+    &output_check
   
  
     ! These are module variables that can be used by any program unit that uses 
@@ -31,7 +33,9 @@ module do_tests
     !logical, parameter :: ALV7_check = .true.
     !logical, parameter :: ULV7_check = .true.
     logical, parameter :: open_file_check = .true.
-    logical, parameter :: leer_input_flash_check = .false.
+    logical, parameter :: leer_input_flash_check = .true.
     logical, parameter :: open_database_check = .true.
+    logical, parameter :: output_llecalas_check = .true.
+    logical, parameter :: output_check = .true.
 
   end module do_tests
