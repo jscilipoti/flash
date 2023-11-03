@@ -16,22 +16,22 @@ module do_tests
     &open_database_check
   
  
-    ! These are module variables that can be used by any program unit that uses this module
-    character(len=*),parameter :: test_run = "Running test: "
-    character(len=*),parameter :: test_ok = "Ok! "
-    character(len=*),parameter :: test_disabled = "This test is disabled."
-    character(len=*),parameter :: test_error = "ERROR! "
+    ! These are module variables that can be used by any program unit that uses 
+    ! this module
+
+    character(len=*), parameter :: test_run = "Running test: "
+    character(len=*), parameter :: test_ok = "Ok! "
+    character(len=*), parameter :: test_disabled = "This test is disabled."
+    character(len=*), parameter :: test_error = "ERROR! "
     
     logical,parameter :: pause_test = .false.
 
-    !logical,parameter :: ALL7_check = .false.
-    !logical,parameter :: ULL7_check = .false.
-    !logical,parameter :: ALV7_check = .true.
-    !logical,parameter :: ULV7_check = .true.
-    logical,parameter :: open_file_check = .true.
-    logical,parameter :: leer_input_flash_check = .false.
-    logical,parameter :: open_database_check = .true.
+    !logical, parameter :: ALL7_check = .false.
+    !logical, parameter :: ULL7_check = .false.
+    !logical, parameter :: ALV7_check = .true.
+    !logical, parameter :: ULV7_check = .true.
+    logical, parameter :: open_file_check = .true.
+    logical, parameter :: leer_input_flash_check = .false.
+    logical, parameter :: open_database_check = .true.
 
-    
-  
   end module do_tests
