@@ -74,7 +74,8 @@ subroutine llecalas!(Tf, Pf, Zf)
         name = name(2:len_trim(name)-1)
         if (parameters==1)then
             call LeerBases(name)
-            stop
+            !stop
+            return
         endif    
         CLOSE (UNIT=1)
         
@@ -414,7 +415,8 @@ subroutine llecalas!(Tf, Pf, Zf)
           IF (IOUT.EQ.1) CLOSE (UNIT=1)
           close (unit=3)
     !c      call salida(name)
-          STOP                                                              
+          !STOP
+          return                                                              
           end SUBROUTINE llecalas   
     !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc                       
     !C******************************* F I N ***************************************
