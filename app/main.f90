@@ -10,8 +10,13 @@
 !
 !   * The 'endprogram main' statement marks the end of the main program.
 program main
-    implicit none
+    use outputData
     
+    implicit none
+
+    ! Allow 'write' or 'print' to be shown in console
+    output_console = .true.
+
     call llecalas()
 
 endprogram main
