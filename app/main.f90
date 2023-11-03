@@ -9,6 +9,10 @@
 !   of it.
 !
 !   * The 'endprogram main' statement marks the end of the main program.
+
+!RECORDAR:
+!Cada funcion/subrutina que lee de las bases de datos deben estar aisladas para 
+!su posible modificacion
 program main
     use outputData
     
