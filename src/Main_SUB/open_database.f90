@@ -176,7 +176,6 @@ subroutine open_database(model)
         end if      
     endif
     
-    ! Since "ab_ban" is not a function, it does not need to return.
-    !return 
+    return 
     
     end subroutine open_database

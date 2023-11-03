@@ -6,7 +6,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 !
 ! *****************************************************************************
 ! *                                                                           *
-! *  PROGRAM   L L E C A L A S                                                *
+! *  SUBROUTINE   L L E C A L A S                                                *
 ! *  (asociacion incorporada para el calculo de flash y                       *
 ! *  curva binodal (icalc 0 y 1)                                              *
 ! *                                                                           *
@@ -67,57 +67,31 @@ common/ig/ig
 
 !   
 DIMENSION DLX(10),YVAL(30),Y(10),GRAD(30),XMAT(30,30),WORK(30,5)  
-DIMENSION NTEXT(36),X(2),ANT(10,3)          
+DIMENSION NTEXT(36),X(2),ANT(10,3)
+dimension xmj(10),actgam(10),agam(10,4),de(10,10),pe(2,2)          
 
 integer::ICALC,MODEL,IPR,IOUT,NOVAP,ig            
 character(len=36)::name, name1 
 integer:: parameters 
     
-    
-    !c-----
-        dimension xmj(10),actgam(10),agam(10,4),de(10,10),pe(2,2)
-    !c-----
-    
-        OPEN (UNIT=1,FILE ='name.dat',status='OLD',FORM='FORMATTED')
-        read(1,*)parameters 
-        read(1,"(A36)") name
-        name = name(2:len_trim(name)-1)
-        if (parameters==1)then
-            call LeerBases(name)
-            !stop
-            return
-        endif    
-        CLOSE (UNIT=1)
-        
-    
-        
-        
-        
-    !c      character*6 name
-    !c      name='llecal'
-    !c      call entrada(name)
-        OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
-        READ(2,501) NTEXT                                                 
-    !C     READ(2,503) ICALC,MODEL,IPR,IOUT,NOVAP                            
-        READ(2,*) ICALC,MODEL,IPR,IOUT,NOVAP,ig, ipareq 
 
-    !   icalc:  0-' **** FLASH CALCULATION ****'                            
-    !           1-' **** BINODAL CURVE CALCULATION ****'
-    !           2-' **** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **** '
-    !   model:  0-' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIFAC'     
-    !           1-' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIQUAC'
-    !   ipr:    1-' ** COMPARISON OF ACTIVITIES CALCULATED BY UNIFAC AND UNIQUAC, RESPECTIVELY **'
-    !   iout:   1-'open 'lleasoccuzada.OUT''
-    !   novap:  0-'VAPOR PHASE INCLUDED IN FLASH-CALCULATIONS'
-    !   ig:     0-'write compositions'
-    !           1-'write compositions and activities'
-    !   ipareq: 1-'liquid-liquid parameters table (UNIFAC)'
-    !           2-'liquid-vapor parameters table (UNIFAC)'
-    !           3-'infinite dilution parameters table (UNIFAC)'
-    !           4-'GC-EOS parameters'
-    
-    
-        call ab_ban1(model)
+    OPEN (UNIT=1,FILE ='name.dat',status='OLD',FORM='FORMATTED')
+    read(1,*)parameters 
+    read(1,"(A36)") name
+    name = name(2:len_trim(name)-1)
+    if (parameters==1)then
+        call get_database_data(name)
+        !stop
+        return
+    endif    
+    CLOSE (UNIT=1)
+            
+    OPEN (UNIT=2,FILE=name,status='OLD',FORM='FORMATTED')
+    READ(2,501) NTEXT                                                                             
+    READ(2,*) ICALC,MODEL,IPR,IOUT,NOVAP,ig, ipareq 
+
+    call open_database(model)
+
         IF (IOUT.EQ.1) OPEN (UNIT=1,FILE='lleasoccuzada.OUT',FORM='FORMATTED')
         OPEN (UNIT=3,FILE='output.OUT',FORM='FORMATTED')
         output=3
