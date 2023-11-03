@@ -3,14 +3,14 @@
 ! calc.
 module inputData
     
-    use iso_fortran_env, only: int32, real64
+    use iso_fortran_env, only: int8, int32, real64
     
     implicit none
 
     private :: &
         & icalc, model, ipr, iout, novap, ig, &
         & name_maxlen, &
-        & flashInput_name, &
+        & flash_input_filename, &
         & ntext, &
         & ant
     
@@ -60,7 +60,7 @@ module inputData
     !           3-'infinite dilution parameters table (UNIFAC)'
     !           4-'GC-EOS parameters'
     !
-    integer(kind=int32) :: &
+    integer(kind=int8) :: &
         & icalc = 0,& 
         & model = 0,& 
         & ipr = 0,& 
@@ -72,13 +72,13 @@ module inputData
     integer(kind=int32) :: output
     
     ! The name of the file with the filename of the flash-parameters-file.
-    !character(len=8) :: name_filename = "name.dat"
+    !character(len=8) :: input_filename = "name.dat"
     
     ! The max character lenght of the filename with the flash parameters.
     integer(kind=int32), parameter :: name_maxlen = 36
     
     ! The filename of the flash-parameters-file.
-    character(len=name_maxlen) :: flashInput_name
+    character(len=name_maxlen) :: flash_input_filename
     
     ! A matrix with the size of (the max site number per group x
     ! Max size of the arrays which contains subgroups' data)

@@ -6,13 +6,13 @@ module openunits
     private
 
     public :: &
-    & flashInput_unit,&
+    & flash_input_unit,&
     & intrcn32_unit, qPar150_unit, rPar150_unit
 
     ! These are module variables that can be used by any program unit 
     ! that uses this module
     integer(kind=int32) :: &
-    & flashInput_unit, intrcn32_unit, qPar150_unit, rPar150_unit
+    & flash_input_unit, intrcn32_unit, qPar150_unit, rPar150_unit
 
 
   end module openunits

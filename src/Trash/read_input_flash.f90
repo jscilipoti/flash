@@ -1,59 +1,60 @@
-subroutine leer_input_flash(name_filename)
+subroutine read_input_flash(input_filename)
     ! This Fortran subroutine opens a file and reads its contents. 
     ! It first reads the number of parameters and then reads the name of the 
     ! file which contains the data for the flash calculation. 
     ! The subroutine then removes the leading and trailing quotes from the name.
     ! If the number of parameters is 1, the subroutine reads the bases from the 
-    ! file using the `leerBases()` subroutine. Finally, 
+    ! file using the `get_database_data()` subroutine. Finally, 
     ! the file is closed.
 
-    use CUFAC, only: NKK, NGG, Pxx, Txx
-    use flash, only: P, T, Z
+    !use CUFAC, only: NKK, NGG, Pxx, Txx
+    !use flash, only: P, T, Z
     use iso_fortran_env, only: int16, int8
     use InputData_Conv, only:&
-        &flashInput_name, name_maxlen,&
+        &flash_input_filename, name_maxlen,&
         &ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
         &ANT,NTEXT
-    use openunits, only: flashInput_unit
+    use openunits, only: flash_input_unit
     
     
     implicit none    
     
     integer(kind=int16) :: i, j, k, stat
     integer(kind=int16), parameter :: file_vars = 2
-    integer(kind=int8) :: doLeerBases = 0
-    character(len=*), intent(in) :: name_filename
+    integer(kind=int8) :: search_parameters_flag = 0
+    character(len=*), intent(in) :: input_filename
     
     character(len=name_maxlen), dimension(file_vars) :: file_data
     
     ! Open the file for reading
-    call open_textfile(name_filename, file_data, file_vars, name_maxlen)
+    call open_textfile(input_filename, file_data, file_vars, name_maxlen)
 
      ! Read the number of parameters and the name from the file
-    read(file_data(1),'(I1)') doLeerBases
-    flashInput_name = file_data(2)
+    read(file_data(1),'(I1)') search_parameters_flag
+    flash_input_filename = file_data(2)
 
     ! Remove the leading and trailing quotes from the name
-    flashInput_name = flashInput_name(2:len_trim(flashInput_name)-1)
+    flash_input_filename = &
+        & flash_input_filename(2:len_trim(flash_input_filename)-1)
 
-    ! If the number of doLeerBases is 1, read the bases from the file
-    if (doLeerBases == 1) then
-        call leerBases()
+    ! If the number of search_parameters_flag is 1, read the bases from the file
+    if (search_parameters_flag == 1) then
+        call get_database_data()
         stop
     end if
     
     !Old way to open flashInput file
-    open(unit=2, file=flashInput_name, status='old', form='formatted',&
+    open(unit=2, file=flash_input_filename, status='old', form='formatted',&
         &action='read', iostat=stat)
     if (stat /= 0) then ! check for errors
-        print *, 'Error opening file ', flashInput_name
+        print *, 'Error opening file ', flash_input_filename
         ERROR STOP 'Error opening file.'
     end if
     !New way to open flashInput file
-    open(newunit=flashInput_unit, file=flashInput_name, status='old',&
+    open(newunit=flash_input_unit, file=flash_input_filename, status='old',&
         &form='formatted', action='read', iostat=stat)
     if (stat /= 0) then ! check for errors
-        print *, 'Error opening file ', flashInput_name
+        print *, 'Error opening file ', flash_input_filename
         ERROR STOP 'Error opening file.'
     end if
 
@@ -86,7 +87,7 @@ subroutine leer_input_flash(name_filename)
     ! ! Read the composition of each component of the system.
     ! read(2,*) (Z(i), i = 1, NKK) 
     
-    close(flashInput_unit)
+    close(flash_input_unit)
     close(unit=2)
 
-end subroutine leer_input_flash
+end subroutine read_input_flash
