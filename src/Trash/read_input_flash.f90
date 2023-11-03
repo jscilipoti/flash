@@ -11,9 +11,15 @@ subroutine read_input_flash(input_filename)
     !use flash, only: P, T, Z
     use iso_fortran_env, only: int16, int8
     use InputData_Conv, only:&
-        &flash_input_filename, name_maxlen,&
-        &ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq,&
-        &ANT,NTEXT
+        !&flash_input_filename, name_maxlen,&
+        !&ICALC, modelo, IPRm, IOUTm, NOVAPm, igm,& !ipareq,&
+        &ANT
+    use inputData, only:&
+        & flash_input_filename, name_maxlen,&
+        & icalc, model, IPR, IOUT, NOVAP, ig, ipareq,&
+        & NTEXT
+
+
     use openunits, only: flash_input_unit
     
     
@@ -59,10 +65,10 @@ subroutine read_input_flash(input_filename)
     end if
 
     ! Read the first line of the flash calc input file where the name is.
-    read(2,*) NTEXT
+    read(2,'(36A2)') NTEXT
 
     ! Read some info related to the calculation (see InputData module...)   
-    read(2,*) ICALC, modelo, IPRm, IOUTm, NOVAPm, igm, ipareq     
+    read(2,*) ICALC, model, IPR, IOUT, NOVAP, ig, ipareq     
     
     !Disabled since there are more errors below
     !call open_database(modelo)
@@ -87,7 +93,7 @@ subroutine read_input_flash(input_filename)
     ! ! Read the composition of each component of the system.
     ! read(2,*) (Z(i), i = 1, NKK) 
     
-    close(flash_input_unit)
-    close(unit=2)
+    !close(flash_input_unit)
+    !close(unit=2)
 
 end subroutine read_input_flash
