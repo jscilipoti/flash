@@ -73,7 +73,8 @@ subroutine open_textfile(filename,array,max_lines,max_chars)
     ! Name of the file to open
     character(len=*),intent(in) :: filename
     
-    open(newunit=openTextFile_unit, file=filename,&
+    call get_free_unit(openTextFile_unit)
+    open(unit=openTextFile_unit, file=filename,&
         &status='old', action='read', iostat=stat) ! open the file for reading
     if (stat /= 0) then ! check for errors
         print *, 'Error opening file ', filename
