@@ -23,12 +23,19 @@ subroutine read_input_flash(input_filename)
     implicit none    
     
     integer(kind=int16) :: i, j, k, stat
+    ! The number of variables to get from the input_file
     integer(kind=int16), parameter :: file_vars = 2
+    ! A variable to be read from the input_file in order to allow or not further
+    ! parameter seach.
     integer(kind=int8) :: search_parameters_flag = 0
+    ! An external function to get a free unit to open a file.
     integer(kind=int8) :: get_free_unit
     external :: get_free_unit
-    character(len=*), intent(in) :: input_filename
     
+    ! The name of the input_file to be read. It must contain the name of the 
+    ! flash input file and the value of search_parameters_flag.
+    character(len=*), intent(in) :: input_filename
+    ! The raw data from the input_file
     character(len=name_maxlen), dimension(file_vars) :: file_data
     
     ! Open the file for reading
