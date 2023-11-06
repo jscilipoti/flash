@@ -44,9 +44,10 @@ subroutine llecalas!(Tf, Pf, Zf)
 !  
 ! Required modules:
     use InputData
+    use iso_fortran_env, only: real64, int16
 
     ! Implicit statements need to be removed. It must use 'implicit none'
-    IMPLICIT REAL*8(A-H,O-Z)                                          
+    IMPLICIT real(kind=real64) (A-H,O-Z)                                          
 
     ! External functions
     !EXTERNAL STABIL,GMIX ! Not used
@@ -54,7 +55,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 
     ! Common blocks that are meant to be removed
                             
-    COMMON/CGIBBS/NF,MAXZ,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),&
+    COMMON/CGIBBS/NF,z_max_index,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),&
     & DA(10,10),XM(10,4)                                       
     COMMON/CUFAC/N,NG,P(10,10),T                                      
     COMMON/CY/Y13,Y21,STEP                                            
@@ -79,9 +80,34 @@ subroutine llecalas!(Tf, Pf, Zf)
     DIMENSION X(2),ANT(10,3)
     dimension xmj(10),actgam(10),agam(10,4),de(10,10),pe(2,2)          
 
-    integer::ICALC_common,MODEL_common,IPR_common,IOUT_common,NOVAP_common,ig_common            
-    character(len=36)::name!, name1 
-    !integer:: parameters 
+    ! These integer are meant to be removed
+    integer :: &
+    & ICALC_common,MODEL_common,IPR_common,IOUT_common,NOVAP_common,ig_common
+
+    ! These integer are meant to be defined
+    integer :: & 
+    & z_max_index            
+    
+    integer(kind=int16):: NN = 0
+
+                                                                         
+
+    real(kind=real64) :: &
+
+    ! The pressure of the system to be read in the input flash file
+    & PP = 0.D0, &
+
+    ! Apparentlym, this is a value to test what happends at this T
+    & T1 = 0.D0, & !T1=0.
+
+    ! The maximum value among all the molar fractions Z(i) of the components to
+    ! be calculated from Z array
+    & z_max = 0.D0, &
+
+    ! The sum of all the molar fractions Z(i) to be calculated from Z array.
+    & z_sum = 0.D0
+
+!---START-------------------------------------------------------------------------
 
     call read_input_flash("name.dat")
 
@@ -95,30 +121,35 @@ subroutine llecalas!(Tf, Pf, Zf)
 
     call open_database(model)
 
-        if (iout == 1) OPEN (UNIT=1,FILE='lleasoccuzada.OUT',FORM='FORMATTED')
-        OPEN (UNIT=3,FILE='output.OUT',FORM='FORMATTED')
+        if (iout == 1) then
+            open (unit = 1, file = 'lleasoccuzada.OUT', form = 'FORMATTED')
+        end if
         
-        output=3
+        open (unit = 3, file = 'output.OUT', form = 'FORMATTED')
         
-        write(6,608)                                                      
-        write(6,628) iout                                                 
-        write(6,610)                                                      
+        output = 3
         
-        if(iout == 0) iout=6                                              
-        if(icalc == 0) write(6,620)                                       
-        if(icalc == 1) write(6,621)                                       
-        if(icalc == 2) write(6,622)                                       
-        if(novap /= 0) write(6,629)                                       
-        if(model == 0) write(6,624)                                       
-        if(model == 1) write(6,625)                                       
+        ! Write to screen
+        write(6, 608)                                                      
+        write(6, 628) iout                                                 
+        write(6, 610)                                                      
+        
+        if(iout == 0) iout = 6                                              
+        if(icalc == 0) write(6, 620)                                       
+        if(icalc == 1) write(6, 621)                                       
+        if(icalc == 2) write(6, 622)                                       
+        if(novap /= 0) write(6, 629)                                       
+        if(model == 0) write(6, 624)                                       
+        if(model == 1) write(6, 625)                                       
         
         write(6,623) NTEXT                                                
         
         !if(iout == 6) GOTO 5
         if (iout /= 6) then                                              
         
-        write(iout,608)                                                   
-        write(iout,610)                                                   
+        ! write to iout
+        write(iout, 608)                                                   
+        write(iout, 610)                                                   
         
         if(icalc == 0) write(iout,620)                                    
         if(icalc == 1) write(iout,621)                                    
@@ -135,7 +166,8 @@ subroutine llecalas!(Tf, Pf, Zf)
         
         !-----------------------------------------------------------------------
         !Testear y luego modificar
-        if(novap /=0 ) then                                             
+        ! If no vapour phase is considered...
+        if(novap /= 0 ) then                                             
             do 6 j=1,N                                                                                 
         6       READ(2,*) (ANT(K,j),K=1,3)                                        
             do 7 j=1,N                                                        
@@ -147,10 +179,10 @@ subroutine llecalas!(Tf, Pf, Zf)
         T1=0.                                                             
         NN=0                                                              
 
-        ! Check whether the problem is a FLASH CALCULATION (0) or a 
+        ! It checks whether the problem is a FLASH CALCULATION (0) or a 
         ! BINODAL CURVE CALCULATION OR CALCULATION OF UNIQUAC PARAMETERS 
-        ! FROM UNIFAC.
-        
+        ! FROM UNIFAC. After that it reads the Temperature and Pressure.
+
         10  if (icalc == 0) then 
                 READ(2,*) T, PP
             else !if (icalc .GE. 1) READ(2,*) T
@@ -164,21 +196,33 @@ subroutine llecalas!(Tf, Pf, Zf)
             return
         end if
 
-        if(PP /= 0. .and. novap /= 0) then                                 
+        ! If no vapour phase is considered...
+        if(PP /= 0.D0 .and. novap /= 0) then                                 
             do i=1,N                                                        
                 PRAT(i)=DLOG(PP)-ANT(1,i)+ANT(2,i)/(T-273.15+ANT(3,i))
             end do                                     
         end if
+        
+        ! Read the composition (Z) of each component (Zi)
         4 READ(2,*) (Z(i),i=1,N)                                            
-        ZSUM=0.                                                           
-        ZMAX=0.                                                           
-        do 15 i=1,N                                                       
-            ZSUM=ZSUM+Z(i)                                                    
-            if(Z(i).LT.ZMAX) cycle !GOTO 15                                          
-            ZMAX=Z(i)                                                         
-            MAXZ=i                                                            
-    15 CONTINUE                                                          
+        
+        !z_sum = 0.D0                                                       
+        !z_max = 0.D0                                                          
+        
+        ! It sums the compostion of each component to get Z_sum and the max
+        ! value of composition and its index.
+        do i = 1, N !15 i = 1, N                                                       
+            z_sum = z_sum + z(i)                                                    
+            if(Z(i) < z_max) cycle !GOTO 15                                          
+            z_max = z(i)                                                         
+            z_max_index = i                                                            
+        !15 CONTINUE
+        end do
+
+        ! The following line has no sense since, as far as I know, T1
+        ! had been initialized at the beggining as T1 = 0.
         if(T == T1) GOTO 30                                               
+        
         call PARAM2                                                       
         if(icalc.NE.1) GOTO 16                                            
         if(N.NE.2.AND.N.NE.3) write(6,616)                                
@@ -267,10 +311,10 @@ subroutine llecalas!(Tf, Pf, Zf)
         NN=NN+1                                                           
         write(6,602) NN                                                   
         do 35 i=1,N                                                       
-    35 Z(i)=Z(i)/ZSUM                                                    
-        write(6,605) T,PP,ZSUM,(Z(i),i=1,N)                               
+    35 Z(i)=Z(i)/z_sum                                                    
+        write(6,605) T,PP,z_sum,(Z(i),i=1,N)                               
         if(iout.NE.6) write(iout,602) NN                                  
-        if(iout.NE.6) write(iout,605) T,PP,ZSUM,(Z(i),i=1,N)              
+        if(iout.NE.6) write(iout,605) T,PP,z_sum,(Z(i),i=1,N)              
         call unifac(1,Z,AL,DA,PACT)                                       
         SFAS(1)=1.                                                        
         GNUL=0.                                                           
@@ -297,16 +341,16 @@ subroutine llecalas!(Tf, Pf, Zf)
         if(iout.NE.6.AND.NF == 1.AND.IPR.GT.0) write(iout,606)            
         if(iout.NE.6.AND.NF.GT.1.AND.IPR.GT.0) write(iout,609) NF         
         call TMSSJ(30,N,IPR,15,XLAM,1.D-12,FUN,YVAL,GRAD,XMAT,WORK,1)     
-        if(FUN.LT.-1.D-7) GOTO 80                                         
+        if(FUN < -1.D-7) GOTO 80                                         
         write(6,604)         
         write(output,*) 1
             write(output,2613) (Z(j),j=1,N)
             write(output,2613) (AL(j),j=1,N)        
         write(output,*) "SYSTEM IS STABLE"                                                   
     
-        write(7,46) T,  (xM(l,1),l=1,N)    !Alfonsina
-        write(7,46) T,  (xM(l,2),l=1,N)!Alfonsina
-        write(7,*)                    !Alfonsina
+        ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
+        ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
+        ! write(7,*)                          !Alfonsina
     
     
     
@@ -445,7 +489,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 
 end SUBROUTINE llecalas   
                       
-!C******************************* F I N ***************************************
+!---END-------------------------------------------------------------------------
 
     ! Subroutine close_llecalas: This subroutine replaces the original 
     ! "goto 10000" statement. It closes Units: 1 (lleasoccuzada.OUT),
@@ -462,3 +506,5 @@ end SUBROUTINE llecalas
         return
 
     end subroutine close_llecalas
+
+!-------------------------------------------------------------------------------
