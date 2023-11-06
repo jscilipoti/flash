@@ -54,11 +54,13 @@ subroutine read_input_flash(input_filename)
         ERROR STOP 'Error opening file.'
     end if
     !New way to open flashInput file
-    open(newunit=flash_input_unit, file=flash_input_filename, status='old',&
+    
+    call get_free_unit(flash_input_unit)
+    open(unit=flash_input_unit, file=flash_input_filename, status='old',&
         &form='formatted', action='read', iostat=stat)
     if (stat /= 0) then ! check for errors
         print *, 'Error opening file ', flash_input_filename
-        ERROR STOP 'Error opening file.'
+        !ERROR STOP 'Error opening file.'
     end if
 
     ! Read the first line of the flash calc input file where the name is.
