@@ -13,6 +13,7 @@
 !RECORDAR:
 !Cada funcion/subrutina que lee de las bases de datos deben estar aisladas para 
 !su posible modificacion
+!Probar real128
 program main
     use outputData
     
