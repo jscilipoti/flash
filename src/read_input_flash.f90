@@ -25,6 +25,8 @@ subroutine read_input_flash(input_filename)
     integer(kind=int16) :: i, j, k, stat
     integer(kind=int16), parameter :: file_vars = 2
     integer(kind=int8) :: search_parameters_flag = 0
+    integer(kind=int8) :: get_free_unit
+    external :: get_free_unit
     character(len=*), intent(in) :: input_filename
     
     character(len=name_maxlen), dimension(file_vars) :: file_data
@@ -55,7 +57,7 @@ subroutine read_input_flash(input_filename)
     end if
     !New way to open flashInput file
     
-    call get_free_unit(flash_input_unit)
+    flash_input_unit = get_free_unit()
     open(unit=flash_input_unit, file=flash_input_filename, status='old',&
         &form='formatted', action='read', iostat=stat)
     if (stat /= 0) then ! check for errors
