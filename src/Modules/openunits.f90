@@ -1,5 +1,5 @@
 module openunits
-	use iso_fortran_env, only: int32
+	use iso_fortran_env, only: int8
 
     implicit none
 
@@ -11,7 +11,7 @@ module openunits
 
     ! These are module variables that can be used by any program unit 
     ! that uses this module
-    integer(kind=int32) :: &
+    integer(kind=int8) :: &
     & flash_input_unit, intrcn32_unit, qPar150_unit, rPar150_unit
 
 
