@@ -10,10 +10,10 @@ program check
     
     ! Here the interaction parameters are dim 100 because
     ! there is a maximum of 10 different functional groups in total
-    real(kind=real64),dimension(100,100) :: A 
-    real(kind=real64),dimension(100,100) :: intrcn32_data
+    real(kind=real64),dimension(100,100) :: A = 0.D0
+    real(kind=real64),dimension(100,100) :: intrcn32_data = 0.D0
     ! Arrays with re r and q parameters. Dim=150 because there are 150 values.
-    real(kind=real32), dimension(150) :: RR, QQ, rPar150_data, qPar150_data                                              
+    real(kind=real32), dimension(150) :: RR, QQ, rPar150_data, qPar150_data                                            
     
     ! Original code method for filling up "A" matrix by unsing "An" arrays.
     real(kind=real32), dimension(32) :: &

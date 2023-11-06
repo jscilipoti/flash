@@ -1,11 +1,14 @@
 program check
     use do_tests
     use iso_fortran_env, only: int32
+    
     implicit none
+    
     character(len=8) :: filename = "name.dat"
     character(len=16) :: flash_filename = "llecalas2.dat"
     character(len=36),dimension(2) :: array = (/"",""/)
     integer(kind=int32) :: doLeerBases_tmp
+    
     print *,""
     print *, test_run//"open_file-check"
     if (pause_test) pause

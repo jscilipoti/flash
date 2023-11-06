@@ -3,10 +3,12 @@ program check
     use iso_fortran_env, only: int32
     
     implicit none
+    
     character(len=86),dimension(70) :: &
     &lleasoccuzada_new,lleasoccuzada_old
     character(len=70),dimension(6) :: &
     &output_new,output_old
+    
     integer(kind=int32) :: i, j
 
     print *,""
