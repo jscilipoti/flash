@@ -49,7 +49,7 @@ subroutine llecalas!(Tf, Pf, Zf)
     IMPLICIT REAL*8(A-H,O-Z)                                          
 
     ! External functions
-    !EXTERNAL STABIL,GMIX
+    !EXTERNAL STABIL,GMIX ! Not used
     EXTERNAL FUNC                                         
 
     ! Common blocks that are meant to be removed
@@ -97,50 +97,78 @@ subroutine llecalas!(Tf, Pf, Zf)
 
         if (iout == 1) OPEN (UNIT=1,FILE='lleasoccuzada.OUT',FORM='FORMATTED')
         OPEN (UNIT=3,FILE='output.OUT',FORM='FORMATTED')
+        
         output=3
+        
         write(6,608)                                                      
         write(6,628) iout                                                 
         write(6,610)                                                      
+        
         if(iout == 0) iout=6                                              
         if(icalc == 0) write(6,620)                                       
         if(icalc == 1) write(6,621)                                       
         if(icalc == 2) write(6,622)                                       
-        if(novap.NE.0) write(6,629)                                       
-        if(MODEL == 0) write(6,624)                                       
-        if(MODEL == 1) write(6,625)                                       
+        if(novap /= 0) write(6,629)                                       
+        if(model == 0) write(6,624)                                       
+        if(model == 1) write(6,625)                                       
+        
         write(6,623) NTEXT                                                
-        if(iout == 6) GOTO 5                                              
+        
+        !if(iout == 6) GOTO 5
+        if (iout /= 6) then                                              
+        
         write(iout,608)                                                   
         write(iout,610)                                                   
+        
         if(icalc == 0) write(iout,620)                                    
         if(icalc == 1) write(iout,621)                                    
         if(icalc == 2) write(iout,622)                                    
         if(novap /= 0) write(iout,629)                                    
-        if(MODEL == 0) write(iout,624)                                    
-        if(MODEL == 1) write(iout,625)                                    
+        if(model == 0) write(iout,624)                                    
+        if(model == 1) write(iout,625)                                    
         write(iout,623) NTEXT                                             
-        5 CONTINUE                                                          
+        
+        end if
+        !5 CONTINUE                                                          
+        
         call PARIN2                                                       
-        if(novap/=0) then                                             
-            do 6 j=1,N                                                        
-    !C   6 READ(2,502) (ANT(K,j),K=1,3)                                      
+        
+        !-----------------------------------------------------------------------
+        !Testear y luego modificar
+        if(novap /=0 ) then                                             
+            do 6 j=1,N                                                                                 
         6       READ(2,*) (ANT(K,j),K=1,3)                                        
             do 7 j=1,N                                                        
                 ANT(1,j)=2.302585*(ANT(1,j)-2.880814)                             
         7       ANT(2,j)=2.302585*ANT(2,j)                                        
         endif                                                          
+        !-----------------------------------------------------------------------
+        
         T1=0.                                                             
         NN=0                                                              
-    !C  10 READ(2,502) T,PP                                                  
-    10 if (icalc == 0) READ(2,*) T,PP                                   
-        if (icalc.GE.1) READ(2,*) T
-        if(T == 0.) GOTO 10000 
-        !if(PP == 0..OR.novap == 0) then !reemplazado por la siguiente estructura
-        if(PP/=0..and.novap/=0) then                                 
-            do 1 i=1,N                                                        
-        1       PRAT(i)=DLOG(PP)-ANT(1,i)+ANT(2,i)/(T-273.15+ANT(3,i))            
-    !C   4 READ(2,502) (Z(i),i=1,N)                                          
-        endif
+
+        ! Check whether the problem is a FLASH CALCULATION (0) or a 
+        ! BINODAL CURVE CALCULATION OR CALCULATION OF UNIQUAC PARAMETERS 
+        ! FROM UNIFAC.
+        
+        10  if (icalc == 0) then 
+                READ(2,*) T, PP
+            else !if (icalc .GE. 1) READ(2,*) T
+                READ(2,*) T 
+            end if                                   
+
+        
+        ! Exit the subroutine if the temperature has not been set 
+        if(T == 0.) then 
+            call close_llecalas() !GOTO 10000
+            return
+        end if
+
+        if(PP /= 0. .and. novap /= 0) then                                 
+            do i=1,N                                                        
+                PRAT(i)=DLOG(PP)-ANT(1,i)+ANT(2,i)/(T-273.15+ANT(3,i))
+            end do                                     
+        end if
         4 READ(2,*) (Z(i),i=1,N)                                            
         ZSUM=0.                                                           
         ZMAX=0.                                                           
@@ -161,11 +189,14 @@ subroutine llecalas!(Tf, Pf, Zf)
         if(iout.NE.6) write(iout,633) T                                   
         if(N == 3) GOTO 12                                                
         call SOLBIN                                                       
-        GOTO 10000                                                        
+        call close_llecalas() !GOTO 10000
+        return
+                                                                
     12 STEP=Z(3)/100.D0                                                  
         if(STEP == 0.) STEP=.02D0                                         
         call BINOD                                                        
-        GOTO 10000                                                        
+        call close_llecalas() !GOTO 10000
+        return                                                        
     16 CONTINUE                                                          
         if(icalc.NE.2) GOTO 19                                            
         if(N.NE.2) write(6,616)                                           
@@ -221,7 +252,9 @@ subroutine llecalas!(Tf, Pf, Zf)
         if(IPR == 1) write(iout,619) ((GE(L,i),L=1,5),i=1,2)              
         if(IPR == 1) write(iout,619) ((GC(L,i),L=1,5),i=1,2)              
     22 CONTINUE                                                          
-        GOTO 10000                                                        
+        call close_llecalas() !GOTO 10000
+        return
+
     19 CONTINUE                                                          
         do 20 i=1,N                                                       
             do 20 j=1,N                                                       
@@ -398,14 +431,34 @@ subroutine llecalas!(Tf, Pf, Zf)
     630 FORMAT(' NO VAPOR PHASE')                                         
     631 FORMAT(' PHASE',I2,' IS A VAPOR PHASE')                           
     633 FORMAT(///,'   TEMPERATURE =',F10.2,' DEG K')                     
-    10000 CLOSE (UNIT=2)
-        if (iout == 1) CLOSE (UNIT=1)
-        close (unit=3)
-    !c      call salida(name)
-        !STOP
-        return                                                              
-        end SUBROUTINE llecalas   
-    !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc                       
-    !C******************************* F I N ***************************************
-    !C
     
+    ! Close all opened units in this subroutine 
+    call close_llecalas()
+    
+    ! 10000 CLOSE (UNIT=2)
+    !     if (iout == 1) CLOSE (UNIT=1)
+    !     close (unit=3)
+    ! !c      call salida(name)
+    !     !STOP
+
+    return
+
+end SUBROUTINE llecalas   
+                      
+!C******************************* F I N ***************************************
+
+    ! Subroutine close_llecalas: This subroutine replaces the original 
+    ! "goto 10000" statement. It closes Units: 1 (lleasoccuzada.OUT),
+    ! 2 (llecalas.dat) and 3 (output.out).
+    subroutine close_llecalas()
+        use iso_fortran_env, only: int8
+        use inputData, only: iout
+
+        implicit none
+        
+        if (iout == 1) close (unit=1)
+        close (unit=2)
+        close (unit=3)
+        return
+
+    end subroutine close_llecalas
