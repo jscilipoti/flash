@@ -7,6 +7,7 @@ module openunits
 
     public :: &
     & flash_input_unit,&
+
     & intrcn32_unit, qPar150_unit, rPar150_unit, &
     & intrcn_unit, &
     & intrcnas_unit, &
@@ -15,12 +16,15 @@ module openunits
     & gruposram_unit, &
     & intrcngcalpha_unit, &
     & gruposramgc_unit, &
-    & intrcngckapa_unit
+    & intrcngckapa_unit, &
+
+    & output_unit
 
     ! These are module variables that can be used by any program unit 
     ! that uses this module
     integer(kind=int8) :: &
     & flash_input_unit, &
+
     & intrcn32_unit, &
     & qPar150_unit, &
     & rPar150_unit, &
@@ -31,7 +35,9 @@ module openunits
     & gruposram_unit, &
     & intrcngcalpha_unit, &
     & gruposramgc_unit, &
-    & intrcngckapa_unit
+    & intrcngckapa_unit, &
+
+    & output_unit
 
 
   end module openunits

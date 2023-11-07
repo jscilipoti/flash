@@ -16,7 +16,6 @@ module inputData
         & icalc, model, ipr, iout, novap, ig, &
         & flash_input_filename, name_maxlen, &
         & ipareq, &
-        & output, &
         & ntext, &
         & aint1
 
@@ -68,8 +67,6 @@ module inputData
         & ig = 1,&
         & ipareq = 2 
 
-    integer(kind=int32) :: output
-    
     ! The name of the file with the filename of the flash-parameters-file.
     !character(len=8) :: input_filename = "name.dat"
     
