@@ -228,7 +228,7 @@ subroutine llecalas!(Tf, Pf, Zf)
             
                 call PARAM2                                                       
                 
-                !** BINODAL CURVE CALCULATION **************************************
+                !** BINODAL CURVE CALCULATION **********************************
                 if (icalc == 1) then !if (icalc /= 1) GOTO 16                                            
                 
                     if (N /= 2 .and. N /= 3) write(6, 616)                                
@@ -260,7 +260,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                 !16 CONTINUE
                 end if
                                                                         
-                !** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC ******************
+                !** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **************
                 if (icalc == 2) then !if (icalc /= 2) GOTO 19                                            
                     if (N /= 2) write(6, 616)                                           
                     if (iout /= 6 .and. N /= 2) write(iout, 616)                          
@@ -317,9 +317,12 @@ subroutine llecalas!(Tf, Pf, Zf)
                     
                     if (iout /= 6) then !if (iout == 6) GOTO 22                                             
                         write(iout, 617) P(1, 2), P(2, 1)                                     
-                        if (IPR == 1) write(iout, 618)                                      
-                        if (IPR == 1) write(iout, 619) ((GE(L, i), L = 1, 5), i = 1, 2)              
-                        if (IPR == 1) write(iout, 619) ((GC(L, i), L = 1, 5), i = 1, 2)              
+                        if (IPR == 1) &
+                        & write(iout, 618)                                      
+                        if (IPR == 1) &
+                        & write(iout, 619) ((GE(L, i), L = 1, 5), i = 1, 2)              
+                        if (IPR == 1) & 
+                        & write(iout, 619) ((GC(L, i), L = 1, 5), i = 1, 2)              
                     !22 CONTINUE
                     end if
 
@@ -329,7 +332,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                 19 CONTINUE                                                          
                 end if
                 
-                !** FLASH CALCULATION **********************************************
+                !** FLASH CALCULATION ******************************************
                 do i = 1, N                                                       
                     do j = 1, N                                                       
                         GAM(i, j) = 0.D0                                                     
@@ -385,10 +388,13 @@ subroutine llecalas!(Tf, Pf, Zf)
                     XLAM = 1.                                                           
                     if (NF == 1 .and. IPR > 0) write(6, 606)                             
                     if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
-                    if (iout /= 6 .and. NF == 1 .and. IPR > 0) write(iout, 606)            
-                    if (iout /= 6 .and. NF > 1 .and. IPR > 0) write(iout, 609) NF         
+                    if (iout /= 6 .and. NF == 1 .and. IPR > 0) &
+                        & write(iout, 606)            
+                    if (iout /= 6 .and. NF > 1 .and. IPR > 0) &
+                        & write(iout, 609) NF         
                     
-                    call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+                    call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, &
+                        & XMAT, WORK, 1)     
                     
                     !if (FUN < -1.D-7) GOTO 80                                         
                     if (FUN > -1.D-7) then 
@@ -434,7 +440,8 @@ subroutine llecalas!(Tf, Pf, Zf)
                 
                 if (iout /= 6 .and. IPR > 0) write(iout,607) NF                     
                 
-                call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
+                call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, &
+                & XMAT, WORK, 2)     
                 
                 NT = NF * N                                                           
                 NB = NT - N                                                           
@@ -481,23 +488,30 @@ subroutine llecalas!(Tf, Pf, Zf)
             1132       agam(i, j) = actgam(i)
             1130 continue
                 write (output,*) NF
-                do i = 1, NF !escribe resultados para el output que ser� le�do por excel
+                ! Print the output to be read by an Excel Sheet
+                do i = 1, NF
                     write(output, 2613) (XM(j, i),j = 1, N)
                     write(output, 2613) (agam(j, i),j = 1, N)  
-                enddo
+                end do
                 
-                do 130 i = 1, N                                                      
-                    write(6, 613) i, (XM(i, j), j = 1, NF)     !composition        
-            130   write(6, 1613) i, (agam(i, j), j = 1, nf) !Ln(gamma)
-                
+                do i = 1, N                                                      
+                    write(6, 613) i, (XM(i, j), j = 1, NF)    ! Composition        
+                    write(6, 1613) i, (agam(i, j), j = 1, nf) ! Ln(gamma)
+                end do
                 !if (iout == 6) GOTO 132
                 if (iout /= 6) then                                          
                     do i=1,N                                                      
                         write(iout, 613) i, (XM(i, j), j = 1, NF)    
                         write(iout, 1613) i, (agam(i, j), j = 1, nf)
                     end do
-                46	FORMAT (2X,F12.2, 8X,F12.6, 8X,F12.6 , 8X,F12.6, 8X,F12.6, & !Alfonsina                                                 
-                    8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6)
+                                                                     
+                ! 46 FORMAT( &
+                !   & 2X, F12.2, 8X,F12.6, &
+                !   & 8X, F12.6, 8X, F12.6, &
+                !   & 8X, F12.6, 8X, F12.6, &
+                !   & 8X, F12.6, 8X, F12.6, &
+                !   & 8X, F12.6, 8X, F12.6, &
+                !   & 8X, F12.6, 8X, F12.6) ! Alfonsina
                 end if
                 !132 CONTINUE
                 !GOTO 50
