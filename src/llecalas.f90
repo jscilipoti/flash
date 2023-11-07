@@ -588,9 +588,9 @@ end SUBROUTINE llecalas
 
         implicit none
         
-        if (iout == 1) close (unit=1)
-        close (unit=2)
-        close (unit=3)
+        if (iout == 1) close (unit = 1)
+        close (unit = 2)
+        close (unit = 3)
         return
 
     end subroutine close_llecalas
