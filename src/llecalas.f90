@@ -137,19 +137,19 @@ subroutine llecalas!(Tf, Pf, Zf)
     
     
     ! Write to screen
-    write(6, 608)                                                      
-    write(6, 628) iout                                                 
-    write(6, 610)                                                      
+    write(*, 608)                                                      
+    write(*, 628) iout                                                 
+    write(*, 610)                                                      
     
     if (iout == 0) iout = 6                                              
-    if (icalc == 0) write(6, 620)                                       
-    if (icalc == 1) write(6, 621)                                       
-    if (icalc == 2) write(6, 622)                                       
-    if (novap /= 0) write(6, 629)                                       
-    if (model == 0) write(6, 624)                                       
-    if (model == 1) write(6, 625)                                       
+    if (icalc == 0) write(*, 620)                                       
+    if (icalc == 1) write(*, 621)                                       
+    if (icalc == 2) write(*, 622)                                       
+    if (novap /= 0) write(*, 629)                                       
+    if (model == 0) write(*, 624)                                       
+    if (model == 1) write(*, 625)                                       
     
-    write(6,623) NTEXT                                                
+    write(*,623) NTEXT                                                
     
     !if (iout == 6) GOTO 5
     if (iout /= 6) then                                              
@@ -238,12 +238,12 @@ subroutine llecalas!(Tf, Pf, Zf)
             !** BINODAL CURVE CALCULATION **********************************
             if (icalc == 1) then !if (icalc /= 1) GOTO 16                                            
             
-                if (N /= 2 .and. N /= 3) write(6, 616)                                
+                if (N /= 2 .and. N /= 3) write(*, 616)                                
                 if (iout /= 6 .and. N /= 2 .and. N /= 3) write(iout, 616)               
                 Y13 = Z(1)                                                          
                 Y21 = Z(2)                                                          
                 
-                write(6,633) T                                                    
+                write(*,633) T                                                    
                 
                 if (iout /= 6) write(iout, 633) T                                   
                 if (N == 3) then !if (N == 3) GOTO 12                                                
@@ -269,7 +269,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                                                                     
             !** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **************
             if (icalc == 2) then !if (icalc /= 2) GOTO 19                                            
-                if (N /= 2) write(6, 616)                                           
+                if (N /= 2) write(*, 616)                                           
                 if (iout /= 6 .and. N /= 2) write(iout, 616)                          
                 XC(1) = 0.D0                                                          
                 XC(2) = 0.2D0                                                        
@@ -287,10 +287,10 @@ subroutine llecalas!(Tf, Pf, Zf)
                 READ(2, *) R(1), Q(1)                                               
                 READ(2, *) R(2), Q(2)                                               
                                             
-                write(6, 627)                                                      
+                write(*, 627)                                                      
                 
                 do 14 i = 1, 2                                                       
-                14   write(6, 626) i, R(i), Q(i)                                          
+                14   write(*, 626) i, R(i), Q(i)                                          
                 
                 if (iout /= 6) then !if (iout == 6) GOTO 13                                             
                     write(iout, 627)                                                   
@@ -311,16 +311,16 @@ subroutine llecalas!(Tf, Pf, Zf)
                 NG = 2                                                              
                 XLAMB = 1.D0                                                          
                 call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
-                write(6, 633) T                                                    
+                write(*, 633) T                                                    
                 if (iout /= 6) write(iout, 633) T                                   
-                write(6, 617) P(1, 2), P(2, 1)     
-                if (IPR == 1) write(6, 618)                                         
+                write(*, 617) P(1, 2), P(2, 1)     
+                if (IPR == 1) write(*, 618)                                         
                 do 21 L = 1, 5                                                       
                     do 21 i = 1, 2                                                       
                         GE(L,i) = DEXP(GE(L, i))                                             
             21       GC(L, i) = DEXP(GC(L, i))                                             
-                if (IPR == 1) write(6, 619) ((GE(L, i), L = 1, 5), i = 1, 2)                 
-                if (IPR == 1) write(6, 619) ((GC(L, i), L = 1, 5), i = 1, 2)                 
+                if (IPR == 1) write(*, 619) ((GE(L, i), L = 1, 5), i = 1, 2)                 
+                if (IPR == 1) write(*, 619) ((GC(L, i), L = 1, 5), i = 1, 2)                 
                 
                 if (iout /= 6) then !if (iout == 6) GOTO 22                                             
                     write(iout, 617) P(1, 2), P(2, 1)                                     
@@ -354,12 +354,12 @@ subroutine llecalas!(Tf, Pf, Zf)
     30  T1 = T                                                              
         NN = NN + 1
 
-        write(6, 602) NN                                                   
+        write(*, 602) NN                                                   
         
         do 35 i = 1, N                                                       
     35  Z(i) = Z(i) / z_sum                                                    
         
-        write(6, 605) T, PP, z_sum, (Z(i), i = 1, N)
+        write(*, 605) T, PP, z_sum, (Z(i), i = 1, N)
 
         if (iout /= 6) write(iout, 602) NN                                  
         if (iout /= 6) write(iout, 605) T, PP, z_sum, (Z(i), i = 1, N)              
@@ -377,7 +377,7 @@ subroutine llecalas!(Tf, Pf, Zf)
     do while (.true.) ! A loop that ends when "FUN > -1.D-7"
         50  call STIG(Y,S)                                                    
             if (S < -1.D-7) then !if (S > -1.D-7) GOTO 70                                           
-                write(6, 603)                                                      
+                write(*, 603)                                                      
                 if (iout /= 6) write(iout, 603)                                     
                 do i = 1, N                                                       
                     YVAL(i) = 1.D-5 * Y(i) / Z(i)
@@ -393,8 +393,8 @@ subroutine llecalas!(Tf, Pf, Zf)
                 end do
                                                         
                 XLAM = 1.                                                           
-                if (NF == 1 .and. IPR > 0) write(6, 606)                             
-                if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
+                if (NF == 1 .and. IPR > 0) write(*, 606)                             
+                if (NF > 1 .and. IPR > 0) write(*, 609) NF                          
                 if (iout /= 6 .and. NF == 1 .and. IPR > 0) &
                     & write(iout, 606)            
                 if (iout /= 6 .and. NF > 1 .and. IPR > 0) &
@@ -405,7 +405,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                 
                 !if (FUN < -1.D-7) GOTO 80                                         
                 if (FUN > -1.D-7) then 
-                    write(6, 604)         
+                    write(*, 604)         
                     write(output_unit, *) 1
                         write(output_unit, 2613) (Z(j), j = 1, N)
                         write(output_unit, 2613) (AL(j), j= 1, N)        
@@ -420,7 +420,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                     exit 
                 end if
 
-            80  write(6, 603)                                                      
+            80  write(*, 603)                                                      
                 if (iout /= 6) write(iout, 603)                                     
                 
                 do i = 1, N                                                       
@@ -443,7 +443,7 @@ subroutine llecalas!(Tf, Pf, Zf)
             if (NF == 2) XLAM = 0.5D0                                               
             M = (NF - 1) * N                                                        
             
-            if (IPR > 0) write(6,607) NF                                      
+            if (IPR > 0) write(*,607) NF                                      
             
             if (iout /= 6 .and. IPR > 0) write(iout,607) NF                     
             
@@ -457,19 +457,19 @@ subroutine llecalas!(Tf, Pf, Zf)
                 YVAL(NT + 1 - i) = YVAL(NB + 1 - i)
             end do
 
-            write(6, 614) NF                                                   
+            write(*, 614) NF                                                   
             
             NVAP = 0                                                            
             do j = 1, NF                                                     
                 if (IDUM(j) == 1) NVAP = j
             end do                                           
                                                                 
-            if (NVAP == 0) write(6, 630)                                        
-            if (NVAP /= 0) write(6, 631) NVAP                                   
+            if (NVAP == 0) write(*, 630)                                        
+            if (NVAP /= 0) write(*, 631) NVAP                                   
             if (iout /= 6 .and. NVAP == 0) write(iout, 630)                       
             if (iout /= 6 .and. NVAP /= 0) write(iout, 631) NVAP                  
-            write(6, 611) (j, SFAS(j), j = 1, NF)                                   
-            write(6, 612) (j, j = 1, NF)                                           
+            write(*, 611) (j, SFAS(j), j = 1, NF)                                   
+            write(*, 612) (j, j = 1, NF)                                           
             if (iout /= 6) write(iout, 614) NF                                  
             if (iout /= 6) write(iout, 611)(j, SFAS(j), j = 1, NF)                   
             if (iout /= 6) write(iout, 612) (j, j = 1, NF)                          
@@ -494,7 +494,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                 do 1132 i = 1, n
         1132       agam(i, j) = actgam(i)
         1130 continue
-            write (output_unit,*) NF
+            write(output_unit,*) NF
             ! Print the output_unit to be read by an Excel Sheet
             do i = 1, NF
                 write(output_unit, 2613) (XM(j, i),j = 1, N)
@@ -502,8 +502,8 @@ subroutine llecalas!(Tf, Pf, Zf)
             end do
             
             do i = 1, N                                                      
-                write(6, 613) i, (XM(i, j), j = 1, NF)    ! Composition        
-                write(6, 1613) i, (agam(i, j), j = 1, nf) ! Ln(gamma)
+                write(*, 613) i, (XM(i, j), j = 1, NF)    ! Composition        
+                write(*, 1613) i, (agam(i, j), j = 1, nf) ! Ln(gamma)
             end do
             !if (iout == 6) GOTO 132
             if (iout /= 6) then                                          
