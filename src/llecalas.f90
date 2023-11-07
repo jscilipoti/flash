@@ -45,7 +45,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 ! Required modules:
     use InputData
     use iso_fortran_env, only: real64, int16
-    use openunits, only: output_unit
+    use fileUnits, only: output_unit
 
     ! Implicit statements need to be removed. It must use 'implicit none'
     IMPLICIT real(kind=real64) (A-H,O-Z)                                          
@@ -154,17 +154,17 @@ subroutine llecalas!(Tf, Pf, Zf)
     !if (iout == 6) GOTO 5
     if (iout /= 6) then                                              
     
-    ! write to iout
-    write(iout, 608)                                                   
-    write(iout, 610)                                                   
-    
-    if (icalc == 0) write(iout,620)                                    
-    if (icalc == 1) write(iout,621)                                    
-    if (icalc == 2) write(iout,622)                                    
-    if (novap /= 0) write(iout,629)                                    
-    if (model == 0) write(iout,624)                                    
-    if (model == 1) write(iout,625)                                    
-    write(iout,623) NTEXT                                             
+        ! write to iout
+        write(iout, 608)                                                   
+        write(iout, 610)                                                   
+        
+        if (icalc == 0) write(iout,620)                                    
+        if (icalc == 1) write(iout,621)                                    
+        if (icalc == 2) write(iout,622)                                    
+        if (novap /= 0) write(iout,629)                                    
+        if (model == 0) write(iout,624)                                    
+        if (model == 1) write(iout,625)                                    
+        write(iout,623) NTEXT                                             
     
     end if
     !5 CONTINUE                                                          
@@ -575,7 +575,7 @@ end do
 call close_llecalas()
 
 ! 10000 CLOSE (UNIT=2)
-!     if (iout == 1) CLOSE (UNIT=1)
+!     if (iout == 1) CLOSE (UNIT = 1)
 !     close (unit=3)
 ! !c      call salida(name)
 !     !STOP
@@ -591,7 +591,7 @@ end SUBROUTINE llecalas
 ! 2 (llecalas.dat) and output_unit (output.out).
 subroutine close_llecalas()
     use iso_fortran_env, only: int8
-    use openunits, only: output_unit
+    use fileUnits, only: output_unit
     use inputData, only: iout
 
     implicit none

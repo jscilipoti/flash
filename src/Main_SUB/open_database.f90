@@ -76,7 +76,7 @@ subroutine open_database(model)
     !---------------------------------------------------------------------------
 
     use iso_fortran_env, only: int8, int16
-    use openunits, only: &
+    use fileUnits, only: &
     & intrcn_unit, &
     & intrcnas_unit, &
     & parvolas_unit, & 

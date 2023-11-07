@@ -17,7 +17,7 @@ subroutine read_input_flash(input_filename)
         & NTEXT
 
 
-    use openunits, only: flash_input_unit
+    use fileUnits, only: flash_input_unit
     
     
     implicit none    

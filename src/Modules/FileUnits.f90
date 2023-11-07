@@ -1,4 +1,4 @@
-module openunits
+module fileUnits
     use iso_fortran_env, only: int8
 
     implicit none
@@ -40,4 +40,4 @@ module openunits
     & output_unit
 
 
-  end module openunits
+  end module fileUnits

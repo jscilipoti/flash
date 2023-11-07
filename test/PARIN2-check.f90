@@ -1,7 +1,7 @@
 program check
     use do_tests
     ! Units available to open a file:
-    use openunits, only: intrcn32_unit, qPar150_unit, rPar150_unit
+    use fileUnits, only: intrcn32_unit, qPar150_unit, rPar150_unit
     use iso_fortran_env!, only: int16, real32, real64 
     
     implicit none
