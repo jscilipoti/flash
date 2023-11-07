@@ -125,10 +125,12 @@ subroutine llecalas!(Tf, Pf, Zf)
     ! appropiate databases 
     call open_database(model)
 
+    ! Check if "iout = 1" to allow "lleasoccuzada.out" output file.
     if (iout == 1) then
         open (unit = 1, file = 'lleasoccuzada.OUT', form = 'FORMATTED')
     end if
     
+    ! Set the output unit for output.OUT file
     output_unit = get_free_unit()
     open (unit = output_unit, file = 'output.OUT', form = 'FORMATTED')
     
