@@ -363,140 +363,147 @@ subroutine llecalas!(Tf, Pf, Zf)
     40  GNUL = GNUL + Z(i) * AL(i)                                              
         NF = 1
                                                                       
-    50  call STIG(Y,S)                                                    
-        if (S < -1.D-7) then !if (S > -1.D-7) GOTO 70                                           
-            write(6, 603)                                                      
-            if (iout /= 6) write(iout, 603)                                     
-            do i = 1, N                                                       
-                YVAL(i) = 1.D-5 * Y(i) / Z(i)
-            end do                                                                                                    
-            GOTO 100 !ELIMINAR GOTO 
-        end if                                                       
-    
-    !70 do 75 i = 1, N
-    
-        do i = 1, N                                                        
-            YVAL(i) = DLOG(Y(i))
-        end do
-                                                 
-        XLAM = 1.                                                           
-        if (NF == 1 .and. IPR > 0) write(6, 606)                             
-        if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
-        if (iout /= 6 .and. NF == 1 .and. IPR > 0) write(iout, 606)            
-        if (iout /= 6 .and. NF > 1 .and. IPR > 0) write(iout, 609) NF         
+    do while (.true.)
+        50  call STIG(Y,S)                                                    
+            if (S < -1.D-7) then !if (S > -1.D-7) GOTO 70                                           
+                write(6, 603)                                                      
+                if (iout /= 6) write(iout, 603)                                     
+                do i = 1, N                                                       
+                    YVAL(i) = 1.D-5 * Y(i) / Z(i)
+                end do                                                                                                    
+                GOTO 100 !ELIMINAR GOTO 
+            end if                                                       
         
-        call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+        !70 do 75 i = 1, N
         
-        !if (FUN < -1.D-7) GOTO 80                                         
-        if (FUN > -1.D-7) then 
-            write(6, 604)         
-            write(output, *) 1
-                write(output, 2613) (Z(j), j = 1, N)
-                write(output, 2613) (AL(j), j= 1, N)        
-            write(output, *) "SYSTEM IS STABLE"                                                   
-
-            ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
-            ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
-            ! write(7,*)                          !Alfonsina
-    
-            if (iout /= 6) write(iout, 604)                                     
-            GOTO 10 !ELIMINAR GOTO 
-        end if
-
-    80  write(6, 603)                                                      
-        if (iout /= 6) write(iout, 603)                                     
-        
-        do i = 1, N                                                       
-            YVAL(i) = 1.D-5 * DEXP(YVAL(i)) / Z(i)
-        end do
-                                          
-    100 NF = NF + 1                                                           
-        do i = 1, N                                                      
-            if (YVAL(i) > 1.D0) then 
-                do j = 1, N                                                      
-                    YVAL(j) = YVAL(j) / 10.D0
-                end do                                               
-            end if
-        end do
-
-        SFAS(NF) = 1.D0                                                       
-        XLAM = 0.2D0                                                           
-        
-        if (NF == 2) XLAM = 0.5D0                                               
-        M = (NF - 1) * N                                                        
-        
-        if (IPR > 0) write(6,607) NF                                      
-        
-        if (iout /= 6 .and. IPR > 0) write(iout,607) NF                     
-        
-        call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
-        
-        NT = NF * N                                                           
-        NB = NT - N                                                           
-        
-        do i = 1, NB                                                     
-            YVAL(NT + 1 - i) = YVAL(NB + 1 - i)
-        end do
-
-        write(6, 614) NF                                                   
-        
-        NVAP = 0                                                            
-        do j = 1, NF                                                     
-            if (IDUM(j) == 1) NVAP = j
-        end do                                           
-                                                              
-        if (NVAP == 0) write(6, 630)                                        
-        if (NVAP /= 0) write(6, 631) NVAP                                   
-        if (iout /= 6 .and. NVAP == 0) write(iout, 630)                       
-        if (iout /= 6 .and. NVAP /= 0) write(iout, 631) NVAP                  
-        write(6, 611) (j, SFAS(j), j = 1, NF)                                   
-        write(6, 612) (j, j = 1, NF)                                           
-        if (iout /= 6) write(iout, 614) NF                                  
-        if (iout /= 6) write(iout, 611)(j, SFAS(j), j = 1, NF)                   
-        if (iout /= 6) write(iout, 612) (j, j = 1, NF)                          
-        
-        SUM = 0.D0                                                            
-        
-        do i = 1, N                                                      
-            DLX(i) = XVL(i, NF) * Z(i) / SFAS(NF)                                    
-            SUM = SUM + DLX(i)
-        end do                                                    
-        
-        SUM = DLOG(SUM)                                                     
-        call unifac(1, DLX, A, DA, PACT)                                      
-        do 120 i = 1, N                                                      
-            DLX(i) = DLOG(DLX(i))                                               
-    120   A(i) = A(i) + DLX(i) - SUM                                              
-    !c-----
-        do 1130 j = 1, nf
-            do 1131 i = 1, n
-    1131       xmj(i) = xm(i, j)
-            call unifac(1, xmj, actgam, de, pe)
-            do 1132 i = 1, n
-    1132       agam(i, j) = actgam(i)
-    1130 continue
-        write (output,*) NF
-        do i = 1, NF !escribe resultados para el output que ser� le�do por excel
-            write(output, 2613) (XM(j, i),j = 1, N)
-            write(output, 2613) (agam(j, i),j = 1, N)  
-        enddo
-        
-        do 130 i = 1, N                                                      
-            write(6, 613) i, (XM(i, j), j = 1, NF)     !composition        
-    130   write(6, 1613) i, (agam(i, j), j = 1, nf) !Ln(gamma)
-        
-        !if (iout == 6) GOTO 132
-        if (iout /= 6) then                                          
-            do i=1,N                                                      
-                write(iout, 613) i, (XM(i, j), j = 1, NF)    
-                write(iout, 1613) i, (agam(i, j), j = 1, nf)
+            do i = 1, N                                                        
+                YVAL(i) = DLOG(Y(i))
             end do
-        46	FORMAT (2X,F12.2, 8X,F12.6, 8X,F12.6 , 8X,F12.6, 8X,F12.6, & !Alfonsina                                                 
-            8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6)
-        end if
-        !132 CONTINUE
-        GOTO 50 !ELIMINAR GOTO 
+                                                    
+            XLAM = 1.                                                           
+            if (NF == 1 .and. IPR > 0) write(6, 606)                             
+            if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
+            if (iout /= 6 .and. NF == 1 .and. IPR > 0) write(iout, 606)            
+            if (iout /= 6 .and. NF > 1 .and. IPR > 0) write(iout, 609) NF         
+            
+            call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+            
+            !if (FUN < -1.D-7) GOTO 80                                         
+            if (FUN > -1.D-7) then 
+                write(6, 604)         
+                write(output, *) 1
+                    write(output, 2613) (Z(j), j = 1, N)
+                    write(output, 2613) (AL(j), j= 1, N)        
+                write(output, *) "SYSTEM IS STABLE"                                                   
 
+                ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
+                ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
+                ! write(7,*)                          !Alfonsina
+        
+                if (iout /= 6) write(iout, 604)                                     
+                GOTO 10 !ELIMINAR GOTO 
+            end if
+
+        80  write(6, 603)                                                      
+            if (iout /= 6) write(iout, 603)                                     
+            
+            do i = 1, N                                                       
+                YVAL(i) = 1.D-5 * DEXP(YVAL(i)) / Z(i)
+            end do
+                                            
+        100 NF = NF + 1                                                           
+            do i = 1, N                                                      
+                if (YVAL(i) > 1.D0) then 
+                    do j = 1, N                                                      
+                        YVAL(j) = YVAL(j) / 10.D0
+                    end do                                               
+                end if
+            end do
+
+            SFAS(NF) = 1.D0                                                       
+            XLAM = 0.2D0                                                           
+            
+            if (NF == 2) XLAM = 0.5D0                                               
+            M = (NF - 1) * N                                                        
+            
+            if (IPR > 0) write(6,607) NF                                      
+            
+            if (iout /= 6 .and. IPR > 0) write(iout,607) NF                     
+            
+            call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
+            
+            NT = NF * N                                                           
+            NB = NT - N                                                           
+            
+            do i = 1, NB                                                     
+                YVAL(NT + 1 - i) = YVAL(NB + 1 - i)
+            end do
+
+            write(6, 614) NF                                                   
+            
+            NVAP = 0                                                            
+            do j = 1, NF                                                     
+                if (IDUM(j) == 1) NVAP = j
+            end do                                           
+                                                                
+            if (NVAP == 0) write(6, 630)                                        
+            if (NVAP /= 0) write(6, 631) NVAP                                   
+            if (iout /= 6 .and. NVAP == 0) write(iout, 630)                       
+            if (iout /= 6 .and. NVAP /= 0) write(iout, 631) NVAP                  
+            write(6, 611) (j, SFAS(j), j = 1, NF)                                   
+            write(6, 612) (j, j = 1, NF)                                           
+            if (iout /= 6) write(iout, 614) NF                                  
+            if (iout /= 6) write(iout, 611)(j, SFAS(j), j = 1, NF)                   
+            if (iout /= 6) write(iout, 612) (j, j = 1, NF)                          
+            
+            SUM = 0.D0                                                            
+            
+            do i = 1, N                                                      
+                DLX(i) = XVL(i, NF) * Z(i) / SFAS(NF)                                    
+                SUM = SUM + DLX(i)
+            end do                                                    
+            
+            SUM = DLOG(SUM)                                                     
+            call unifac(1, DLX, A, DA, PACT)                                      
+            do 120 i = 1, N                                                      
+                DLX(i) = DLOG(DLX(i))                                               
+        120   A(i) = A(i) + DLX(i) - SUM                                              
+        !c-----
+            do 1130 j = 1, nf
+                do 1131 i = 1, n
+        1131       xmj(i) = xm(i, j)
+                call unifac(1, xmj, actgam, de, pe)
+                do 1132 i = 1, n
+        1132       agam(i, j) = actgam(i)
+        1130 continue
+            write (output,*) NF
+            do i = 1, NF !escribe resultados para el output que ser� le�do por excel
+                write(output, 2613) (XM(j, i),j = 1, N)
+                write(output, 2613) (agam(j, i),j = 1, N)  
+            enddo
+            
+            do 130 i = 1, N                                                      
+                write(6, 613) i, (XM(i, j), j = 1, NF)     !composition        
+        130   write(6, 1613) i, (agam(i, j), j = 1, nf) !Ln(gamma)
+            
+            !if (iout == 6) GOTO 132
+            if (iout /= 6) then                                          
+                do i=1,N                                                      
+                    write(iout, 613) i, (XM(i, j), j = 1, NF)    
+                    write(iout, 1613) i, (agam(i, j), j = 1, nf)
+                end do
+            46	FORMAT (2X,F12.2, 8X,F12.6, 8X,F12.6 , 8X,F12.6, 8X,F12.6, & !Alfonsina                                                 
+                8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6)
+            end if
+            !132 CONTINUE
+            !GOTO 50
+    end do 
+
+!-------------------------------------------------------------------------------
+!
+!     FORMATS USED IN THIS PROGRAM:
+!
+!-------------------------------------------------------------------------------
     501 FORMAT(36A2)                                                      
     502 FORMAT(8F10.2)                                                    
     503 FORMAT(20I3)                                                      
