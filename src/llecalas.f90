@@ -373,45 +373,47 @@ subroutine llecalas!(Tf, Pf, Zf)
                         YVAL(i) = 1.D-5 * Y(i) / Z(i)
                     end do                                                                                                    
                     GOTO 100 !ELIMINAR GOTO 
-                end if                                                       
+                !end if
+                else                                                       
             
-            !70 do 75 i = 1, N
-            
-                do i = 1, N                                                        
-                    YVAL(i) = DLOG(Y(i))
-                end do
-                                                        
-                XLAM = 1.                                                           
-                if (NF == 1 .and. IPR > 0) write(6, 606)                             
-                if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
-                if (iout /= 6 .and. NF == 1 .and. IPR > 0) write(iout, 606)            
-                if (iout /= 6 .and. NF > 1 .and. IPR > 0) write(iout, 609) NF         
+                !70 do 75 i = 1, N
                 
-                call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
-                
-                !if (FUN < -1.D-7) GOTO 80                                         
-                if (FUN > -1.D-7) then 
-                    write(6, 604)         
-                    write(output, *) 1
-                        write(output, 2613) (Z(j), j = 1, N)
-                        write(output, 2613) (AL(j), j= 1, N)        
-                    write(output, *) "SYSTEM IS STABLE"                                                   
+                    do i = 1, N                                                        
+                        YVAL(i) = DLOG(Y(i))
+                    end do
+                                                            
+                    XLAM = 1.                                                           
+                    if (NF == 1 .and. IPR > 0) write(6, 606)                             
+                    if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
+                    if (iout /= 6 .and. NF == 1 .and. IPR > 0) write(iout, 606)            
+                    if (iout /= 6 .and. NF > 1 .and. IPR > 0) write(iout, 609) NF         
+                    
+                    call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+                    
+                    !if (FUN < -1.D-7) GOTO 80                                         
+                    if (FUN > -1.D-7) then 
+                        write(6, 604)         
+                        write(output, *) 1
+                            write(output, 2613) (Z(j), j = 1, N)
+                            write(output, 2613) (AL(j), j= 1, N)        
+                        write(output, *) "SYSTEM IS STABLE"                                                   
 
-                    ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
-                    ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
-                    ! write(7,*)                          !Alfonsina
-            
-                    if (iout /= 6) write(iout, 604)                                     
-                    !GOTO 10 !ELIMINAR GOTO
-                    exit 
+                        ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
+                        ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
+                        ! write(7,*)                          !Alfonsina
+                
+                        if (iout /= 6) write(iout, 604)                                     
+                        !GOTO 10 
+                        exit 
+                    end if
+
+                80  write(6, 603)                                                      
+                    if (iout /= 6) write(iout, 603)                                     
+                    
+                    do i = 1, N                                                       
+                        YVAL(i) = 1.D-5 * DEXP(YVAL(i)) / Z(i)
+                    end do
                 end if
-
-            80  write(6, 603)                                                      
-                if (iout /= 6) write(iout, 603)                                     
-                
-                do i = 1, N                                                       
-                    YVAL(i) = 1.D-5 * DEXP(YVAL(i)) / Z(i)
-                end do
                                                 
             100 NF = NF + 1                                                           
                 do i = 1, N                                                      
