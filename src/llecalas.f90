@@ -179,324 +179,327 @@ subroutine llecalas!(Tf, Pf, Zf)
         !T1 = 0.                                                            
         !NN = 0                                                              
 
-        ! It checks whether the problem is a FLASH CALCULATION (0) or a 
-        ! BINODAL CURVE CALCULATION OR CALCULATION OF UNIQUAC PARAMETERS 
-        ! FROM UNIFAC. After that it reads the Temperature and Pressure.
+        
+        do while (.true.)
+            ! It checks whether the problem is a FLASH CALCULATION (0) or a 
+            ! BINODAL CURVE CALCULATION OR CALCULATION OF UNIQUAC PARAMETERS 
+            ! FROM UNIFAC. After that it reads the Temperature and Pressure.
+            10  if (icalc == 0) then 
+                    READ(2,*) T, PP
+                else !if (icalc .GE. 1) READ(2,*) T
+                    READ(2,*) T 
+                end if                                   
 
-        10  if (icalc == 0) then 
-                READ(2,*) T, PP
-            else !if (icalc .GE. 1) READ(2,*) T
-                READ(2,*) T 
-            end if                                   
-
-        
-        ! Exit the subroutine if the temperature has not been set 
-        if (T == 0.) then 
-            call close_llecalas() !GOTO 10000
-            return
-        end if
-
-        ! If no vapour phase is considered...
-        if (PP /= 0.D0  .and.  novap /= 0) then                                 
-            do i=1,N                                                        
-                PRAT(i)=DLOG(PP)-ANT(1,i)+ANT(2,i)/(T-273.15+ANT(3,i))
-            end do                                     
-        end if
-        
-        ! Read the composition (Z) of each component (Zi)
-        4 READ(2,*) (Z(i),i=1,N)                                            
-        
-        !z_sum = 0.D0                                                       
-        !z_max = 0.D0                                                          
-        
-        ! It sums the compostion of each component to get Z_sum and the max
-        ! value of composition and its index.
-        do i = 1, N !15 i = 1, N                                                       
-            z_sum = z_sum + z(i)                                                    
-            if (Z(i) < z_max) cycle !GOTO 15                                          
-            z_max = z(i)                                                         
-            z_max_index = i                                                            
-        !15 CONTINUE
-        end do
-
-        ! The following line has no sense since, as far as I know, T1
-        ! had been initialized at the beggining as T1 = 0. Also it cuts some
-        ! code related to the Flash Calculation
-        !if (T == T1) GOTO 30
-        if (T /= T1) then                                             
-        
-            call PARAM2                                                       
             
-            !** BINODAL CURVE CALCULATION **************************************
-            if (icalc == 1) then !if (icalc /= 1) GOTO 16                                            
-            
-                if (N /= 2 .and. N /= 3) write(6, 616)                                
-                if (iout /= 6 .and. N /= 2 .and. N /= 3) write(iout, 616)               
-                Y13 = Z(1)                                                          
-                Y21 = Z(2)                                                          
-                
-                write(6,633) T                                                    
-                
-                if (iout /= 6) write(iout, 633) T                                   
-                if (N == 3) then !if (N == 3) GOTO 12                                                
-                    !12 STEP=Z(3) / 100.D0
-                    STEP = Z(3) / 100.D0
+            ! Exit the subroutine if the temperature has not been set 
+            if (T == 0.) then 
+                call close_llecalas() !GOTO 10000
+                return
+            end if
 
-                    if (STEP == 0.D0) STEP = 0.02D0                                         
-                    call BINOD                                                        
+            ! If no vapour phase is considered...
+            if (PP /= 0.D0  .and.  novap /= 0) then                                 
+                do i=1,N                                                        
+                    PRAT(i)=DLOG(PP)-ANT(1,i)+ANT(2,i)/(T-273.15+ANT(3,i))
+                end do                                     
+            end if
+            
+            ! Read the composition (Z) of each component (Zi)
+            4 READ(2,*) (Z(i),i=1,N)                                            
+            
+            !z_sum = 0.D0                                                       
+            !z_max = 0.D0                                                          
+            
+            ! It sums the compostion of each component to get Z_sum and the max
+            ! value of composition and its index.
+            do i = 1, N !15 i = 1, N                                                       
+                z_sum = z_sum + z(i)                                                    
+                if (Z(i) < z_max) cycle !GOTO 15                                          
+                z_max = z(i)                                                         
+                z_max_index = i                                                            
+            !15 CONTINUE
+            end do
+
+            ! The following line has no sense since, as far as I know, T1
+            ! had been initialized at the beggining as T1 = 0. Also it cuts some
+            ! code related to the Flash Calculation
+            !if (T == T1) GOTO 30
+            if (T /= T1) then                                             
+            
+                call PARAM2                                                       
+                
+                !** BINODAL CURVE CALCULATION **************************************
+                if (icalc == 1) then !if (icalc /= 1) GOTO 16                                            
+                
+                    if (N /= 2 .and. N /= 3) write(6, 616)                                
+                    if (iout /= 6 .and. N /= 2 .and. N /= 3) write(iout, 616)               
+                    Y13 = Z(1)                                                          
+                    Y21 = Z(2)                                                          
+                    
+                    write(6,633) T                                                    
+                    
+                    if (iout /= 6) write(iout, 633) T                                   
+                    if (N == 3) then !if (N == 3) GOTO 12                                                
+                        !12 STEP=Z(3) / 100.D0
+                        STEP = Z(3) / 100.D0
+
+                        if (STEP == 0.D0) STEP = 0.02D0                                         
+                        call BINOD                                                        
+                        
+                        call close_llecalas() !GOTO 10000
+                        return
+                    end if
+
+                    call SOLBIN                                                       
                     
                     call close_llecalas() !GOTO 10000
                     return
-                end if
-
-                call SOLBIN                                                       
-                
-                call close_llecalas() !GOTO 10000
-                return
-                                                                    
-        
-
-            !16 CONTINUE
-            end if
-                                                                    
-            !** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC ******************
-            if (icalc == 2) then !if (icalc /= 2) GOTO 19                                            
-                if (N /= 2) write(6, 616)                                           
-                if (iout /= 6 .and. N /= 2) write(iout, 616)                          
-                XC(1) = 0.D0                                                          
-                XC(2) = 0.2D0                                                        
-                XC(3) = 0.5D0                                                        
-                XC(4) = 0.8D0                                                        
-                XC(5) = 1.D0                                                        
-                
-                do 17 k = 1, 5                                                       
-                    Y(1) = XC(k)                                                        
-                    Y(2) = 1.D0 - XC(k)                                                   
-                    call unifac(1, Y, ACT1, DACT1, PACT)                                  
-                    GE(K, 1) = ACT1(1)                                                   
-                17  GE(K, 2) = ACT1(2)
-
-                READ(2, *) R(1), Q(1)                                               
-                READ(2, *) R(2), Q(2)                                               
-                                            
-                write(6, 627)                                                      
-                
-                do 14 i = 1, 2                                                       
-                14   write(6, 626) i, R(i), Q(i)                                          
-                
-                if (iout /= 6) then !if (iout == 6) GOTO 13                                             
-                    write(iout, 627)                                                   
-                    do 11 i = 1, 2                                                       
-                11  write(iout, 626) i, R(i), Q(i)                                        
-                !13 CONTINUE
-                end if
-
-                X(1) = Z(1) / 300.D0                                                  
-                X(2) = Z(2) / 300.D0                                                  
-                do 18 i = 1, 2                                                       
-                    do 18 j = 1, 2                                                       
-                        QT(i, j) = 0.D0                                                        
-                18       P(i, j) = 0.D0                                                         
-                QT(1, 1) = Q(1)                                                      
-                QT(2, 2) = Q(2)                                                      
-                NK = 2                                                              
-                NG = 2                                                              
-                XLAMB = 1.D0                                                          
-                call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
-                write(6, 633) T                                                    
-                if (iout /= 6) write(iout, 633) T                                   
-                write(6, 617) P(1, 2), P(2, 1)     
-                if (IPR == 1) write(6, 618)                                         
-                do 21 L = 1, 5                                                       
-                    do 21 i = 1, 2                                                       
-                        GE(L,i) = DEXP(GE(L, i))                                             
-            21       GC(L, i) = DEXP(GC(L, i))                                             
-                if (IPR == 1) write(6, 619) ((GE(L, i), L = 1, 5), i = 1, 2)                 
-                if (IPR == 1) write(6, 619) ((GC(L, i), L = 1, 5), i = 1, 2)                 
-                
-                if (iout /= 6) then !if (iout == 6) GOTO 22                                             
-                    write(iout, 617) P(1, 2), P(2, 1)                                     
-                    if (IPR == 1) write(iout, 618)                                      
-                    if (IPR == 1) write(iout, 619) ((GE(L, i), L = 1, 5), i = 1, 2)              
-                    if (IPR == 1) write(iout, 619) ((GC(L, i), L = 1, 5), i = 1, 2)              
-                !22 CONTINUE
-                end if
-
-                call close_llecalas() !GOTO 10000
-                return
-
-            19 CONTINUE                                                          
-            end if
+                                                                        
             
-            !** FLASH CALCULATION **********************************************
-            do i = 1, N                                                       
-                do j = 1, N                                                       
-                    GAM(i, j) = 0.D0                                                     
-                    if (j /= i) then !if (j == i) GOTO 20                                                
-                        call GAMINF(i, j, G)                                                
-                        GAM(i,j) = G
+
+                !16 CONTINUE
+                end if
+                                                                        
+                !** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC ******************
+                if (icalc == 2) then !if (icalc /= 2) GOTO 19                                            
+                    if (N /= 2) write(6, 616)                                           
+                    if (iout /= 6 .and. N /= 2) write(iout, 616)                          
+                    XC(1) = 0.D0                                                          
+                    XC(2) = 0.2D0                                                        
+                    XC(3) = 0.5D0                                                        
+                    XC(4) = 0.8D0                                                        
+                    XC(5) = 1.D0                                                        
+                    
+                    do 17 k = 1, 5                                                       
+                        Y(1) = XC(k)                                                        
+                        Y(2) = 1.D0 - XC(k)                                                   
+                        call unifac(1, Y, ACT1, DACT1, PACT)                                  
+                        GE(K, 1) = ACT1(1)                                                   
+                    17  GE(K, 2) = ACT1(2)
+
+                    READ(2, *) R(1), Q(1)                                               
+                    READ(2, *) R(2), Q(2)                                               
+                                                
+                    write(6, 627)                                                      
+                    
+                    do 14 i = 1, 2                                                       
+                    14   write(6, 626) i, R(i), Q(i)                                          
+                    
+                    if (iout /= 6) then !if (iout == 6) GOTO 13                                             
+                        write(iout, 627)                                                   
+                        do 11 i = 1, 2                                                       
+                    11  write(iout, 626) i, R(i), Q(i)                                        
+                    !13 CONTINUE
+                    end if
+
+                    X(1) = Z(1) / 300.D0                                                  
+                    X(2) = Z(2) / 300.D0                                                  
+                    do 18 i = 1, 2                                                       
+                        do 18 j = 1, 2                                                       
+                            QT(i, j) = 0.D0                                                        
+                    18       P(i, j) = 0.D0                                                         
+                    QT(1, 1) = Q(1)                                                      
+                    QT(2, 2) = Q(2)                                                      
+                    NK = 2                                                              
+                    NG = 2                                                              
+                    XLAMB = 1.D0                                                          
+                    call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
+                    write(6, 633) T                                                    
+                    if (iout /= 6) write(iout, 633) T                                   
+                    write(6, 617) P(1, 2), P(2, 1)     
+                    if (IPR == 1) write(6, 618)                                         
+                    do 21 L = 1, 5                                                       
+                        do 21 i = 1, 2                                                       
+                            GE(L,i) = DEXP(GE(L, i))                                             
+                21       GC(L, i) = DEXP(GC(L, i))                                             
+                    if (IPR == 1) write(6, 619) ((GE(L, i), L = 1, 5), i = 1, 2)                 
+                    if (IPR == 1) write(6, 619) ((GC(L, i), L = 1, 5), i = 1, 2)                 
+                    
+                    if (iout /= 6) then !if (iout == 6) GOTO 22                                             
+                        write(iout, 617) P(1, 2), P(2, 1)                                     
+                        if (IPR == 1) write(iout, 618)                                      
+                        if (IPR == 1) write(iout, 619) ((GE(L, i), L = 1, 5), i = 1, 2)              
+                        if (IPR == 1) write(iout, 619) ((GC(L, i), L = 1, 5), i = 1, 2)              
+                    !22 CONTINUE
+                    end if
+
+                    call close_llecalas() !GOTO 10000
+                    return
+
+                19 CONTINUE                                                          
+                end if
+                
+                !** FLASH CALCULATION **********************************************
+                do i = 1, N                                                       
+                    do j = 1, N                                                       
+                        GAM(i, j) = 0.D0                                                     
+                        if (j /= i) then !if (j == i) GOTO 20                                                
+                            call GAMINF(i, j, G)                                                
+                            GAM(i,j) = G
+                        end if
+                    end do
+                enddo                                                        
+                !20  CONTINUE                                                          
+            end if
+        30  T1 = T                                                              
+            NN = NN + 1
+
+            write(6, 602) NN                                                   
+            
+            do 35 i = 1, N                                                       
+        35  Z(i) = Z(i) / z_sum                                                    
+            
+            write(6, 605) T, PP, z_sum, (Z(i), i = 1, N)
+
+            if (iout /= 6) write(iout, 602) NN                                  
+            if (iout /= 6) write(iout, 605) T, PP, z_sum, (Z(i), i = 1, N)              
+            call unifac(1, Z, AL, DA, PACT)                                       
+            SFAS(1) = 1.D0                                                        
+            GNUL = 0.D0                                                           
+            do 40 i = 1, N                                                       
+                XVL(i, 1) = 1.D0                                                       
+                Z(i) = Z(i) + 1.D-20                                                  
+                DLX(i) = DLOG(Z(i))                                                 
+                A(i) = AL(i) + DLX(i)                                                 
+        40  GNUL = GNUL + Z(i) * AL(i)                                              
+            NF = 1
+                                                                        
+        do while (.true.) ! A loop that ends when "FUN > -1.D-7"
+            50  call STIG(Y,S)                                                    
+                if (S < -1.D-7) then !if (S > -1.D-7) GOTO 70                                           
+                    write(6, 603)                                                      
+                    if (iout /= 6) write(iout, 603)                                     
+                    do i = 1, N                                                       
+                        YVAL(i) = 1.D-5 * Y(i) / Z(i)
+                    end do                                                                                                    
+                    GOTO 100 !ELIMINAR GOTO 
+                end if                                                       
+            
+            !70 do 75 i = 1, N
+            
+                do i = 1, N                                                        
+                    YVAL(i) = DLOG(Y(i))
+                end do
+                                                        
+                XLAM = 1.                                                           
+                if (NF == 1 .and. IPR > 0) write(6, 606)                             
+                if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
+                if (iout /= 6 .and. NF == 1 .and. IPR > 0) write(iout, 606)            
+                if (iout /= 6 .and. NF > 1 .and. IPR > 0) write(iout, 609) NF         
+                
+                call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
+                
+                !if (FUN < -1.D-7) GOTO 80                                         
+                if (FUN > -1.D-7) then 
+                    write(6, 604)         
+                    write(output, *) 1
+                        write(output, 2613) (Z(j), j = 1, N)
+                        write(output, 2613) (AL(j), j= 1, N)        
+                    write(output, *) "SYSTEM IS STABLE"                                                   
+
+                    ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
+                    ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
+                    ! write(7,*)                          !Alfonsina
+            
+                    if (iout /= 6) write(iout, 604)                                     
+                    !GOTO 10 !ELIMINAR GOTO
+                    exit 
+                end if
+
+            80  write(6, 603)                                                      
+                if (iout /= 6) write(iout, 603)                                     
+                
+                do i = 1, N                                                       
+                    YVAL(i) = 1.D-5 * DEXP(YVAL(i)) / Z(i)
+                end do
+                                                
+            100 NF = NF + 1                                                           
+                do i = 1, N                                                      
+                    if (YVAL(i) > 1.D0) then 
+                        do j = 1, N                                                      
+                            YVAL(j) = YVAL(j) / 10.D0
+                        end do                                               
                     end if
                 end do
-            enddo                                                        
-            !20  CONTINUE                                                          
-        end if
-    30  T1 = T                                                              
-        NN = NN + 1
 
-        write(6, 602) NN                                                   
-        
-        do 35 i = 1, N                                                       
-    35  Z(i) = Z(i) / z_sum                                                    
-        
-        write(6, 605) T, PP, z_sum, (Z(i), i = 1, N)
-
-        if (iout /= 6) write(iout, 602) NN                                  
-        if (iout /= 6) write(iout, 605) T, PP, z_sum, (Z(i), i = 1, N)              
-        call unifac(1, Z, AL, DA, PACT)                                       
-        SFAS(1) = 1.D0                                                        
-        GNUL = 0.D0                                                           
-        do 40 i = 1, N                                                       
-            XVL(i, 1) = 1.D0                                                       
-            Z(i) = Z(i) + 1.D-20                                                  
-            DLX(i) = DLOG(Z(i))                                                 
-            A(i) = AL(i) + DLX(i)                                                 
-    40  GNUL = GNUL + Z(i) * AL(i)                                              
-        NF = 1
-                                                                      
-    do while (.true.)
-        50  call STIG(Y,S)                                                    
-            if (S < -1.D-7) then !if (S > -1.D-7) GOTO 70                                           
-                write(6, 603)                                                      
-                if (iout /= 6) write(iout, 603)                                     
-                do i = 1, N                                                       
-                    YVAL(i) = 1.D-5 * Y(i) / Z(i)
-                end do                                                                                                    
-                GOTO 100 !ELIMINAR GOTO 
-            end if                                                       
-        
-        !70 do 75 i = 1, N
-        
-            do i = 1, N                                                        
-                YVAL(i) = DLOG(Y(i))
-            end do
-                                                    
-            XLAM = 1.                                                           
-            if (NF == 1 .and. IPR > 0) write(6, 606)                             
-            if (NF > 1 .and. IPR > 0) write(6, 609) NF                          
-            if (iout /= 6 .and. NF == 1 .and. IPR > 0) write(iout, 606)            
-            if (iout /= 6 .and. NF > 1 .and. IPR > 0) write(iout, 609) NF         
-            
-            call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, XMAT, WORK, 1)     
-            
-            !if (FUN < -1.D-7) GOTO 80                                         
-            if (FUN > -1.D-7) then 
-                write(6, 604)         
-                write(output, *) 1
-                    write(output, 2613) (Z(j), j = 1, N)
-                    write(output, 2613) (AL(j), j= 1, N)        
-                write(output, *) "SYSTEM IS STABLE"                                                   
-
-                ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
-                ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
-                ! write(7,*)                          !Alfonsina
-        
-                if (iout /= 6) write(iout, 604)                                     
-                GOTO 10 !ELIMINAR GOTO 
-            end if
-
-        80  write(6, 603)                                                      
-            if (iout /= 6) write(iout, 603)                                     
-            
-            do i = 1, N                                                       
-                YVAL(i) = 1.D-5 * DEXP(YVAL(i)) / Z(i)
-            end do
-                                            
-        100 NF = NF + 1                                                           
-            do i = 1, N                                                      
-                if (YVAL(i) > 1.D0) then 
-                    do j = 1, N                                                      
-                        YVAL(j) = YVAL(j) / 10.D0
-                    end do                                               
-                end if
-            end do
-
-            SFAS(NF) = 1.D0                                                       
-            XLAM = 0.2D0                                                           
-            
-            if (NF == 2) XLAM = 0.5D0                                               
-            M = (NF - 1) * N                                                        
-            
-            if (IPR > 0) write(6,607) NF                                      
-            
-            if (iout /= 6 .and. IPR > 0) write(iout,607) NF                     
-            
-            call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
-            
-            NT = NF * N                                                           
-            NB = NT - N                                                           
-            
-            do i = 1, NB                                                     
-                YVAL(NT + 1 - i) = YVAL(NB + 1 - i)
-            end do
-
-            write(6, 614) NF                                                   
-            
-            NVAP = 0                                                            
-            do j = 1, NF                                                     
-                if (IDUM(j) == 1) NVAP = j
-            end do                                           
-                                                                
-            if (NVAP == 0) write(6, 630)                                        
-            if (NVAP /= 0) write(6, 631) NVAP                                   
-            if (iout /= 6 .and. NVAP == 0) write(iout, 630)                       
-            if (iout /= 6 .and. NVAP /= 0) write(iout, 631) NVAP                  
-            write(6, 611) (j, SFAS(j), j = 1, NF)                                   
-            write(6, 612) (j, j = 1, NF)                                           
-            if (iout /= 6) write(iout, 614) NF                                  
-            if (iout /= 6) write(iout, 611)(j, SFAS(j), j = 1, NF)                   
-            if (iout /= 6) write(iout, 612) (j, j = 1, NF)                          
-            
-            SUM = 0.D0                                                            
-            
-            do i = 1, N                                                      
-                DLX(i) = XVL(i, NF) * Z(i) / SFAS(NF)                                    
-                SUM = SUM + DLX(i)
-            end do                                                    
-            
-            SUM = DLOG(SUM)                                                     
-            call unifac(1, DLX, A, DA, PACT)                                      
-            do 120 i = 1, N                                                      
-                DLX(i) = DLOG(DLX(i))                                               
-        120   A(i) = A(i) + DLX(i) - SUM                                              
-        !c-----
-            do 1130 j = 1, nf
-                do 1131 i = 1, n
-        1131       xmj(i) = xm(i, j)
-                call unifac(1, xmj, actgam, de, pe)
-                do 1132 i = 1, n
-        1132       agam(i, j) = actgam(i)
-        1130 continue
-            write (output,*) NF
-            do i = 1, NF !escribe resultados para el output que ser� le�do por excel
-                write(output, 2613) (XM(j, i),j = 1, N)
-                write(output, 2613) (agam(j, i),j = 1, N)  
-            enddo
-            
-            do 130 i = 1, N                                                      
-                write(6, 613) i, (XM(i, j), j = 1, NF)     !composition        
-        130   write(6, 1613) i, (agam(i, j), j = 1, nf) !Ln(gamma)
-            
-            !if (iout == 6) GOTO 132
-            if (iout /= 6) then                                          
-                do i=1,N                                                      
-                    write(iout, 613) i, (XM(i, j), j = 1, NF)    
-                    write(iout, 1613) i, (agam(i, j), j = 1, nf)
+                SFAS(NF) = 1.D0                                                       
+                XLAM = 0.2D0                                                           
+                
+                if (NF == 2) XLAM = 0.5D0                                               
+                M = (NF - 1) * N                                                        
+                
+                if (IPR > 0) write(6,607) NF                                      
+                
+                if (iout /= 6 .and. IPR > 0) write(iout,607) NF                     
+                
+                call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, XMAT, WORK, 2)     
+                
+                NT = NF * N                                                           
+                NB = NT - N                                                           
+                
+                do i = 1, NB                                                     
+                    YVAL(NT + 1 - i) = YVAL(NB + 1 - i)
                 end do
-            46	FORMAT (2X,F12.2, 8X,F12.6, 8X,F12.6 , 8X,F12.6, 8X,F12.6, & !Alfonsina                                                 
-                8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6)
-            end if
-            !132 CONTINUE
-            !GOTO 50
+
+                write(6, 614) NF                                                   
+                
+                NVAP = 0                                                            
+                do j = 1, NF                                                     
+                    if (IDUM(j) == 1) NVAP = j
+                end do                                           
+                                                                    
+                if (NVAP == 0) write(6, 630)                                        
+                if (NVAP /= 0) write(6, 631) NVAP                                   
+                if (iout /= 6 .and. NVAP == 0) write(iout, 630)                       
+                if (iout /= 6 .and. NVAP /= 0) write(iout, 631) NVAP                  
+                write(6, 611) (j, SFAS(j), j = 1, NF)                                   
+                write(6, 612) (j, j = 1, NF)                                           
+                if (iout /= 6) write(iout, 614) NF                                  
+                if (iout /= 6) write(iout, 611)(j, SFAS(j), j = 1, NF)                   
+                if (iout /= 6) write(iout, 612) (j, j = 1, NF)                          
+                
+                SUM = 0.D0                                                            
+                
+                do i = 1, N                                                      
+                    DLX(i) = XVL(i, NF) * Z(i) / SFAS(NF)                                    
+                    SUM = SUM + DLX(i)
+                end do                                                    
+                
+                SUM = DLOG(SUM)                                                     
+                call unifac(1, DLX, A, DA, PACT)                                      
+                do 120 i = 1, N                                                      
+                    DLX(i) = DLOG(DLX(i))                                               
+            120   A(i) = A(i) + DLX(i) - SUM                                              
+            !c-----
+                do 1130 j = 1, nf
+                    do 1131 i = 1, n
+            1131       xmj(i) = xm(i, j)
+                    call unifac(1, xmj, actgam, de, pe)
+                    do 1132 i = 1, n
+            1132       agam(i, j) = actgam(i)
+            1130 continue
+                write (output,*) NF
+                do i = 1, NF !escribe resultados para el output que ser� le�do por excel
+                    write(output, 2613) (XM(j, i),j = 1, N)
+                    write(output, 2613) (agam(j, i),j = 1, N)  
+                enddo
+                
+                do 130 i = 1, N                                                      
+                    write(6, 613) i, (XM(i, j), j = 1, NF)     !composition        
+            130   write(6, 1613) i, (agam(i, j), j = 1, nf) !Ln(gamma)
+                
+                !if (iout == 6) GOTO 132
+                if (iout /= 6) then                                          
+                    do i=1,N                                                      
+                        write(iout, 613) i, (XM(i, j), j = 1, NF)    
+                        write(iout, 1613) i, (agam(i, j), j = 1, nf)
+                    end do
+                46	FORMAT (2X,F12.2, 8X,F12.6, 8X,F12.6 , 8X,F12.6, 8X,F12.6, & !Alfonsina                                                 
+                    8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6,8X,F12.6)
+                end if
+                !132 CONTINUE
+                !GOTO 50
+        end do
     end do 
 
 !-------------------------------------------------------------------------------
