@@ -1,10 +1,12 @@
 program check
     use do_tests
+
+    use inputData, only: input_filename
+    use iso_fortran_env, only: int32
+    
     use stdlib_ansi, only : & 
     & fg_color_green, fg_color_red, fg_color_yellow, & 
     & style_bold, style_reset, operator(//), operator(+)
-    use inputData, only: input_filename
-    use iso_fortran_env, only: int32
     
     implicit none
     
