@@ -12,6 +12,7 @@ module inputData
     
 
     public :: &
+        & input_filename, &
         & nms, nmg, nint, &
         & icalc, model, ipr, iout, novap, ig, &
         & flash_input_filename, name_maxlen, &
@@ -68,7 +69,7 @@ module inputData
         & ipareq = 2 
 
     ! The name of the file with the filename of the flash-parameters-file.
-    !character(len=8) :: input_filename = "name.dat"
+    character(len=36):: input_filename
     
     ! The max character lenght of the filename with the flash parameters.
     integer(kind=int32), parameter :: name_maxlen = 36

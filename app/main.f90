@@ -15,12 +15,14 @@
 !su posible modificacion
 !Probar real128
 program main
+    use inputData, only: input_filename
     use outputData
     
     implicit none
 
     ! Allow 'write' or 'print' to be shown in console
     output_console = .true.
+    input_filename = "name.dat"
 
     call llecalas()
 

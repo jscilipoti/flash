@@ -112,7 +112,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 
     ! Look for the input_flash file by reading the name in name.dat file.
     ! Then, read all the data in input_flash file.
-    call read_input_flash("name.dat")
+    call read_input_flash(input_filename)
 
     ICALC_common = icalc
     MODEL_common = model
