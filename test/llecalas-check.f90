@@ -3,6 +3,10 @@
     
 
     use iso_fortran_env, only: int8, real64
+    use stdlib_ansi, only : & 
+    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & style_bold, style_reset, operator(//), operator(+)
+    
     implicit none
 
     integer(kind=int8) ::  &
@@ -60,7 +64,7 @@
     ! Check if something changed
     do i = 1, N
         if (YVAL(i) /= YVAL_2(i)) then
-            print *, "ERROR"
+            print *, fg_color_red + style_bold // test_ error // style_reset
             print *, "At: ", i, "| ", YVAL(i), " /= ", YVAL_2(i)
             ERROR STOP "YVAL /= YVAL_2"
         end if

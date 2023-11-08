@@ -1,5 +1,8 @@
 program check
     use do_tests
+    use stdlib_ansi, only : & 
+    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & style_bold, style_reset, operator(//), operator(+)
     ! Units available to open a file:
     use fileUnits, only: intrcn32_unit, qPar150_unit, rPar150_unit
     use iso_fortran_env!, only: int16, real32, real64 
@@ -319,13 +322,14 @@ program check
         do i = 1, 32
             do j = 1, 32
                 if (abs(A(i,j) - intrcn32_data(i,j)) > 1E-4) then
+                    print *, fg_color_red + style_bold // test_ error // style_reset
                     print *, "HERE:"
                     print *, "intrcn32_data(",i,",",j,")"
                     print *, "intrcn32_data value is: ", intrcn32_data(i,j)
                     print *, "original value was: ", A(i,j)
-                    ERROR STOP "Look NEO, an error in the Matrix!.& 
-                    &New matrix code for parameters gives different values& 
-                    &and differs from the original."
+                    ERROR STOP "Look NEO, an error in the Matrix!. & 
+                    & New matrix code for parameters gives different values & 
+                    & and differs from the original."
                 end if
             end do
         end do
@@ -333,33 +337,35 @@ program check
         !print '(150F5.2)', RR-rPar150_data
         do i = 1, 150
             if (abs(RR(i) - rPar150_data(i)) > 1E-4) then
+                print *, fg_color_red + style_bold // test_ error // style_reset
                 print *, "HERE:"
                 print *, "rPar150_data(",i,")"
                 print *, "rPar150_data value is: ", rPar150_data(i)
                 print *, "original value was: ", RR(i)
-                ERROR STOP "Look NEO, an error in the Matrix!.& 
-                &New matrix code for R parameters gives different values& 
-                &and differs from the original."
+                ERROR STOP "Look NEO, an error in the Matrix!. & 
+                & New matrix code for R parameters gives different values & 
+                & and differs from the original."
             end if
         end do
         ! Check if qPar150_data and QQ are different)    
         !print '(150F5.2)', QQ-QPar150_data
         do i = 1, 150
             if (abs(QQ(i) - qPar150_data(i)) > 1E-4) then
+                print *, fg_color_red + style_bold // test_ error // style_reset
                 print *, "HERE:"
                 print *, "qPar150_data(",i,")"
                 print *, "qPar150_data value is: ", qPar150_data(i)
                 print *, "original value was: ", QQ(i)
-                ERROR STOP "Look NEO, an error in the Matrix!.& 
-                &New matrix code for Q parameters gives different values& 
-                &and differs from the original."
+                ERROR STOP "Look NEO, an error in the Matrix!. & 
+                & New matrix code for Q parameters gives different values & 
+                & and differs from the original."
             end if
         end do
         
-        print *, test_ok
+        print *, fg_color_green + style_bold // test_ok // style_reset
 
     else 
-        print *, test_disabled
+        print *, fg_color_yellow + style_bold // test_disabled // style_reset
     endif
 
 !print *, "Put some tests in here!"

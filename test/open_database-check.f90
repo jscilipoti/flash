@@ -1,5 +1,8 @@
 program check
     use do_tests
+    use stdlib_ansi, only : & 
+    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & style_bold, style_reset, operator(//), operator(+)
     
     implicit none
 
@@ -30,9 +33,9 @@ program check
         ! if (abs(0 - 0) > 1E-8)&
         !     &ERROR STOP ""
             
-        print *, test_ok
+        print *, fg_color_green + style_bold // test_ok // style_reset
     else 
-        print *, test_disabled
+        print *, fg_color_yellow + style_bold // test_disabled // style_reset
     endif
 
 !print *, "Put some tests in here!"

@@ -1,4 +1,7 @@
 module do_tests
+    
+
+
     implicit none
     private
     public :: &
@@ -12,7 +15,7 @@ module do_tests
     !&ALV7_check,&
     !&ULV7_check,&
     &open_file_check,&
-    &leer_input_flash_check,&
+    &read_input_flash_check,&
     &open_database_check,&
     &output_llecalas_check,&
     &output_check
@@ -22,7 +25,7 @@ module do_tests
     ! this module
 
     character(len=*), parameter :: test_run = "Running test: "
-    character(len=*), parameter :: test_ok = "Ok! "
+    character(len=*), parameter :: test_ok = "OK!"
     character(len=*), parameter :: test_disabled = "This test is disabled."
     character(len=*), parameter :: test_error = "ERROR! "
     
@@ -32,10 +35,13 @@ module do_tests
     !logical, parameter :: ULL7_check = .false.
     !logical, parameter :: ALV7_check = .true.
     !logical, parameter :: ULV7_check = .true.
-    logical, parameter :: open_file_check = .true.
-    logical, parameter :: leer_input_flash_check = .true.
+    
+    
     logical, parameter :: open_database_check = .true.
+    logical, parameter :: open_file_check = .true.
+    logical, parameter :: output_check = .false.
     logical, parameter :: output_llecalas_check = .true.
-    logical, parameter :: output_check = .true.
+    logical, parameter :: read_input_flash_check = .true.
+    
 
   end module do_tests
