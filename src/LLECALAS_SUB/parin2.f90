@@ -213,6 +213,7 @@ SUBROUTINE PARIN2
 !ccccccccccccccccccccccccccAlfonsinaccccccccccccccccccccccccccccccccccccccccccccccccccccc
   !rngoh=0.
   !LECTURA DE LA COMPOSICION GRUPAL ASOCIATIVA
+! AGREGAR ALGO ACÁ QUE LEA 0,0 si no hay 10 pares de numero de grupo y cantidad
          do ja=1, nga
       read(2,*) (rngoh(i,ja),i=1,nc) 
   end do     
