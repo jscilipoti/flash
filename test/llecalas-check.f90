@@ -5,7 +5,7 @@
     use iso_fortran_env, only: int8, real64
     use do_tests
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
     
     implicit none

@@ -5,7 +5,7 @@ program check
     use iso_fortran_env, only: int32
     
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
     
     implicit none
@@ -28,7 +28,7 @@ program check
     
 
     print *,""
-    print *, test_run//"output_flash_check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"output_flash_check"
     
     if (.true.) then
         if (pause_test) pause

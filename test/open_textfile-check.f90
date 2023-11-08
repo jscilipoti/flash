@@ -1,7 +1,7 @@
 program check
     use do_tests
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
     use iso_fortran_env, only: int32
     
@@ -13,7 +13,7 @@ program check
     integer(kind=int32) :: doLeerBases_tmp
     
     print *,""
-    print *, test_run//"open_file-check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"open_file-check"
     if (pause_test) pause
     call open_textfile(filename,array,2,36)
     if (open_file_check) then

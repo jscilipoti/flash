@@ -1,42 +1,55 @@
 program check
     use do_tests
+
+    use inputData, only: input_filename
+    use iso_fortran_env, only: int32
+    
     use stdlib_ansi, only : & 
     & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
-    use iso_fortran_env, only: int32
     
     implicit none
     
-    character(len=86),dimension(70) :: &
+    integer(kind=int32), parameter :: lleasoccuzada_linelen = 86
+    integer(kind=int32), parameter :: lleasoccuzada_maxlines = 70
+    integer(kind=int32), parameter :: output_linelen = 70
+    integer(kind=int32), parameter :: output_maxlines = 6
+    
+    character(len=lleasoccuzada_linelen), dimension(lleasoccuzada_maxlines) :: &
     &lleasoccuzada_new,lleasoccuzada_old
-    character(len=70),dimension(6) :: &
+    character(len=output_linelen), dimension(output_maxlines) :: &
     &output_new,output_old
+    character(len=*), parameter :: PATH = "test/"
+    character(len=*), parameter :: flashtype = "ALL7-"
     
     integer(kind=int32) :: i, j
 
-    print *,""
-    print *, fg_color_blue + style_bold // test_run // style_reset //"output-check"
+    input_filename = PATH//flashtype//"name.dat"
     
-    if (output_check) then
+
+    print *,""
+    print *, fg_color_blue + style_bold // test_run // style_reset //"ALL7_flash_check"
+    
+    if (.true.) then
         if (pause_test) pause
 
-        !call llecalas 
+        call llecalas 
         
-        call open_textfile("lleasoccuzada.OUT",&
-            &lleasoccuzada_new,70,86)
+        call open_textfile("lleasoccuzada.OUT", &
+            & lleasoccuzada_new, lleasoccuzada_maxlines, lleasoccuzada_linelen)
         !print "(A)",lleasoccuzada_new
-        call open_textfile("lleasoccuzada_original.OUT",&
-            &lleasoccuzada_old,70,86)
+        call open_textfile(PATH//flashtype//"lleasoccuzada.OUT",&
+            &lleasoccuzada_old, lleasoccuzada_maxlines, lleasoccuzada_linelen)
         !print "(A)",lleasoccuzada_old
         call open_textfile("output.OUT",&
-            &output_new,6,70)
+            &output_new, output_maxlines, output_linelen)
         !print "(A)",output_new
-        call open_textfile("output_original.OUT",&
-            &output_old,6,70)
+        call open_textfile(PATH//flashtype//"output.OUT",&
+            &output_old, output_maxlines, output_linelen)
         !print "(A)",output_old
         
         !Check if everything went OK
-        do i = 1, 70
+        do i = 1, lleasoccuzada_maxlines
             if (trim(lleasoccuzada_new(i)) /= trim(lleasoccuzada_old(i))) then
                 print *, fg_color_red + style_bold // test_error // style_reset
                 print *,&
@@ -46,7 +59,7 @@ program check
                 ERROR STOP ""
             end if
         end do
-        do i = 1, 6
+        do i = 1, output_maxlines
             if (trim(output_new(i)) /= trim(output_old(i))) then
                 print *, fg_color_red + style_bold // test_error // style_reset
                 print *,&

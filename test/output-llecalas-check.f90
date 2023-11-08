@@ -5,7 +5,7 @@ program check
     use iso_fortran_env, only: int32
     
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
     
     implicit none
@@ -20,7 +20,7 @@ program check
     input_filename = "name.dat"
 
     print *,""
-    print *, test_run//"output-llecalas-check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"output-llecalas-check"
     
     if (output_llecalas_check) then
         if (pause_test) pause

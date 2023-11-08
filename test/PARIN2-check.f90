@@ -1,7 +1,7 @@
 program check
     use do_tests
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
     ! Units available to open a file:
     use fileUnits, only: intrcn32_unit, qPar150_unit, rPar150_unit
@@ -258,7 +258,7 @@ program check
     &956.5, 265.4, 84.16, 132.2, 27*1., 0./
     
     print *,""
-    print *, test_run//"PARIN2-Check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"PARIN2-Check"
     
     if (.true.) then
         if (pause_test) pause

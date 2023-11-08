@@ -1,14 +1,14 @@
 program check
     use do_tests
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
     
     implicit none
 
 
     print *,""
-    print *, test_run//"open_database-check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"open_database-check"
     
     if (open_database_check) then
         if (pause_test) pause

@@ -2,7 +2,7 @@ program check
     !ANT, NGG, Pxx, Txx: No fueron checkeados
     use do_tests
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
     use InputData, only:&
     & flash_input_filename, name_maxlen, &
@@ -17,7 +17,7 @@ program check
     integer :: i 
 
     print *,""
-    print *, test_run//"read_input_flash-Test"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"read_input_flash-Test"
     if (read_input_flash_check) then
         if (pause_test) pause
         call read_input_flash("test/name.dat")

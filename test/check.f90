@@ -1,7 +1,7 @@
 program check
     use do_tests
     use stdlib_ansi, only : & 
-    & fg_color_green, fg_color_red, fg_color_yellow, & 
+    & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
     & style_bold, style_reset, operator(//), operator(+)
 
 
@@ -9,7 +9,7 @@ program check
 
 
     print *,""
-    print *, test_run//"check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"check"
     
     if (.true.) then
         if (pause_test) pause
