@@ -24,59 +24,59 @@ program check
         !Check if everything went OK
         print *, flash_input_filename
         if (flash_input_filename /= "test/llecalas2.dat") then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'flash_input_filename' was not read correctly."
         end if
         if (abs(icalc - 0) > 1E-8) then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'ICALC' was not read correctly."
         end if
         if (abs(model - 0) > 1E-8) then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'model' was not read correctly."
         end if
         if (abs(ipr - 0) > 1E-8) then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'IPR' was not read correctly."
         end if
         if (abs(iout - 1) > 1E-8) then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'IOUT' was not read correctly."
         end if
         if (abs(novap - 0) > 1E-8) then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'NOVAP' was not read correctly."
         end if
         if (abs(ig - 1) > 1E-8) then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'ig' was not read correctly."
         end if
         if (abs(ipareq - 2) > 1E-8) then
-            print *, fg_color_red + style_bold // test_ error // style_reset
+            print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'ipareq' was not read correctly."
         end if
         ! Disabled since there are more errors bellow
         !if (abs(T - 358.15) > 1E-5) then
-        !   print *, fg_color_red + style_bold // test_ error // style_reset
+        !   print *, fg_color_red + style_bold // test_error // style_reset
         !   ERROR STOP "'T' was not read correctly."
         !end if
         !if (abs(P - 1.) > 1E-8) then
-        !   print *, fg_color_red + style_bold // test_ error // style_reset
+        !   print *, fg_color_red + style_bold // test_error // style_reset
         !   ERROR STOP "'P' was not read correctly."
         !end if
         !z_check = Z - (/ 0.65, 0.13, 1E-8, 1E-8, 1E-8, 1E-8, 1E-8, 0., 0., 0./)
         !do i = 1 , size(z_check)
         !   if (abs(z_check(i)) > 1E-5) then
-        !       print *, fg_color_red + style_bold // test_ error // style_reset
+        !       print *, fg_color_red + style_bold // test_error // style_reset
         !       ERROR STOP "'Z' was not read correctly."
         !   end if
         !enddo
         !if (abs(NKK - 7) > 1E-8) then
-        !   print *, fg_color_red + style_bold // test_ error // style_reset
+        !   print *, fg_color_red + style_bold // test_error // style_reset
         !   ERROR STOP "'NKK' was not read correctly."
         !end if
         !if (NTEXT /= "llecalas2")then
-        !       print *, fg_color_red + style_bold // test_ error // style_reset
+        !       print *, fg_color_red + style_bold // test_error // style_reset
         !       ERROR STOP "'NTEXT' was not read correctly."
         !end if
 

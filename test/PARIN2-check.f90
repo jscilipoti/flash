@@ -322,7 +322,7 @@ program check
         do i = 1, 32
             do j = 1, 32
                 if (abs(A(i,j) - intrcn32_data(i,j)) > 1E-4) then
-                    print *, fg_color_red + style_bold // test_ error // style_reset
+                    print *, fg_color_red + style_bold // test_error // style_reset
                     print *, "HERE:"
                     print *, "intrcn32_data(",i,",",j,")"
                     print *, "intrcn32_data value is: ", intrcn32_data(i,j)
@@ -337,7 +337,7 @@ program check
         !print '(150F5.2)', RR-rPar150_data
         do i = 1, 150
             if (abs(RR(i) - rPar150_data(i)) > 1E-4) then
-                print *, fg_color_red + style_bold // test_ error // style_reset
+                print *, fg_color_red + style_bold // test_error // style_reset
                 print *, "HERE:"
                 print *, "rPar150_data(",i,")"
                 print *, "rPar150_data value is: ", rPar150_data(i)
@@ -351,7 +351,7 @@ program check
         !print '(150F5.2)', QQ-QPar150_data
         do i = 1, 150
             if (abs(QQ(i) - qPar150_data(i)) > 1E-4) then
-                print *, fg_color_red + style_bold // test_ error // style_reset
+                print *, fg_color_red + style_bold // test_error // style_reset
                 print *, "HERE:"
                 print *, "qPar150_data(",i,")"
                 print *, "qPar150_data value is: ", qPar150_data(i)

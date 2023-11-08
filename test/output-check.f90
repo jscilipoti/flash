@@ -38,7 +38,7 @@ program check
         !Check if everything went OK
         do i = 1, 70
             if (trim(lleasoccuzada_new(i)) /= trim(lleasoccuzada_old(i))) then
-                print *, fg_color_red + style_bold // test_ error // style_reset
+                print *, fg_color_red + style_bold // test_error // style_reset
                 print *,&
                     trim(lleasoccuzada_new(i)) /= trim(lleasoccuzada_old(i))
                 print '(3A)',&
@@ -48,7 +48,7 @@ program check
         end do
         do i = 1, 6
             if (trim(output_new(i)) /= trim(output_old(i))) then
-                print *, fg_color_red + style_bold // test_ error // style_reset
+                print *, fg_color_red + style_bold // test_error // style_reset
                 print *,&
                     &trim(output_new(i)) /= trim(output_old(i))
                 print '(3A)',&
