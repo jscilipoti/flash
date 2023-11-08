@@ -104,86 +104,118 @@ subroutine open_database(model)
     character(len=*), parameter :: gruposramgc_mds = "gruposramgc.mds"
     character(len=*), parameter :: intrcngckapa_mds = "intrcngckapa.mds"
 
-    if(model /= 3) then ! When model is not GC (3)...    
-        !if(model == 1) then ! When model is UNIQUAC (1)... 
-        ! [The correct way to proceed was to use only A-UNIFAC for the 
-        ! associative interaction parameters, as classic UNIFAC is not 
-        ! suitable for this purpose. The previous statement was erroneous and 
-        ! should be disregarded.]
-        if(model /= 2) then ! When model is either UNIFAC (0) or UNIQUAC (1)...
-            open (unit=13, file=path//intrcn_mds, status='old',&
-            &access='direct', form='formatted', recl=850, action='read',&
-            &iostat=stat)
+    logical :: use_new = .false.
+
+    if (use_new) then
+        if(model /= 3) then ! When model is not GC (3)...    
+            !if(model == 1) then ! When model is UNIQUAC (1)... 
+            ! [The correct way to proceed was to use only A-UNIFAC for the 
+            ! associative interaction parameters, as classic UNIFAC is not 
+            ! suitable for this purpose. The previous statement was erroneous and 
+            ! should be disregarded.]
+            if(model /= 2) then ! When model is either UNIFAC (0) or UNIQUAC (1)...
+                open (unit=13, file=path//intrcn_mds, status='old',&
+                &access='direct', form='formatted', recl=850, action='read',&
+                &iostat=stat)
+                if (stat /= 0) then ! check for errors
+                    print *, 'Error opening file ', intrcn_mds
+                    stop
+                end if   
+            else ! When model is A-UNIFAC (2)...    
+                open (unit=13, file=path//intrcnas_mds, status='old',&
+                &access='direct',form='formatted',recl=850, action='read', &
+                &iostat=stat)
+                if (stat /= 0) then ! check for errors
+                    print *, 'Error opening file ', intrcnas_mds
+                    stop
+                end if   
+                open (unit=15, file=path//parvolas_mds, status='old', &
+                &access='direct', form='formatted', recl=850, action='read', &
+                &iostat=stat)
+                if (stat /= 0) then ! check for errors
+                    print *, 'Error opening file ', parvolas_mds
+                    stop
+                end if   
+                open (unit=16, file=path//pareneas_mds, status='old', &
+                &access='direct', form='formatted', recl=850, action='read', &
+                &iostat=stat)
+                if (stat /= 0) then ! check for errors
+                    print *, 'Error opening file ', pareneas_mds
+                    stop
+                end if          
+            endif
+
+            ! When model is either A-UNIFAC (0), UNIQUAC (1) or A-UNIFAC (2)...
+            open (unit=14, file=path//gruposram_mds, status='old', &
+                &access='direct',form='formatted',recl=300, action='read', &
+                &iostat=stat)
             if (stat /= 0) then ! check for errors
-                print *, 'Error opening file ', intrcn_mds
+                print *, 'Error opening file ', gruposram_mds
                 stop
-            end if   
-        else ! When model is A-UNIFAC (2)...    
-            open (unit=13, file=path//intrcnas_mds, status='old',&
-            &access='direct',form='formatted',recl=850, action='read', &
-            &iostat=stat)
+            end if  
+            !open (unit=15, file='src/database/parvolas.mds', status='old', &
+            !   &access='direct', form='formatted', recl=850)
+            !open (unit=16, file='src/database/pareneas.mds', status='old', &
+            !   &access='direct', form='formatted', recl=850)
+            ! [The four previous lines were misplaced in the code, as they are only 
+            ! relevant for the A-UNIFAC model (model = 2), which uses associative 
+            ! interaction parameters. For the classic UNIFAC model (model = 0), 
+            ! these parameters are not required. The lines have been moved to the 
+            ! appropriate section of the code.]
+            
+
+        else ! When model is GC (3)...
+            open (unit=13, file=path//intrcngcalpha_mds, status='old',&
+                &access='direct', form='formatted', recl=730, action='read', &
+                &iostat=stat)
             if (stat /= 0) then ! check for errors
-                print *, 'Error opening file ', intrcnas_mds
+                print *, 'Error opening file ', intrcngcalpha_mds
                 stop
-            end if   
-            open (unit=15, file=path//parvolas_mds, status='old', &
-            &access='direct', form='formatted', recl=850, action='read', &
-            &iostat=stat)
+            end if  
+            open (unit=14, file=path//gruposramgc_mds, status='old',&
+                &access='direct', form='formatted', recl=263, action='read', &
+                &iostat=stat)
             if (stat /= 0) then ! check for errors
-                print *, 'Error opening file ', parvolas_mds
+                print *, 'Error opening file ', gruposramgc_mds
                 stop
-            end if   
-            open (unit=16, file=path//pareneas_mds, status='old', &
-            &access='direct', form='formatted', recl=850, action='read', &
-            &iostat=stat)
+            end if  
+            open (unit=16, file=path//intrcngckapa_mds, status='old',&
+                &access='direct', form='formatted', recl=730, action='read', &
+                &iostat=stat)
             if (stat /= 0) then ! check for errors
-                print *, 'Error opening file ', pareneas_mds
+                print *, 'Error opening file ', intrcngckapa_mds
                 stop
-            end if          
+            end if      
         endif
+    else
+        if(model /= 3)then
+            if(model==1)then
+                open (unit=13,file='src/database/intrcn.mds',status='old',&
+                      access='direct',form='formatted',recl=850)   
+            else     
+                open (unit=13,file='src/database/intrcnas.mds',status='old',&
+                      access='direct',form='formatted',recl=850)        
+            endif
+            open (unit=14,file='src/database/gruposram.mds',status='old',&
+                     access='direct',form='formatted',recl=300)
+            open (unit=15,file='src/database/parvolas.mds',status='old',&
+                  access='direct',form='formatted',recl=850)
+            open (unit=16,file='src/database/pareneas.mds',status='old',&
+                  access='direct',form='formatted',recl=850)    
+        else
+    
+            open (unit=14,file='src/database/gruposramgc.mds',status='old',&
+                     access='direct',form='formatted',recl=263)
+            open (unit=13,file='src/database/intrcngcalpha.mds',status='old',&
+                  access='direct',form='formatted',recl=730)
+            open (unit=16,file='src/database/intrcngckapa.mds',status='old',&
+                  access='direct',form='formatted',recl=730)    
+            
+        endif
+      
 
-        ! When model is either A-UNIFAC (0), UNIQUAC (1) or A-UNIFAC (2)...
-        open (unit=14, file=path//gruposram_mds, status='old', &
-            &access='direct',form='formatted',recl=300, action='read', &
-            &iostat=stat)
-        if (stat /= 0) then ! check for errors
-            print *, 'Error opening file ', gruposram_mds
-            stop
-        end if  
-        !open (unit=15, file='src/database/parvolas.mds', status='old', &
-        !   &access='direct', form='formatted', recl=850)
-        !open (unit=16, file='src/database/pareneas.mds', status='old', &
-        !   &access='direct', form='formatted', recl=850)
-        ! [The four previous lines were misplaced in the code, as they are only 
-        ! relevant for the A-UNIFAC model (model = 2), which uses associative 
-        ! interaction parameters. For the classic UNIFAC model (model = 0), 
-        ! these parameters are not required. The lines have been moved to the 
-        ! appropriate section of the code.]
-           
-
-    else ! When model is GC (3)...
-        open (unit=13, file=path//intrcngcalpha_mds, status='old',&
-            &access='direct', form='formatted', recl=730, action='read', &
-            &iostat=stat)
-        if (stat /= 0) then ! check for errors
-            print *, 'Error opening file ', intrcngcalpha_mds
-            stop
-        end if  
-        open (unit=14, file=path//gruposramgc_mds, status='old',&
-            &access='direct', form='formatted', recl=263, action='read', &
-            &iostat=stat)
-        if (stat /= 0) then ! check for errors
-            print *, 'Error opening file ', gruposramgc_mds
-            stop
-        end if  
-        open (unit=16, file=path//intrcngckapa_mds, status='old',&
-            &access='direct', form='formatted', recl=730, action='read', &
-            &iostat=stat)
-        if (stat /= 0) then ! check for errors
-            print *, 'Error opening file ', intrcngckapa_mds
-            stop
-        end if      
-    endif
+      return
+    end if
     
     return 
     
