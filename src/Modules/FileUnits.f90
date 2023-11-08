@@ -18,7 +18,8 @@ module fileUnits
     & gruposramgc_unit, &
     & intrcngckapa_unit, &
 
-    & output_unit
+    & output_unit, &
+    & iout_unit
 
     ! These are module variables that can be used by any program unit 
     ! that uses this module
@@ -37,7 +38,8 @@ module fileUnits
     & gruposramgc_unit, &
     & intrcngckapa_unit, &
 
-    & output_unit
+    & output_unit, &
+    & iout_unit
 
 
   end module fileUnits

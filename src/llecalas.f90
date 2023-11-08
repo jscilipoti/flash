@@ -45,7 +45,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 ! Required modules:
     use InputData
     use iso_fortran_env, only: real64, int16
-    use fileUnits, only: output_unit
+    use fileUnits, only: iout_unit, output_unit
 
     ! Implicit statements need to be removed. It must use 'implicit none'
     IMPLICIT real(kind=real64) (A-H,O-Z)                                          
