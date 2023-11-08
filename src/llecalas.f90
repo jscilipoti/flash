@@ -382,7 +382,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                 do i = 1, N                                                       
                     YVAL(i) = 1.D-5 * Y(i) / Z(i)
                 end do                                                                                                    
-                GOTO 100 !ELIMINAR GOTO 
+                !GOTO 100 !ELIMINAR GOTO 
             !end if
             else                                                       
         
