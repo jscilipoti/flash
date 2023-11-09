@@ -1,0 +1,53 @@
+1
+
+
+
+
+ **** FLASH CALCULATION ****
+ MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIFAC
+
+
+ COMPONENTS : "llecalas2"                                                             
+
+
+ SUB GROUPS :  1  2 14 17
+ MAIN GROUPS:  1  1  5  8
+ COMPONENT
+       1       1  1  1  0
+       2       0  0  0  1
+
+
+
+ GROUP R- AND Q-VALUES
+
+   1    0.9011    0.8480
+   2    0.6744    0.5400
+  14    1.0000    1.2000
+  17    0.9200    1.4000
+
+
+
+  INTERACTION PARAMETERS
+
+        0.000     644.600    2255.000
+      328.200       0.000    -195.500
+      342.400    -122.400       0.000
+
+
+
+ UNIFAC MOLECULAR R AND Q
+
+    1         2.5755         2.5880
+    2         0.9200         1.4000
+
+
+
+ * * * FLASH NUMBER  1 * * *
+
+
+ TEMPERATURE =  273.1500 K, PRESSURE =  1.000 ATM, FEED =      1.00 MOLES
+ FEED COMPOSITION (MOLE PERCENT):
+  50.000 50.000
+
+ * SYSTEM IS STABLE *
+
