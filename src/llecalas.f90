@@ -44,7 +44,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 !  
 ! Required modules:
     use InputData
-    use iso_fortran_env, only: real64, int16
+    use iso_fortran_env, only: real64, int16, int32
     use fileUnits, only: iout_unit, output_unit
 
     ! Implicit statements need to be removed. It must use 'implicit none'
@@ -78,7 +78,7 @@ subroutine llecalas!(Tf, Pf, Zf)
     !   
     DIMENSION DLX(10),YVAL(30),Y(10),GRAD(30),XMAT(30,30),WORK(30,5)  
     !DIMENSION NTEXT(36),
-    DIMENSION X(2),ANT(10,3)
+    DIMENSION X(2)!,ANT(10,3)
     dimension xmj(10),actgam(10),agam(10,4),de(10,10),pe(2,2)          
 
     ! These integer are meant to be removed
@@ -89,7 +89,8 @@ subroutine llecalas!(Tf, Pf, Zf)
     integer :: & 
     & z_max_index            
     
-    integer(kind=int16):: NN = 0
+    ! The number of flash Calculations done
+    integer(kind=int32):: flashcalc_loop = 0
 
                                                                          
 
@@ -97,9 +98,6 @@ subroutine llecalas!(Tf, Pf, Zf)
 
     ! The pressure of the system to be read in the input flash file
     & PP = 0.D0, &
-
-    ! Apparently, this is a value to test what happends at this T
-    & T1 = 0.D0, & !T1=0.
 
     ! The maximum value among all the molar fractions Z(i) of the components to
     ! be calculated from Z array
@@ -114,16 +112,16 @@ subroutine llecalas!(Tf, Pf, Zf)
     ! Then, read all the data in input_flash file.
     call read_input_flash(input_filename)
 
-    ICALC_common = icalc
-    MODEL_common = model
-    IPR_common = ipr
     IOUT_common = iout
-    NOVAP_common = novap
-    ig_common = ig
+    !ICALC_common = icalc
+    !MODEL_common = model
+    !IPR_common = ipr
+    !NOVAP_common = novap
+    !ig_common = ig
 
     ! Now, since it has read the number of the model, it needs to open the 
     ! appropiate databases 
-    call open_database(model)
+    !call open_database(model)
 
     ! Check if "iout = 1" to allow "lleasoccuzada.out" output file.
     if (iout == 1) then
@@ -181,10 +179,7 @@ subroutine llecalas!(Tf, Pf, Zf)
             ANT(1,j)=2.302585*(ANT(1,j)-2.880814)                             
     7       ANT(2,j)=2.302585*ANT(2,j)                                        
     endif                                                          
-    !-----------------------------------------------------------------------
-    
-    !T1 = 0.                                                            
-    !NN = 0                                                              
+    !-----------------------------------------------------------------------                                                            
 
     
     do while (.true.)
@@ -198,7 +193,8 @@ subroutine llecalas!(Tf, Pf, Zf)
             end if                                   
 
         
-        ! Exit the subroutine if the temperature has not been set 
+        ! Exit the subroutine if the temperature has not been set or there is no
+        ! more inputs for T and P in the input file: "0,0"
         if (T == 0.) then 
             call close_llecalas() !GOTO 10000
             return
@@ -351,17 +347,17 @@ subroutine llecalas!(Tf, Pf, Zf)
             enddo                                                        
             !20  CONTINUE                                                          
         end if
-    30  T1 = T                                                              
-        NN = NN + 1
+                                                            
+        flashcalc_loop = flashcalc_loop + 1
 
-        write(*, 602) NN                                                   
+        write(*, 602) flashcalc_loop                                                   
         
         do 35 i = 1, N                                                       
     35  Z(i) = Z(i) / z_sum                                                    
         
         write(*, 605) T, PP, z_sum, (Z(i), i = 1, N)
 
-        if (iout /= 6) write(iout, 602) NN                                  
+        if (iout /= 6) write(iout, 602) flashcalc_loop                                  
         if (iout /= 6) write(iout, 605) T, PP, z_sum, (Z(i), i = 1, N)              
         call unifac(1, Z, AL, DA, PACT)                                       
         SFAS(1) = 1.D0                                                        
