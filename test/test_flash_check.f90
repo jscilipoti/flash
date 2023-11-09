@@ -28,7 +28,7 @@ program check
     
 
     print *,""
-    print *, fg_color_blue + style_bold // test_run // style_reset //"output_flash_check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"test_flash_check"
     
     if (.true.) then
         if (pause_test) pause

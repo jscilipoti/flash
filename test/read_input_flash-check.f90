@@ -22,7 +22,7 @@ program check
         if (pause_test) pause
         call read_input_flash("test/name.dat")
         !Check if everything went OK
-        print *, flash_input_filename
+        !print *, flash_input_filename
         if (flash_input_filename /= "test/llecalas2.dat") then
             print *, fg_color_red + style_bold // test_error // style_reset
             ERROR STOP "'flash_input_filename' was not read correctly."
