@@ -14,6 +14,15 @@
 !Cada funcion/subrutina que lee de las bases de datos deben estar aisladas para 
 !su posible modificacion
 !Probar real128
+
+! module some_module
+!     use iso_fortran_env, only: real64
+!     implicit none
+! contains
+!     real(kind=real64) function some_function()
+!         some_function=1.0_real64
+!     end function some_function
+! end module some_module
 program main
     use inputData, only: input_filename
     use outputData
