@@ -16,6 +16,7 @@ program check
     integer(kind=int32), parameter :: output_maxlines = 4
     
     logical :: is_OK = .true.
+    integer(kind=int32) :: error_count = 0
     
     character(len=lleasoccuzada_linelen), dimension(lleasoccuzada_maxlines) :: &
     &lleasoccuzada_new,lleasoccuzada_old
@@ -60,6 +61,7 @@ program check
                 print '(3A)',&
                     &trim(lleasoccuzada_new(i)),"//",trim(lleasoccuzada_old(i))
                 is_OK = .false.
+                error_count = error_count + 1
                 !ERROR STOP ""
             end if
         end do
@@ -72,12 +74,16 @@ program check
                 print '(3A)',&
                     &trim(output_new(i)),"//",trim(output_old(i))
                 is_OK = .false.
+                error_count = error_count + 1
                 !ERROR STOP ""
             end if
         end do
         
         ! if (abs(0 - 0) > 1E-8)&
         !     &ERROR STOP ""
+        if (error_count >= 5) then
+            ERROR STOP "TOO MANY ERRORS"
+        end if
         if (is_OK) then
             print *, fg_color_green + style_bold // test_ok // style_reset
         end if    
