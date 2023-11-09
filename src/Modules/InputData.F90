@@ -59,7 +59,9 @@ module inputData
     !           3-'infinite dilution parameters table (UNIFAC)'
     !           4-'GC-EOS parameters'
     !
-    integer(kind=int8) :: &
+    integer(kind = int32) :: & 
+    ! Some compilers struggle with these varibles (specially "ipareq") if they
+    ! are int8
         & icalc = 0,& 
         & model = 0,& 
         & ipr = 0,& 
