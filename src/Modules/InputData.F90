@@ -7,8 +7,8 @@ module inputData
     
     implicit none
 
-    private :: &
-        & ant
+    private  
+        
     
 
     public :: &
@@ -18,7 +18,8 @@ module inputData
         & flash_input_filename, name_maxlen, &
         & ipareq, &
         & ntext, &
-        & aint1
+        & aint1, &
+        & ant
 
     ! Max site number per group.
     integer(kind=int32),parameter :: nms = 2

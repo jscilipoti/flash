@@ -79,8 +79,7 @@ subroutine read_input_flash(input_filename)
     read(2,*) ICALC, model, IPR, IOUT, NOVAP, ig, ipareq     
     
     !Disabled since there are more errors below
-    !call open_database(modelo)
-
+    call open_database(model)
     !call PARIN2(NKK, NGG, Pxx, Txx) 
     
     ! The following code is run whether vapor phase is not included in flash
