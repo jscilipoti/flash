@@ -11,7 +11,7 @@ program check
     implicit none
     
     integer(kind=int32), parameter :: lleasoccuzada_linelen = 86
-    integer(kind=int32), parameter :: lleasoccuzada_maxlines = 53
+    integer(kind=int32), parameter :: lleasoccuzada_maxlines = 93
     integer(kind=int32), parameter :: output_linelen = 70
     integer(kind=int32), parameter :: output_maxlines = 4
     
