@@ -19,9 +19,9 @@ integer function mainsgfunc (i, ipareq)
 
     implicit none
 
-    integer(kind = int8), intent(in) :: i, ipareq
-    integer(kind = int32) :: maingroup_number
-    integer(kind = int32) :: read_record
+    integer(kind = int8), intent(in) :: ipareq
+    integer(kind = int32), intent(in) :: i
+    integer(kind = int32) :: maingroup_number, read_record
     integer(kind = int32), parameter :: grouplist_maxnumber = 150
 
 	read_record = i + (ipareq - 1) * grouplist_maxnumber
