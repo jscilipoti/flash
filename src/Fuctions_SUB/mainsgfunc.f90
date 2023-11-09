@@ -20,14 +20,15 @@ integer function mainsgfunc (i, ipareq)
     implicit none
 
     integer(kind = int8), intent(in) :: i, ipareq
-    integer(kind = int8) :: main_group
+    integer(kind = int32) :: maingroup_number
     integer(kind = int32) :: read_record
+    integer(kind = int32), parameter :: grouplist_maxnumber = 150
 
-	read_record = i + (ipareq - 1) * 150
+	read_record = i + (ipareq - 1) * grouplist_maxnumber
     
-    read (14, '(i4)', rec = read_record) main_group
+    read (14, '(i4)', rec = read_record) maingroup_number
     
-    mainsgfunc = main_group
+    mainsgfunc = maingroup_number
     return
 
 end function mainsgfunc
