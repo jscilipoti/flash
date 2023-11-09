@@ -148,8 +148,13 @@ SUBROUTINE unifac(NDIF,X,ACT,DACT,PACT)
 !c C�lculo de la  fracci�n no asociada Paper:Ind. Eng. Chem. Res, 2004,43,203-208   
 !c !Inicializaci�
     if(nga.ne.0) then
-    xoh=1.0d0 
-    del=1.d0
+    !VALORES ORIGINALES
+    !xoh=1.0d0 
+    !del=1.d0
+    !VALORES MODIFICADOS PORQUE SINO NO SE CUMPLIA EL DO WHILE DEBAJO Y QUEDABA
+    !TRABADO ACÁ
+    xoh=0.d0 
+    del=0.d0
 !c Iteraciones con tolerancia de 10-9
     do while (del>1.0d-10)
     xoh_old=xoh
@@ -208,6 +213,8 @@ SUBROUTINE unifac(NDIF,X,ACT,DACT,PACT)
     xohi0=1.D0
     del1=1.D0
 !c Iteraciones con tolerancia de 10-12
+    dif1=0.D0 !ESTE VALOR LO INICIALIZÉ YO PORQUE ORIGINALMENTE SE INICIALIZABA
+    !SOLO COMO 1E+310 Y JAMÁS SALIA DEL BUCLE SIGUIENTE
     do while (del1>1.0d-10)
     xohi0_old=xohi0
   do m=1, nga

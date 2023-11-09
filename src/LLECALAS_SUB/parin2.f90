@@ -468,14 +468,24 @@ SUBROUTINE PARIN2
 !ccccccccccccccccc Escritura de los par�metros de asociaci�n ALFONSINAccccccccccccccccc
      IF (NGA.GT.0) THEN
 
-  WRITE(1,218) (I, I=1,NC)
-218	FORMAT(/,X,'"ASSOC GROUP COMPOSITION" ',/,23X,'COMPONENTES',/,' GRUPO 	  #  SIT ASOC  ',I5,/) 
+!-------------------------------------------------------------------------------
+!BLOQUE ORIGINAL
+  !WRITE(1,218) (I, I=1,NC)
+  !218	FORMAT(/,X,'"ASSOC GROUP COMPOSITION" ',/,23X,'COMPONENTES',/,' GRUPO 	  #  SIT ASOC  ',I5,/)
+      !DO ja=1,NGA
+        !WRITE(1,219) ja,MASS(ja)  , (rngoh(i,ja),i=1,nc)   
+      !219	FORMAT(3X,I3,9X,I3,6X,f5.1)
+        !END DO
+!-------------------------------------------------------------------------------
+!BLOQUE MODIFICADO PORQUE TIRA ERRORES. NO ESTA BIEN ESTO PERO SINO NO SE PUEDE SEGUIR
+ WRITE(1,218) (I, I=1,NC)
+218	FORMAT(/,X,'"ASSOC GROUP COMPOSITION" ',/,23X,'COMPONENTES',/,' GRUPO 	  #  SIT ASOC  ',2I5,/)  
 
   DO ja=1,NGA
-  WRITE(1,219) ja,MASS(ja)  , (rngoh(i,ja),i=1,nc) 
+  WRITE(1,*) ja, MASS(ja), (rngoh(i,ja),i=1,nc)    
 219	FORMAT(3X,I3,9X,I3,6X,f5.1)
   END DO
-
+!-------------------------------------------------------------------------------
   WRITE(1,220)
 220	FORMAT(/,X,'PARAMETROS DE ENERGIA DE ASOCIACION (Kelvin)  ',/)  
 
