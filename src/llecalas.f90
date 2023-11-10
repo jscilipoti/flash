@@ -46,6 +46,7 @@ subroutine llecalas!(Tf, Pf, Zf)
     use InputData
     use iso_fortran_env, only: real64, int16, int32
     use fileUnits, only: iout_unit, output_unit
+    use outputData, only: output_console, output_lleasoccuzada
 
     ! Implicit statements need to be removed. It must use 'implicit none'
     IMPLICIT real(kind=real64) (A-H,O-Z)                                          
@@ -125,7 +126,9 @@ subroutine llecalas!(Tf, Pf, Zf)
 
     ! Check if "iout = 1" to allow "lleasoccuzada.out" output file.
     if (iout == 1) then
+        !iout_unit = get_free_unit()
         open (unit = 1, file = 'lleasoccuzada.OUT', form = 'FORMATTED')
+        !open (unit = iout_unit, file = 'lleasoccuzada.OUT', form = 'FORMATTED')
     end if
     
     ! Set the output unit for output.OUT file
@@ -133,39 +136,9 @@ subroutine llecalas!(Tf, Pf, Zf)
     open (unit = output_unit, file = 'output.OUT', form = 'FORMATTED')
     
     
-    
-    ! Write to screen
-    write(*, 608)                                                      
-    write(*, 628) iout                                                 
-    write(*, 610)                                                      
-    
-    if (iout == 0) iout = 6                                              
-    if (icalc == 0) write(*, 620)                                       
-    if (icalc == 1) write(*, 621)                                       
-    if (icalc == 2) write(*, 622)                                       
-    if (novap /= 0) write(*, 629)                                       
-    if (model == 0) write(*, 624)                                       
-    if (model == 1) write(*, 625)                                       
-    
-    write(*,623) NTEXT                                                
-    
-    !if (iout == 6) GOTO 5
-    if (iout /= 6) then                                              
-    
-        ! write to iout
-        write(iout, 608)                                                   
-        write(iout, 610)                                                   
-        
-        if (icalc == 0) write(iout,620)                                    
-        if (icalc == 1) write(iout,621)                                    
-        if (icalc == 2) write(iout,622)                                    
-        if (novap /= 0) write(iout,629)                                    
-        if (model == 0) write(iout,624)                                    
-        if (model == 1) write(iout,625)                                    
-        write(iout,623) NTEXT                                             
-    
-    end if
-    !5 CONTINUE                                                          
+    call write_output(1)
+
+                                                      
     
     call PARIN2                                                       
     
@@ -537,9 +510,9 @@ end do
     .3))                                                              
 606 FORMAT(//,' DIFFERENTIAL STABILITY TEST FOR FEED MIXTURE:')       
 607 FORMAT(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')               
-608 FORMAT(1H1)                                                       
+!608 FORMAT(1H1)                                                       
 609 FORMAT(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')  
-610 FORMAT(///)                                                       
+!610 FORMAT(///)                                                       
 611 FORMAT(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))       
 612 FORMAT(/,'  COMPOSITION  ',10X,4(8X,I3,9X))                       
 613 FORMAT('   X(',I2,')            ',5(8X,F12.8))                    
@@ -553,16 +526,16 @@ end do
 617 FORMAT(///,' ** UNIQUAC PARAMETERS FROM UNIFAC **',//,5X,'A12/R =  ',F12.3,' K ,  A21/R = ',F12.3,' K',///)                         
 618 FORMAT(//,' ** COMPARISON OF ACTIVITIES CALCULATED BY UNIFAC AND UNIQUAC, RESPECTIVELY **'//)                                       
 619 FORMAT(10F12.5)                                                   
-620 FORMAT(' **** FLASH CALCULATION ****')                            
-621 FORMAT(' **** BINODAL CURVE CALCULATION ****',//)                 
+!620 FORMAT(' **** FLASioutH CALCULATION ****')                            
+!621 FORMAT(' **** BINODAL CURVE CALCULATION ****',//)                 
 622 FORMAT(' **** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **** ',//)                                                              
-623 FORMAT(1X,'COMPONENTS : ',40A2,//)                                
-624 FORMAT(' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIFAC'//)     
-625 FORMAT(' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIQUAC'//)    
+!623 FORMAT(1X,'COMPONENTS : ',40A2,//)                                
+!624 FORMAT(' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIFAC'//)     
+!625 FORMAT(' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIQUAC'//)    
 626 FORMAT(I5,2F15.4)                                                 
 627 FORMAT(//,' SPECIFIED UNIQUAC R AND Q',/)                         
-628 FORMAT(/,' iout = ',I2,/' if iout = 0: OUTPUT ONLY ON UNIT 6',/,  ' if iout = 1: OUTPUT ON BOTH UNIT 6 AND 1')                      
-629 FORMAT(/,' VAPOR PHASE INCLUDED IN FLASH-CALCULATIONS',//)        
+!628 FORMAT(/,' iout = ',I2,/' if iout = 0: OUTPUT ONLY ON UNIT 6',/,  ' if iout = 1: OUTPUT ON BOTH UNIT 6 AND 1')                      
+!629 FORMAT(/,' VAPOR PHASE INCLUDED IN FLASH-CALCULATIONS',//)        
 630 FORMAT(' NO VAPOR PHASE')                                         
 631 FORMAT(' PHASE',I2,' IS A VAPOR PHASE')                           
 633 FORMAT(///,'   TEMPERATURE =',F10.2,' DEG K')                     

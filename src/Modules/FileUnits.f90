@@ -39,7 +39,7 @@ module fileUnits
     & intrcngckapa_unit, &
 
     & output_unit, &
-    & iout_unit
+    & iout_unit = 1
 
 
   end module fileUnits
