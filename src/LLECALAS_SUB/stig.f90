@@ -1,37 +1,41 @@
-subroutine STIG(y, S)                                              
+subroutine STIG(Y, S)                                              
     use iso_fortran_env, only: real64, int32
     
-    !IMPLICIT REAL * 8(A-H, O-Z)   
     implicit none                                       
                                
     COMMON/CUFAC/n, NG, P, T                                      
     COMMON/CACT/Y1, Y2, ACT1, ACT2, DACT1, DACT2, pact                                                     
     COMMON/CGIBBS/nf, MAXZ, GNUL, Z, A, XVL, SFAS, GAM, aa, da, XM                                       
-    
-    !real(kind = real64), dimension(10) :: y, V, YGEM
-                                        
+                                           
     !USED:
-    integer(kind = int32) :: i, j, jm, k, kk, na, neg, ngn
-    integer(kind = int32) :: jpur = 0
-    real(kind = real64) :: GD, GG, D, CC, amax
+    integer(kind = int32) :: i, j, k, l
+    integer(kind = int32) :: &
+        & j_max = 0, &
+        & A_max_index = 0, &
+        & k_max = 3, &
+        & neg = 0, &
+        & ngn = 0
+
     real(kind = real64) :: & 
-        !& amax = 1.D0, &
-        !& CC = 1.D0, &
-        !& D = 1.D0, &
-        !& GD = 1.D0, &
-        !& GG = 1.D0, &
-        & rmax = 1.D0, &
-        & RT1 = 1.D0, &
-        & SUM = 1.D0, &
-        & VV = 1.D0, &
-        & YV1 = 1.D0, &
-        & YV2 = 1.D0
+        A_max = 0.D0, &
+        & CC = 0.D0, &
+        & D = 0.D0, &
+        & GD = 0.D0, &
+        & GG = 0.D0, &
+        & GG_minval = -50.D0, &
+        & rmax = 1.0D5, &
+        & RT1 = 0.D0, &
+        & sum = 0.D0, &
+        & VV = 0.D0, &
+        & YV1 = 0.D0, &
+        & YV2 = 0.D0
+
     real(kind = real64), dimension(10) :: &
         &   V = 0.D0, &
         &   YGEM = 0.D0
 
-    real(kind = real64), dimension(10) :: Y
-    real(kind = real64) :: S
+    real(kind = real64), dimension(10), intent(out) :: Y
+    real(kind = real64), intent(out) :: S
     
     !COMMON
     integer(kind = int32) :: n, nf
@@ -49,63 +53,70 @@ subroutine STIG(y, S)
     real(kind = real64), dimension(10) :: Y1, Y2, ACT1, ACT2
     real(kind = real64), dimension(10, 4) :: XM
     real(kind = real64), dimension(10, 10) :: P, DACT1, DACT2
+    
+    
 
+    ! Search for the max value of A(i) and its index
     do i = 1, n                                                       
-        if(A(i) > amax) then                                         
-            jpur = i                                                            
-            amax = A(i)
+        if(A(i) > A_max) then                                         
+            A_max_index = i                                                            
+            A_max = A(i)
         end if
     end do                                                         
                                                           
-    rmax = 1.0D5                                                         
-    ngn = n                                                             
+    Y = 0.D0
+    S = 0.D0
+    rmax = 1.0D5
+    neg = 0                                                         
+    ngn = n
+
     if(nf > 1) then
         ngn = n + nf
     end if                                              
-    neg = 0
+    
 
-    mainloop : do kk = 1, ngn                                                   
-        jm = kk                                                             
-        if(jpur /= 0) jm = jpur                                             
+    mainloop : do l = 1, ngn                                                   
+        j_max = l                                                             
+        if(A_max_index /= 0) j_max = A_max_index                                             
         
-        if(.not.(jm <= n)) then                                                
+        if(.not.(j_max <= n)) then                                                
         
             do i = 1, n                                                       
-                y(i) = Z(i) * (2.D0 + XVL(i, jm-n) / SFAS(jm - n)) / 3.D0
+                Y(i) = Z(i) * (2.D0 + XVL(i, j_max-n) / SFAS(j_max - n)) / 3.D0
             end do                            
             
         else                                                           
-    
-            SUM = 0.D0                                                            
-        
+            ! Sum of all Y(i)
+            sum = 0.D0                                                            
             do i = 1, n                                                       
-                GG = A(i)-GAM(jm, i)                                                 
-                if(GG < -50.D0) GG = -50.D0                                        
-                y(i) = DEXP(GG)                                                     
-                SUM = SUM + y(i)
+                GG = A(i) - GAM(j_max, i)                                                 
+                if(GG < GG_minval) GG = GG_minval                                       
+                Y(i) = DEXP(GG)                                                     
+                sum = sum + Y(i)
             end do    
 
         end if
         
-        na = 3                                                              
+        k_max = 3                                                              
         
-        inner: do k = 1, na                                                      
+        inner: do k = 1, k_max                                                      
+            ! Get the fractions of each Y(i)
             do i = 1, n                                                       
-                y(i) = y(i) / SUM
+                Y(i) = Y(i) / sum
             end do
 
-            call unifac(1, y, aa, da, pact)
+            call unifac(1, Y, aa, da, pact)
 
-            if(k == na) exit inner
+            if(k == k_max) exit inner
 
             do i = 1, n
-                y(i) = DEXP(A(i)-aa(i))
+                Y(i) = DEXP(A(i)-aa(i))
             end do                                             
             
-            SUM = 0.D0                                                            
-            
+            ! Sum of all Y(i)
+            sum = 0.D0                                                            
             do i = 1, n                                                       
-                SUM = SUM + y(i)
+                sum = sum + Y(i)
             end do
         end do inner
                                                          
@@ -117,18 +128,19 @@ subroutine STIG(y, S)
         end do
 
         do i = 1, n                                                       
-            GD = DLOG(y(i)) + aa(i)-A(i)                                          
-            YV1 = YV1 + y(i) * GD                                                   
+            GD = DLOG(Y(i)) + aa(i)-A(i)                                          
+            YV1 = YV1 + Y(i) * GD                                                   
             do j = 1, nf                                                      
                 k = j                                                               
                 VV = XVL(i, k) * Z(i)/SFAS(k)                                          
-                D = GD * (y(i)-VV)                                                    
+                D = GD * (Y(i)-VV)                                                    
                 V(j) = V(j) + D
             end do
         end do                                                       
         
         YV2 = V(1)                                                          
         
+        ! Get the min value from all V(j)
         do j = 1, nf                                                      
             if(V(j) < YV2) then 
                 YV2 = V(j)
@@ -148,15 +160,16 @@ subroutine STIG(y, S)
         end if
 
         if(RT1 > rmax) cycle                                          
+        
         S = YV1                                                             
         rmax = RT1                                                          
         CC = DEXP(-YV1)                                                     
         
         do i = 1, n                                                       
-            YGEM(i) = y(i) * CC
+            YGEM(i) = Y(i) * CC
         end do                                                   
         
-        if(jpur /= 0) then 
+        if(A_max_index /= 0) then 
             exit mainloop 
         end if
 
@@ -164,7 +177,7 @@ subroutine STIG(y, S)
 
 
     do i = 1, n                                                      
-        y(i) = YGEM(i)
+        Y(i) = YGEM(i)
     end do                                                      
     
     return
