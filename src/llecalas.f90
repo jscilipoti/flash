@@ -201,19 +201,18 @@ subroutine llecalas!(Tf, Pf, Zf)
         
         problem : select case (icalc)
             case (0) ! *** FLASH CALCULATION ***********************************
-                do i = 1, N                                                       
-                    do j = 1, N                                                       
-                        GAM(i, j) = 0.D0                                                     
-                        if (j /= i) then                                               
-                            call GAMINF(i, j, G)                                                
-                            GAM(i,j) = G
+                do i = 1, N                                                     
+                    do j = 1, N                                                 
+                        GAM(i, j) = 0.D0                                        
+                        if (j /= i) then                                        
+                            call GAMINF(i, j, GAM(i,j))                         
                         end if
                     end do
-                end do                                                                                                                 
+                end do                                                          
                                                                     
                 flashcalc_loop = flashcalc_loop + 1
 
-                do i = 1, N                                                       
+                do i = 1, N                                                     
                     Z(i) = Z(i) / z_sum
                 end do   
                 
@@ -246,6 +245,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                 flash_exit : do while (.true.) 
                 ! A loop that ends when "FUN >-1.D-7"
                     call STIG(Y,S)                                                    
+                    
                     if (S < -1.D-7) then !if (S > -1.D-7) GOTO 70                                           
                         
                         ! Write
