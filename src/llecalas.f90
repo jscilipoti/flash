@@ -194,132 +194,125 @@ subroutine llecalas!(Tf, Pf, Zf)
             z_max = z(i)                                                         
             z_max_index = i                                                            
         !15 CONTINUE
-        end do
-
-        ! The following line has no sense since, as far as I know, T1
-        ! had been initialized at the beggining as T1 = 0. Also it cuts some
-        ! code related to the Flash Calculation
-        !if (T == T1) GOTO 30
-        if (T /= T1) then                                             
+        end do                                         
         
-            call PARAM2                                                       
+        call PARAM2                                                       
             
-            !** BINODAL CURVE CALCULATION **********************************
-            if (icalc == 1) then !if (icalc /= 1) GOTO 16                                            
+        !** BINODAL CURVE CALCULATION **********************************
+        if (icalc == 1) then !if (icalc /= 1) GOTO 16                                            
+        
+            if (N /= 2 .and. N /= 3) write(*, 616)                                
+            if (iout /= 6 .and. N /= 2 .and. N /= 3) write(iout, 616)               
+            Y13 = Z(1)                                                          
+            Y21 = Z(2)                                                          
             
-                if (N /= 2 .and. N /= 3) write(*, 616)                                
-                if (iout /= 6 .and. N /= 2 .and. N /= 3) write(iout, 616)               
-                Y13 = Z(1)                                                          
-                Y21 = Z(2)                                                          
-                
-                write(*,633) T                                                    
-                
-                if (iout /= 6) write(iout, 633) T                                   
-                if (N == 3) then !if (N == 3) GOTO 12                                                
-                    !12 STEP=Z(3) / 100.D0
-                    STEP = Z(3) / 100.D0
+            write(*,633) T                                                    
+            
+            if (iout /= 6) write(iout, 633) T                                   
+            if (N == 3) then !if (N == 3) GOTO 12                                                
+                !12 STEP=Z(3) / 100.D0
+                STEP = Z(3) / 100.D0
 
-                    if (STEP == 0.D0) STEP = 0.02D0                                         
-                    call BINOD                                                        
-                    
-                    call close_llecalas() !GOTO 10000
-                    return
-                end if
-
-                call SOLBIN                                                       
+                if (STEP == 0.D0) STEP = 0.02D0                                         
+                call BINOD                                                        
                 
                 call close_llecalas() !GOTO 10000
                 return
-                                                                    
-        
-
-            !16 CONTINUE
             end if
-                                                                    
-            !** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **************
-            if (icalc == 2) then !if (icalc /= 2) GOTO 19                                            
-                if (N /= 2) write(*, 616)                                           
-                if (iout /= 6 .and. N /= 2) write(iout, 616)                          
-                XC(1) = 0.D0                                                          
-                XC(2) = 0.2D0                                                        
-                XC(3) = 0.5D0                                                        
-                XC(4) = 0.8D0                                                        
-                XC(5) = 1.D0                                                        
-                
-                do 17 k = 1, 5                                                       
-                    Y(1) = XC(k)                                                        
-                    Y(2) = 1.D0 - XC(k)                                                   
-                    call unifac(1, Y, ACT1, DACT1, PACT)                                  
-                    GE(K, 1) = ACT1(1)                                                   
-                17  GE(K, 2) = ACT1(2)
 
-                READ(2, *) R(1), Q(1)                                               
-                READ(2, *) R(2), Q(2)                                               
-                                            
-                write(*, 627)                                                      
-                
-                do 14 i = 1, 2                                                       
-                14   write(*, 626) i, R(i), Q(i)                                          
-                
-                if (iout /= 6) then !if (iout == 6) GOTO 13                                             
-                    write(iout, 627)                                                   
-                    do 11 i = 1, 2                                                       
-                11  write(iout, 626) i, R(i), Q(i)                                        
-                !13 CONTINUE
-                end if
-
-                X(1) = Z(1) / 300.D0                                                  
-                X(2) = Z(2) / 300.D0                                                  
-                do 18 i = 1, 2                                                       
-                    do 18 j = 1, 2                                                       
-                        QT(i, j) = 0.D0                                                        
-                18       P(i, j) = 0.D0                                                         
-                QT(1, 1) = Q(1)                                                      
-                QT(2, 2) = Q(2)                                                      
-                NK = 2                                                              
-                NG = 2                                                              
-                XLAMB = 1.D0                                                          
-                call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
-                write(*, 633) T                                                    
-                if (iout /= 6) write(iout, 633) T                                   
-                write(*, 617) P(1, 2), P(2, 1)     
-                if (IPR == 1) write(*, 618)                                         
-                do 21 L = 1, 5                                                       
-                    do 21 i = 1, 2                                                       
-                        GE(L,i) = DEXP(GE(L, i))                                             
-            21       GC(L, i) = DEXP(GC(L, i))                                             
-                if (IPR == 1) write(*, 619) ((GE(L, i), L = 1, 5), i = 1, 2)                 
-                if (IPR == 1) write(*, 619) ((GC(L, i), L = 1, 5), i = 1, 2)                 
-                
-                if (iout /= 6) then !if (iout == 6) GOTO 22                                             
-                    write(iout, 617) P(1, 2), P(2, 1)                                     
-                    if (IPR == 1) &
-                    & write(iout, 618)                                      
-                    if (IPR == 1) &
-                    & write(iout, 619) ((GE(L, i), L = 1, 5), i = 1, 2)              
-                    if (IPR == 1) & 
-                    & write(iout, 619) ((GC(L, i), L = 1, 5), i = 1, 2)              
-                !22 CONTINUE
-                end if
-
-                call close_llecalas() !GOTO 10000
-                return
-
-            19 CONTINUE                                                          
-            end if
+            call SOLBIN                                                       
             
-            !** FLASH CALCULATION ******************************************
-            do i = 1, N                                                       
-                do j = 1, N                                                       
-                    GAM(i, j) = 0.D0                                                     
-                    if (j /= i) then !if (j == i) GOTO 20                                                
-                        call GAMINF(i, j, G)                                                
-                        GAM(i,j) = G
-                    end if
-                end do
-            enddo                                                        
-            !20  CONTINUE                                                          
+            call close_llecalas() !GOTO 10000
+            return
+                                                                
+    
+
+        !16 CONTINUE
         end if
+                                                                
+        !** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **************
+        if (icalc == 2) then !if (icalc /= 2) GOTO 19                                            
+            if (N /= 2) write(*, 616)                                           
+            if (iout /= 6 .and. N /= 2) write(iout, 616)                          
+            XC(1) = 0.D0                                                          
+            XC(2) = 0.2D0                                                        
+            XC(3) = 0.5D0                                                        
+            XC(4) = 0.8D0                                                        
+            XC(5) = 1.D0                                                        
+            
+            do 17 k = 1, 5                                                       
+                Y(1) = XC(k)                                                        
+                Y(2) = 1.D0 - XC(k)                                                   
+                call unifac(1, Y, ACT1, DACT1, PACT)                                  
+                GE(K, 1) = ACT1(1)                                                   
+            17  GE(K, 2) = ACT1(2)
+
+            READ(2, *) R(1), Q(1)                                               
+            READ(2, *) R(2), Q(2)                                               
+                                        
+            write(*, 627)                                                      
+            
+            do 14 i = 1, 2                                                       
+            14   write(*, 626) i, R(i), Q(i)                                          
+            
+            if (iout /= 6) then !if (iout == 6) GOTO 13                                             
+                write(iout, 627)                                                   
+                do 11 i = 1, 2                                                       
+            11  write(iout, 626) i, R(i), Q(i)                                        
+            !13 CONTINUE
+            end if
+
+            X(1) = Z(1) / 300.D0                                                  
+            X(2) = Z(2) / 300.D0                                                  
+            do 18 i = 1, 2                                                       
+                do 18 j = 1, 2                                                       
+                    QT(i, j) = 0.D0                                                        
+            18       P(i, j) = 0.D0                                                         
+            QT(1, 1) = Q(1)                                                      
+            QT(2, 2) = Q(2)                                                      
+            NK = 2                                                              
+            NG = 2                                                              
+            XLAMB = 1.D0                                                          
+            call MARQ(FUNC, 2, 10, X, XLAMB, 3.D0, 1.D-7, 99)                        
+            write(*, 633) T                                                    
+            if (iout /= 6) write(iout, 633) T                                   
+            write(*, 617) P(1, 2), P(2, 1)     
+            if (IPR == 1) write(*, 618)                                         
+            do 21 L = 1, 5                                                       
+                do 21 i = 1, 2                                                       
+                    GE(L,i) = DEXP(GE(L, i))                                             
+        21       GC(L, i) = DEXP(GC(L, i))                                             
+            if (IPR == 1) write(*, 619) ((GE(L, i), L = 1, 5), i = 1, 2)                 
+            if (IPR == 1) write(*, 619) ((GC(L, i), L = 1, 5), i = 1, 2)                 
+            
+            if (iout /= 6) then !if (iout == 6) GOTO 22                                             
+                write(iout, 617) P(1, 2), P(2, 1)                                     
+                if (IPR == 1) &
+                & write(iout, 618)                                      
+                if (IPR == 1) &
+                & write(iout, 619) ((GE(L, i), L = 1, 5), i = 1, 2)              
+                if (IPR == 1) & 
+                & write(iout, 619) ((GC(L, i), L = 1, 5), i = 1, 2)              
+            !22 CONTINUE
+            end if
+
+            call close_llecalas() !GOTO 10000
+            return
+
+        19 CONTINUE                                                          
+        end if
+        
+        !** FLASH CALCULATION ******************************************
+        do i = 1, N                                                       
+            do j = 1, N                                                       
+                GAM(i, j) = 0.D0                                                     
+                if (j /= i) then !if (j == i) GOTO 20                                                
+                    call GAMINF(i, j, G)                                                
+                    GAM(i,j) = G
+                end if
+            end do
+        enddo                                                        
+        !20  CONTINUE                                                          
                                                             
         flashcalc_loop = flashcalc_loop + 1
 
