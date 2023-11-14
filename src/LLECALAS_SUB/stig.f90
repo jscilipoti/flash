@@ -1,77 +1,172 @@
-SUBROUTINE STIG(Y,S)                                              
-    IMPLICIT REAL*8(A-H,O-Z)                                          
-    COMMON/CVAP/NOVAP,NDUM,IDUM(4),PRAT(10)                           
-    COMMON/CUFAC/N,NG,P(10,10),T                                      
-    COMMON/CACT/Y1(10),Y2(10),ACT1(10),ACT2(10),DACT1(10,10),DACT2(10,10),PACT(2,2)                                                     
-    COMMON/CGIBBS/NF,MAXZ,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AA(10),DA(10,10),XM(10,4)                                       
-    DIMENSION Y(10),V(10),YGEM(10)                                    
-    common/nga/nga,mass(12)
-    JPUR=0                                                            
-    AMAX=0.                                                           
-    DO 10 I=1,N                                                       
-    IF(A(I).LT.AMAX) GOTO 10                                          
-    JPUR=I                                                            
-    AMAX=A(I)                                                         
- 10 CONTINUE                                                          
-    RMAX=1.D5                                                         
-    NGN=N                                                             
-    IF(NF.GT.1) NGN=N+NF                                              
-    NEG=0                                                             
-    DO 100 KK=1,NGN                                                   
-    JM=KK                                                             
-    IF(JPUR.NE.0) JM=JPUR                                             
-    IF(JM.LE.N) GOTO 30                                               
-    DO 20 I=1,N                                                       
- 20 Y(I)=Z(I)*(2+XVL(I,JM-N)/SFAS(JM-N))/3                            
-    GOTO 40                                                           
- 30 SUM=0.                                                            
-    DO 35 I=1,N                                                       
-    GG=A(I)-GAM(JM,I)                                                 
-    IF(GG.LT.-50.D0) GG=-50.D0                                        
-    Y(I)=DEXP(GG)                                                     
- 35 SUM=SUM+Y(I)                                                      
- 40 NA=3                                                              
-    DO 43 K=1,NA                                                      
-    DO 36 I=1,N                                                       
- 36 Y(I)=Y(I)/SUM                                                     
-    CALL unifac(1,Y,AA,DA,PACT)                                       
-    IF(K.EQ.NA) GOTO 44                                               
-    DO 41 I=1,N                                                       
- 41 Y(I)=DEXP(A(I)-AA(I))                                             
- 42 SUM=0.                                                            
-    DO 43 I=1,N                                                       
- 43 SUM=SUM+Y(I)                                                      
- 44 CONTINUE                                                          
-    YV1=0.                                                            
-    DO 50 J=1,NF                                                      
- 50 V(J)=0.                                                           
-    DO 60 I=1,N                                                       
-    GD=DLOG(Y(I))+AA(I)-A(I)                                          
-    YV1=YV1+Y(I)*GD                                                   
-    DO 60 J=1,NF                                                      
-    K=J                                                               
-    VV=XVL(I,K)*Z(I)/SFAS(K)                                          
-    D=GD*(Y(I)-VV)                                                    
- 60 V(J)=V(J)+D                                                       
-    YV2=V(1)                                                          
-    DO 70 J=1,NF                                                      
-    IF(V(J).LT.YV2) YV2=V(J)                                          
- 70 CONTINUE                                                          
-    RT1=YV1                                                           
-    IF(YV2.GT.0.) RT1=RT1-YV2/2                                       
-    IF(NEG.EQ.0.AND.YV1.GT.0.) GOTO 80                                
-    RT1=YV1                                                           
-    IF(NEG.EQ.0) RMAX=0.                                              
-    NEG=1                                                             
- 80 IF(RT1.GT.RMAX) GOTO 100                                          
-    S=YV1                                                             
-    RMAX=RT1                                                          
-    CC=DEXP(-YV1)                                                     
-    DO 90 I=1,N                                                       
- 90 YGEM(I)=Y(I)*CC                                                   
-    IF(JPUR.NE.0) GOTO 110                                            
-100 CONTINUE                                                          
-110 DO 120 I=1,N                                                      
-120 Y(I)=YGEM(I)                                                      
-    RETURN                                                            
-    END
+subroutine STIG(y, S)                                              
+    use iso_fortran_env, only: real64, int32
+    
+    !IMPLICIT REAL * 8(A-H, O-Z)   
+    implicit none                                       
+                               
+    COMMON/CUFAC/n, NG, P, T                                      
+    COMMON/CACT/Y1, Y2, ACT1, ACT2, DACT1, DACT2, pact                                                     
+    COMMON/CGIBBS/nf, MAXZ, GNUL, Z, A, XVL, SFAS, GAM, aa, da, XM                                       
+    
+    !real(kind = real64), dimension(10) :: y, V, YGEM
+                                        
+    !USED:
+    integer(kind = int32) :: i, j, jm, k, kk, na, neg, ngn
+    integer(kind = int32) :: jpur = 0
+    real(kind = real64) :: GD, GG, D, CC, amax
+    real(kind = real64) :: & 
+        !& amax = 1.D0, &
+        !& CC = 1.D0, &
+        !& D = 1.D0, &
+        !& GD = 1.D0, &
+        !& GG = 1.D0, &
+        & rmax = 1.D0, &
+        & RT1 = 1.D0, &
+        & SUM = 1.D0, &
+        & VV = 1.D0, &
+        & YV1 = 1.D0, &
+        & YV2 = 1.D0
+    real(kind = real64), dimension(10) :: &
+        &   V = 0.D0, &
+        &   YGEM = 0.D0
+
+    real(kind = real64), dimension(10) :: Y
+    real(kind = real64) :: S
+    
+    !COMMON
+    integer(kind = int32) :: n, nf
+    real(kind = real64), dimension(4) :: SFAS
+    real(kind = real64), dimension(10) :: A, AA, Z
+    real(kind = real64), dimension(2, 2) :: pact
+    real(kind = real64), dimension(10, 4) :: XVL
+    real(kind = real64), dimension(10, 10) :: GAM, da
+
+    
+    
+    !NOT USED
+    integer(kind = int32) :: ng, maxz, gnul
+    real(kind = real64) :: T
+    real(kind = real64), dimension(10) :: Y1, Y2, ACT1, ACT2
+    real(kind = real64), dimension(10, 4) :: XM
+    real(kind = real64), dimension(10, 10) :: P, DACT1, DACT2
+
+    do i = 1, n                                                       
+        if(A(i) > amax) then                                         
+            jpur = i                                                            
+            amax = A(i)
+        end if
+    end do                                                         
+                                                          
+    rmax = 1.0D5                                                         
+    ngn = n                                                             
+    if(nf > 1) then
+        ngn = n + nf
+    end if                                              
+    neg = 0
+
+    mainloop : do kk = 1, ngn                                                   
+        jm = kk                                                             
+        if(jpur /= 0) jm = jpur                                             
+        
+        if(.not.(jm <= n)) then                                                
+        
+            do i = 1, n                                                       
+                y(i) = Z(i) * (2.D0 + XVL(i, jm-n) / SFAS(jm - n)) / 3.D0
+            end do                            
+            
+        else                                                           
+    
+            SUM = 0.D0                                                            
+        
+            do i = 1, n                                                       
+                GG = A(i)-GAM(jm, i)                                                 
+                if(GG < -50.D0) GG = -50.D0                                        
+                y(i) = DEXP(GG)                                                     
+                SUM = SUM + y(i)
+            end do    
+
+        end if
+        
+        na = 3                                                              
+        
+        inner: do k = 1, na                                                      
+            do i = 1, n                                                       
+                y(i) = y(i) / SUM
+            end do
+
+            call unifac(1, y, aa, da, pact)
+
+            if(k == na) exit inner
+
+            do i = 1, n
+                y(i) = DEXP(A(i)-aa(i))
+            end do                                             
+            
+            SUM = 0.D0                                                            
+            
+            do i = 1, n                                                       
+                SUM = SUM + y(i)
+            end do
+        end do inner
+                                                         
+        
+        YV1 = 0.D0                                                            
+        
+        do j = 1, nf                                                      
+            V(j) = 0.D0
+        end do
+
+        do i = 1, n                                                       
+            GD = DLOG(y(i)) + aa(i)-A(i)                                          
+            YV1 = YV1 + y(i) * GD                                                   
+            do j = 1, nf                                                      
+                k = j                                                               
+                VV = XVL(i, k) * Z(i)/SFAS(k)                                          
+                D = GD * (y(i)-VV)                                                    
+                V(j) = V(j) + D
+            end do
+        end do                                                       
+        
+        YV2 = V(1)                                                          
+        
+        do j = 1, nf                                                      
+            if(V(j) < YV2) then 
+                YV2 = V(j)
+            end if                                          
+        end do
+
+        RT1 = YV1
+
+        if(YV2 > 0.) then 
+            RT1 = RT1 - YV2 / 2
+        end if
+
+        if(.not.(neg == 0 .and. YV1 > 0.)) then                                
+            RT1 = YV1                                                           
+            if(neg == 0) rmax = 0.D0                                              
+            neg = 1
+        end if
+
+        if(RT1 > rmax) cycle                                          
+        S = YV1                                                             
+        rmax = RT1                                                          
+        CC = DEXP(-YV1)                                                     
+        
+        do i = 1, n                                                       
+            YGEM(i) = y(i) * CC
+        end do                                                   
+        
+        if(jpur /= 0) then 
+            exit mainloop 
+        end if
+
+    end do mainloop                                                          
+
+
+    do i = 1, n                                                      
+        y(i) = YGEM(i)
+    end do                                                      
+    
+    return
+
+end subroutine stig
