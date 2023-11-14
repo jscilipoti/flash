@@ -57,7 +57,7 @@ subroutine llecalas!(Tf, Pf, Zf)
 
     ! Common blocks that are meant to be removed
                             
-    COMMON/CGIBBS/NF,z_max_index,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),&
+    COMMON/CGIBBS/nf,z_max_index,GNUL,Z(10),A(10),XVL(10,4),SFAS(4),GAM(10,10),AL(10),&
     & DA(10,10),XM(10,4)                                       
     COMMON/CUFAC/N,NG,P(10,10),T                                      
     COMMON/CY/Y13,Y21,STEP                                            
@@ -186,7 +186,7 @@ subroutine llecalas!(Tf, Pf, Zf)
         end if
         
         ! Read the composition (Z) of each component (Zi)
-        4 READ(2,*) (Z(i), i = 1, N)                                                                                                   
+        4 READ(2,*) (Z(i), i = 1, n)                                                                                                   
         
         ! It sums the compostion of each component to get Z_sum and the max
         ! value of composition and its index.
@@ -221,11 +221,11 @@ subroutine llecalas!(Tf, Pf, Zf)
                 write(*, "(///,' * * * FLASH NUMBER',I3,' * * *',//)") flashcalc_loop  
                 write(*, "(' TEMPERATURE =',F10.4,' K, PRESSURE =',F7.3,' ATM, FEED =' &
                     & ,F10.2,' MOLES',/,' FEED COMPOSITION (MOLE PERCENT):',/,1X,15(2PF7&
-                    & .3))") T, PP, z_sum, (Z(i), i = 1, N)
+                    & .3))") T, PP, z_sum, (Z(i), i = 1, n)
                 if (iout /= 6) write(iout, "(///,' * * * FLASH NUMBER',I3,' * * *',//)") flashcalc_loop                                  
                 if (iout /= 6) write(iout, "(' TEMPERATURE =',F10.4,' K, PRESSURE =',F7.3,' ATM, FEED =' &
                     & ,F10.2,' MOLES',/,' FEED COMPOSITION (MOLE PERCENT):',/,1X,15(2PF7 &
-                    & .3))") T, PP, z_sum, (Z(i), i = 1, N)
+                    & .3))") T, PP, z_sum, (Z(i), i = 1, n)
                 ! ----
 
                 call unifac(1, Z, AL, DA, PACT)
@@ -241,7 +241,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                     GNUL = GNUL + Z(i) * AL(i)
                 end do                                              
                 
-                NF = 1
+                nf = 1
                                                                         
                 flash_exit : do while (.true.) 
                 ! A loop that ends when "FUN >-1.D-7"
@@ -264,12 +264,12 @@ subroutine llecalas!(Tf, Pf, Zf)
                         XLAM = 1.D0
 
                         ! Write
-                        if (NF == 1 .and. IPR > 0) write(*, "(//,' DIFFERENTIAL STABILITY TEST FOR FEED MIXTURE:')")                             
-                        if (NF > 1 .and. IPR > 0) write(*, "(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')") NF                          
-                        if (iout /= 6 .and. NF == 1 .and. IPR > 0) &
+                        if (nf == 1 .and. IPR > 0) write(*, "(//,' DIFFERENTIAL STABILITY TEST FOR FEED MIXTURE:')")                             
+                        if (nf > 1 .and. IPR > 0) write(*, "(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')") nf                          
+                        if (iout /= 6 .and. nf == 1 .and. IPR > 0) &
                             & write(iout, "(//,' DIFFERENTIAL STABILITY TEST FOR FEED MIXTURE:')")            
-                        if (iout /= 6 .and. NF > 1 .and. IPR > 0) &
-                            & write(iout, "(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')") NF         
+                        if (iout /= 6 .and. nf > 1 .and. IPR > 0) &
+                            & write(iout, "(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')") nf         
                         ! ----
 
                         call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, &
@@ -280,8 +280,8 @@ subroutine llecalas!(Tf, Pf, Zf)
                             ! Write 
                             write(*, "(/,' * SYSTEM IS STABLE *',/)")         
                             write(output_unit, *) 1
-                                write(output_unit, "(5(2x,f12.8))") (Z(j), j = 1, N)
-                                write(output_unit, "(5(2x,f12.8))") (AL(j), j= 1, N)        
+                                write(output_unit, "(5(2x,f12.8))") (Z(j), j = 1, n)
+                                write(output_unit, "(5(2x,f12.8))") (AL(j), j= 1, n)        
                             write(output_unit, *) "SYSTEM IS STABLE"                                                   
                             if (iout /= 6) write(iout, "(/,' * SYSTEM IS STABLE *',/)")
                             ! ----
@@ -299,7 +299,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                         end do
                     end if
                                                     
-                100 NF = NF + 1                                                           
+                100 nf = nf + 1                                                           
                     do i = 1, N                                                      
                         if (YVAL(i) > 1.D0) then 
                             do j = 1, N                                                      
@@ -308,21 +308,21 @@ subroutine llecalas!(Tf, Pf, Zf)
                         end if
                     end do
 
-                    SFAS(NF) = 1.D0                                                       
+                    SFAS(nf) = 1.D0                                                       
                     XLAM = 0.2D0                                                           
                     
-                    if (NF == 2) XLAM = 0.5D0                                               
-                    M = (NF - 1) * N                                                        
+                    if (nf == 2) XLAM = 0.5D0                                               
+                    M = (nf - 1) * N                                                        
                     
                     ! Write
-                    if (IPR > 0) write(*,"(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')") NF                                      
-                    if (iout /= 6 .and. IPR > 0) write(iout,"(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')") NF
+                    if (IPR > 0) write(*,"(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')") nf                                      
+                    if (iout /= 6 .and. IPR > 0) write(iout,"(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')") nf
                     ! -----                     
                     
                     call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, &
                     & XMAT, WORK, 2)     
                     
-                    NT = NF * N                                                           
+                    NT = nf * N                                                           
                     NB = NT - N                                                           
                     
                     do i = 1, NB                                                     
@@ -332,27 +332,27 @@ subroutine llecalas!(Tf, Pf, Zf)
                                                                        
                     
                     NVAP = 0                                                            
-                    do j = 1, NF                                                     
+                    do j = 1, nf                                                     
                         if (IDUM(j) == 1) NVAP = j
                     end do                                           
                     
                     ! Write
-                    write(*, "(//,' RESULT OF',I2,'-PHASE CALCULATION:')") NF
+                    write(*, "(//,' RESULT OF',I2,'-PHASE CALCULATION:')") nf
                     if (NVAP == 0) write(*, "(' NO VAPOR PHASE')")                                        
                     if (NVAP /= 0) write(*, "(' PHASE',I2,' IS A VAPOR PHASE')") NVAP                                   
                     if (iout /= 6 .and. NVAP == 0) write(iout, "(' NO VAPOR PHASE')")                       
                     if (iout /= 6 .and. NVAP /= 0) write(iout, "(' PHASE',I2,' IS A VAPOR PHASE')") NVAP                  
-                    write(*, "(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))") (j, SFAS(j), j = 1, NF)                                   
-                    write(*, "(/,'  COMPOSITION  ',10X,4(8X,I3,9X))") (j, j = 1, NF)                                           
-                    if (iout /= 6) write(iout, "(//,' RESULT OF',I2,'-PHASE CALCULATION:')") NF                                  
-                    if (iout /= 6) write(iout, "(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))")(j, SFAS(j), j = 1, NF)                   
-                    if (iout /= 6) write(iout, "(/,'  COMPOSITION  ',10X,4(8X,I3,9X))") (j, j = 1, NF)                          
+                    write(*, "(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))") (j, SFAS(j), j = 1, nf)                                   
+                    write(*, "(/,'  COMPOSITION  ',10X,4(8X,I3,9X))") (j, j = 1, nf)                                           
+                    if (iout /= 6) write(iout, "(//,' RESULT OF',I2,'-PHASE CALCULATION:')") nf                                  
+                    if (iout /= 6) write(iout, "(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))")(j, SFAS(j), j = 1, nf)                   
+                    if (iout /= 6) write(iout, "(/,'  COMPOSITION  ',10X,4(8X,I3,9X))") (j, j = 1, nf)                          
                     ! -----
 
                     SUM = 0.D0                                                            
                     
                     do i = 1, N                                                      
-                        DLX(i) = XVL(i, NF) * Z(i) / SFAS(NF)                                    
+                        DLX(i) = XVL(i, nf) * Z(i) / SFAS(nf)                                    
                         SUM = SUM + DLX(i)
                     end do                                                    
                     
@@ -375,20 +375,20 @@ subroutine llecalas!(Tf, Pf, Zf)
                         end do
                     end do
                     
-                    write(output_unit,*) NF
+                    write(output_unit,*) nf
                     ! Print the output_unit to be read by an Excel Sheet
-                    do i = 1, NF
-                        write(output_unit, "(5(2x,f12.8))") (XM(j, i),j = 1, N)
-                        write(output_unit, "(5(2x,f12.8))") (agam(j, i),j = 1, N)  
+                    do i = 1, nf
+                        write(output_unit, "(5(2x,f12.8))") (XM(j, i),j = 1, n)
+                        write(output_unit, "(5(2x,f12.8))") (agam(j, i),j = 1, n)  
                     end do
                     
                     do i = 1, N                                                      
-                        write(*, "('   X(',I2,')            ',5(8X,F12.8))") i, (XM(i, j), j = 1, NF)    ! Composition        
+                        write(*, "('   X(',I2,')            ',5(8X,F12.8))") i, (XM(i, j), j = 1, nf)    ! Composition        
                         write(*, "('  ln(G',i2,')            ',5(8x,f12.8))") i, (agam(i, j), j = 1, nf) ! Ln(gamma)
                     end do
                     if (iout /= 6) then                                          
                         do i = 1, N                                                      
-                            write(iout, "('   X(',I2,')            ',5(8X,F12.8))") i, (XM(i, j), j = 1, NF)    
+                            write(iout, "('   X(',I2,')            ',5(8X,F12.8))") i, (XM(i, j), j = 1, nf)    
                             write(iout, "('  ln(G',i2,')            ',5(8x,f12.8))") i, (agam(i, j), j = 1, nf)
                         end do
                     end if
