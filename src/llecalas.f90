@@ -168,7 +168,7 @@ subroutine llecalas!(Tf, Pf, Zf)
             case (2)
                 READ(2,*) T 
             case default
-                exit mainloop
+                return
         end select                                  
 
         ! Exit the subroutine if the temperature has not been set or there is no
@@ -180,25 +180,21 @@ subroutine llecalas!(Tf, Pf, Zf)
 
         ! If no vapour phase is considered...
         if (PP /= 0.D0  .and.  novap /= 0) then                                 
-            do i=1,N                                                        
-                PRAT(i)=DLOG(PP)-ANT(1,i)+ANT(2,i)/(T-273.15+ANT(3,i))
+            do i = 1, N                                                        
+                PRAT(i) = DLOG(PP) - ANT(1,i) + ANT(2,i) / (T-273.15 + ANT(3,i))
             end do                                     
         end if
         
         ! Read the composition (Z) of each component (Zi)
-        4 READ(2,*) (Z(i),i=1,N)                                            
-        
-        !z_sum = 0.D0                                                       
-        !z_max = 0.D0                                                          
+        4 READ(2,*) (Z(i), i = 1, N)                                                                                                   
         
         ! It sums the compostion of each component to get Z_sum and the max
         ! value of composition and its index.
-        do i = 1, N !15 i = 1, N                                                       
+        do i = 1, N                                                       
             z_sum = z_sum + z(i)                                                    
-            if (Z(i) < z_max) cycle !GOTO 15                                          
+            if (Z(i) < z_max) cycle                                        
             z_max = z(i)                                                         
             z_max_index = i                                                            
-        !15 CONTINUE
         end do                                         
         
         call PARAM2                                                       
@@ -256,7 +252,7 @@ subroutine llecalas!(Tf, Pf, Zf)
                             YVAL(i) = DLOG(Y(i))
                         end do
                                                                 
-                        XLAM = 1.                                                           
+                        XLAM = 1.D0                                                           
                         if (NF == 1 .and. IPR > 0) write(*, 606)                             
                         if (NF > 1 .and. IPR > 0) write(*, 609) NF                          
                         if (iout /= 6 .and. NF == 1 .and. IPR > 0) &
