@@ -213,75 +213,86 @@ subroutine llecalas!(Tf, Pf, Zf)
                                                                     
                 flashcalc_loop = flashcalc_loop + 1
 
-                write(*, 602) flashcalc_loop                                                   
+                do i = 1, N                                                       
+                    Z(i) = Z(i) / z_sum
+                end do   
                 
-                do 35 i = 1, N                                                       
-            35  Z(i) = Z(i) / z_sum                                                    
-                
-                write(*, 605) T, PP, z_sum, (Z(i), i = 1, N)
+                ! Write
+                write(*, "(///,' * * * FLASH NUMBER',I3,' * * *',//)") flashcalc_loop  
+                write(*, "(' TEMPERATURE =',F10.4,' K, PRESSURE =',F7.3,' ATM, FEED =' &
+                    & ,F10.2,' MOLES',/,' FEED COMPOSITION (MOLE PERCENT):',/,1X,15(2PF7&
+                    & .3))") T, PP, z_sum, (Z(i), i = 1, N)
+                if (iout /= 6) write(iout, "(///,' * * * FLASH NUMBER',I3,' * * *',//)") flashcalc_loop                                  
+                if (iout /= 6) write(iout, "(' TEMPERATURE =',F10.4,' K, PRESSURE =',F7.3,' ATM, FEED =' &
+                    & ,F10.2,' MOLES',/,' FEED COMPOSITION (MOLE PERCENT):',/,1X,15(2PF7 &
+                    & .3))") T, PP, z_sum, (Z(i), i = 1, N)
+                ! ----
 
-                if (iout /= 6) write(iout, 602) flashcalc_loop                                  
-                if (iout /= 6) write(iout, 605) T, PP, z_sum, (Z(i), i = 1, N)              
-                call unifac(1, Z, AL, DA, PACT)                                       
+                call unifac(1, Z, AL, DA, PACT)
+
                 SFAS(1) = 1.D0                                                        
-                GNUL = 0.D0                                                           
-                do 40 i = 1, N                                                       
+                GNUL = 0.D0
+
+                do i = 1, N                                                       
                     XVL(i, 1) = 1.D0                                                       
                     Z(i) = Z(i) + 1.D-20                                                  
                     DLX(i) = DLOG(Z(i))                                                 
                     A(i) = AL(i) + DLX(i)                                                 
-            40  GNUL = GNUL + Z(i) * AL(i)                                              
+                    GNUL = GNUL + Z(i) * AL(i)
+                end do                                              
+                
                 NF = 1
                                                                         
                 flash_exit : do while (.true.) 
                 ! A loop that ends when "FUN >-1.D-7"
-                50  call STIG(Y,S)                                                    
+                    call STIG(Y,S)                                                    
                     if (S < -1.D-7) then !if (S > -1.D-7) GOTO 70                                           
-                        write(*, 603)                                                      
-                        if (iout /= 6) write(iout, 603)                                     
+                        
+                        ! Write
+                        write(*, "(/,' SYSTEM IS UNSTABLE, PHASE SPLIT PERFORMED')")                                                      
+                        if (iout /= 6) write(iout, "(/,' SYSTEM IS UNSTABLE, PHASE SPLIT PERFORMED')")
+                        ! ----                                     
+                        
                         do i = 1, N                                                       
                             YVAL(i) = 1.D-5 * Y(i) / Z(i)
-                        end do                                                                                                    
-                        !GOTO 100 !ELIMINAR GOTO 
-                    !end if
+                        end do                                                 
                     else                                                       
-                
-                    !70 do 75 i = 1, N
-                    
                         do i = 1, N                                                        
                             YVAL(i) = DLOG(Y(i))
                         end do
                                                                 
-                        XLAM = 1.D0                                                           
-                        if (NF == 1 .and. IPR > 0) write(*, 606)                             
-                        if (NF > 1 .and. IPR > 0) write(*, 609) NF                          
+                        XLAM = 1.D0
+
+                        ! Write
+                        if (NF == 1 .and. IPR > 0) write(*, "(//,' DIFFERENTIAL STABILITY TEST FOR FEED MIXTURE:')")                             
+                        if (NF > 1 .and. IPR > 0) write(*, "(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')") NF                          
                         if (iout /= 6 .and. NF == 1 .and. IPR > 0) &
-                            & write(iout, 606)            
+                            & write(iout, "(//,' DIFFERENTIAL STABILITY TEST FOR FEED MIXTURE:')")            
                         if (iout /= 6 .and. NF > 1 .and. IPR > 0) &
-                            & write(iout, 609) NF         
-                        
+                            & write(iout, "(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')") NF         
+                        ! ----
+
                         call TMSSJ(30, N, IPR, 15, XLAM, 1.D-12, FUN, YVAL, GRAD, &
                             & XMAT, WORK, 1)     
                         
                         !if (FUN < -1.D-7) GOTO 80                                         
-                        if (FUN > -1.D-7) then 
-                            write(*, 604)         
+                        if (FUN > -1.D-7) then
+                            ! Write 
+                            write(*, "(/,' * SYSTEM IS STABLE *',/)")         
                             write(output_unit, *) 1
-                                write(output_unit, 2613) (Z(j), j = 1, N)
-                                write(output_unit, 2613) (AL(j), j= 1, N)        
+                                write(output_unit, "(5(2x,f12.8))") (Z(j), j = 1, N)
+                                write(output_unit, "(5(2x,f12.8))") (AL(j), j= 1, N)        
                             write(output_unit, *) "SYSTEM IS STABLE"                                                   
+                            if (iout /= 6) write(iout, "(/,' * SYSTEM IS STABLE *',/)")
+                            ! ----
 
-                            ! write(7,46) T,  (xM(l,1),l=1,N)     !Alfonsina
-                            ! write(7,46) T,  (xM(l,2),l=1,N)     !Alfonsina
-                            ! write(7,*)                          !Alfonsina
-                    
-                            if (iout /= 6) write(iout, 604)                                     
-                            !GOTO 10 
                             exit 
                         end if
 
-                    80  write(*, 603)                                                      
-                        if (iout /= 6) write(iout, 603)                                     
+                        ! Write
+                        write(*, "(/,' SYSTEM IS UNSTABLE, PHASE SPLIT PERFORMED')")                                                      
+                        if (iout /= 6) write(iout, "(/,' SYSTEM IS UNSTABLE, PHASE SPLIT PERFORMED')")
+                        ! ----                                     
                         
                         do i = 1, N                                                       
                             YVAL(i) = 1.D-5 * DEXP(YVAL(i)) / Z(i)
@@ -303,9 +314,10 @@ subroutine llecalas!(Tf, Pf, Zf)
                     if (NF == 2) XLAM = 0.5D0                                               
                     M = (NF - 1) * N                                                        
                     
-                    if (IPR > 0) write(*,607) NF                                      
-                    
-                    if (iout /= 6 .and. IPR > 0) write(iout,607) NF                     
+                    ! Write
+                    if (IPR > 0) write(*,"(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')") NF                                      
+                    if (iout /= 6 .and. IPR > 0) write(iout,"(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')") NF
+                    ! -----                     
                     
                     call TMSSJ(30, M, IPR, 60, XLAM, 1.D-16, FUN, YVAL, GRAD, &
                     & XMAT, WORK, 2)     
@@ -317,23 +329,26 @@ subroutine llecalas!(Tf, Pf, Zf)
                         YVAL(NT + 1 - i) = YVAL(NB + 1 - i)
                     end do
 
-                    write(*, 614) NF                                                   
+                                                                       
                     
                     NVAP = 0                                                            
                     do j = 1, NF                                                     
                         if (IDUM(j) == 1) NVAP = j
                     end do                                           
-                                                                        
-                    if (NVAP == 0) write(*, 630)                                        
-                    if (NVAP /= 0) write(*, 631) NVAP                                   
-                    if (iout /= 6 .and. NVAP == 0) write(iout, 630)                       
-                    if (iout /= 6 .and. NVAP /= 0) write(iout, 631) NVAP                  
-                    write(*, 611) (j, SFAS(j), j = 1, NF)                                   
-                    write(*, 612) (j, j = 1, NF)                                           
-                    if (iout /= 6) write(iout, 614) NF                                  
-                    if (iout /= 6) write(iout, 611)(j, SFAS(j), j = 1, NF)                   
-                    if (iout /= 6) write(iout, 612) (j, j = 1, NF)                          
                     
+                    ! Write
+                    write(*, "(//,' RESULT OF',I2,'-PHASE CALCULATION:')") NF
+                    if (NVAP == 0) write(*, "(' NO VAPOR PHASE')")                                        
+                    if (NVAP /= 0) write(*, "(' PHASE',I2,' IS A VAPOR PHASE')") NVAP                                   
+                    if (iout /= 6 .and. NVAP == 0) write(iout, "(' NO VAPOR PHASE')")                       
+                    if (iout /= 6 .and. NVAP /= 0) write(iout, "(' PHASE',I2,' IS A VAPOR PHASE')") NVAP                  
+                    write(*, "(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))") (j, SFAS(j), j = 1, NF)                                   
+                    write(*, "(/,'  COMPOSITION  ',10X,4(8X,I3,9X))") (j, j = 1, NF)                                           
+                    if (iout /= 6) write(iout, "(//,' RESULT OF',I2,'-PHASE CALCULATION:')") NF                                  
+                    if (iout /= 6) write(iout, "(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))")(j, SFAS(j), j = 1, NF)                   
+                    if (iout /= 6) write(iout, "(/,'  COMPOSITION  ',10X,4(8X,I3,9X))") (j, j = 1, NF)                          
+                    ! -----
+
                     SUM = 0.D0                                                            
                     
                     do i = 1, N                                                      
@@ -343,33 +358,38 @@ subroutine llecalas!(Tf, Pf, Zf)
                     
                     SUM = DLOG(SUM)                                                     
                     call unifac(1, DLX, A, DA, PACT)                                      
-                    do 120 i = 1, N                                                      
+                    do i = 1, N                                                      
                         DLX(i) = DLOG(DLX(i))                                               
-                120   A(i) = A(i) + DLX(i) - SUM                                              
-                !c-----
-                    do 1130 j = 1, nf
-                        do 1131 i = 1, n
-                1131       xmj(i) = xm(i, j)
+                        A(i) = A(i) + DLX(i) - SUM
+                    end do                                              
+  
+                    do j = 1, nf
+                        do i = 1, n
+                            xmj(i) = xm(i, j)
+                        end do
+
                         call unifac(1, xmj, actgam, de, pe)
-                        do 1132 i = 1, n
-                1132       agam(i, j) = actgam(i)
-                1130 continue
+                        
+                        do i = 1, n
+                            agam(i, j) = actgam(i)
+                        end do
+                    end do
+                    
                     write(output_unit,*) NF
                     ! Print the output_unit to be read by an Excel Sheet
                     do i = 1, NF
-                        write(output_unit, 2613) (XM(j, i),j = 1, N)
-                        write(output_unit, 2613) (agam(j, i),j = 1, N)  
+                        write(output_unit, "(5(2x,f12.8))") (XM(j, i),j = 1, N)
+                        write(output_unit, "(5(2x,f12.8))") (agam(j, i),j = 1, N)  
                     end do
                     
                     do i = 1, N                                                      
-                        write(*, 613) i, (XM(i, j), j = 1, NF)    ! Composition        
-                        write(*, 1613) i, (agam(i, j), j = 1, nf) ! Ln(gamma)
+                        write(*, "('   X(',I2,')            ',5(8X,F12.8))") i, (XM(i, j), j = 1, NF)    ! Composition        
+                        write(*, "('  ln(G',i2,')            ',5(8x,f12.8))") i, (agam(i, j), j = 1, nf) ! Ln(gamma)
                     end do
-                    !if (iout == 6) GOTO 132
                     if (iout /= 6) then                                          
                         do i = 1, N                                                      
-                            write(iout, 613) i, (XM(i, j), j = 1, NF)    
-                            write(iout, 1613) i, (agam(i, j), j = 1, nf)
+                            write(iout, "('   X(',I2,')            ',5(8X,F12.8))") i, (XM(i, j), j = 1, NF)    
+                            write(iout, "('  ln(G',i2,')            ',5(8x,f12.8))") i, (agam(i, j), j = 1, nf)
                         end do
                     end if
                 end do flash_exit
@@ -384,62 +404,10 @@ subroutine llecalas!(Tf, Pf, Zf)
             case default
                 return
         end select problem
-    end do mainloop
-
-!-------------------------------------------------------------------------------
-!
-!     FORMATS USED IN THIS PROGRAM:
-!
-!-------------------------------------------------------------------------------
-501 FORMAT(36A2)                                                      
-502 FORMAT(8F10.2)                                                    
-503 FORMAT(20I3)                                                      
-602 FORMAT(///,' * * * FLASH NUMBER',I3,' * * *',//)                  
-603 FORMAT(/,' SYSTEM IS UNSTABLE, PHASE SPLIT PERFORMED')            
-604 FORMAT(/,' * SYSTEM IS STABLE *',/)                               
-605 FORMAT(' TEMPERATURE =',F10.4,' K, PRESSURE =',F7.3,' ATM, FEED ='&
-    ,F10.2,' MOLES',/,' FEED COMPOSITION (MOLE PERCENT):',/,1X,15(2PF7&
-    .3))                                                              
-606 FORMAT(//,' DIFFERENTIAL STABILITY TEST FOR FEED MIXTURE:')       
-607 FORMAT(/,' PHASE SPLIT CALCULATION,',I2,' PHASES:')               
-!608 FORMAT(1H1)                                                       
-609 FORMAT(//,' DIFFERENTIAL STABILITY TEST FOR',I2,'-PHASE SYSTEM')  
-!610 FORMAT(///)                                                       
-611 FORMAT(/,'  PHASE FRACTIONS (PERCENT):',4(5X,I3,2PF7.3,5X))       
-612 FORMAT(/,'  COMPOSITION  ',10X,4(8X,I3,9X))                       
-613 FORMAT('   X(',I2,')            ',5(8X,F12.8))                    
-!c-----
-1613 format('  ln(G',i2,')            ',5(8x,f12.8))
-2613 format(5(2x,f12.8))
-
-!c-----
-614 FORMAT(//,' RESULT OF',I2,'-PHASE CALCULATION:')                  
-616 FORMAT(//,' * WRONG INPUT SPECIFICATION *',//)                    
-617 FORMAT(///,' ** UNIQUAC PARAMETERS FROM UNIFAC **',//,5X,'A12/R =  ',F12.3,' K ,  A21/R = ',F12.3,' K',///)                         
-618 FORMAT(//,' ** COMPARISON OF ACTIVITIES CALCULATED BY UNIFAC AND UNIQUAC, RESPECTIVELY **'//)                                       
-619 FORMAT(10F12.5)                                                   
-!620 FORMAT(' **** FLASioutH CALCULATION ****')                            
-!621 FORMAT(' **** BINODAL CURVE CALCULATION ****',//)                 
-622 FORMAT(' **** CALCULATION OF UNIQUAC PARAMETERS FROM UNIFAC **** ',//)                                                              
-!623 FORMAT(1X,'COMPONENTS : ',40A2,//)                                
-!624 FORMAT(' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIFAC'//)     
-!625 FORMAT(' MODEL USED FOR LIQUID PHASE NON-IDEALITY: UNIQUAC'//)    
-626 FORMAT(I5,2F15.4)                                                 
-627 FORMAT(//,' SPECIFIED UNIQUAC R AND Q',/)                         
-!628 FORMAT(/,' iout = ',I2,/' if iout = 0: OUTPUT ONLY ON UNIT 6',/,  ' if iout = 1: OUTPUT ON BOTH UNIT 6 AND 1')                      
-!629 FORMAT(/,' VAPOR PHASE INCLUDED IN FLASH-CALCULATIONS',//)        
-630 FORMAT(' NO VAPOR PHASE')                                         
-631 FORMAT(' PHASE',I2,' IS A VAPOR PHASE')                           
-633 FORMAT(///,'   TEMPERATURE =',F10.2,' DEG K')                     
+    end do mainloop                   
 
 ! Close all opened units in this subroutine 
 call close_llecalas()
-
-! 10000 CLOSE (UNIT=2)
-!     if (iout == 1) CLOSE (UNIT = 1)
-!     close (unit=3)
-! !c      call salida(name)
-!     !STOP
 
 return
 
