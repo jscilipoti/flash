@@ -9,7 +9,7 @@ subroutine read_input_flash(input_filename)
 
     !use CUFAC, only: NKK, NGG, Pxx, Txx
     !use flash, only: P, T, Z
-    use iso_fortran_env, only: int16, int8
+    use iso_fortran_env, only: int16, int8, int32
 
     use inputData, only:&
         & flash_input_filename, name_maxlen,&
@@ -29,7 +29,7 @@ subroutine read_input_flash(input_filename)
     ! parameter seach.
     integer(kind=int8) :: search_parameters_flag = 0
     ! An external function to get a free unit to open a file.
-    integer(kind=int8) :: get_free_unit
+    integer(kind=int32) :: get_free_unit
     external :: get_free_unit
     
     ! The name of the input_file to be read. It must contain the name of the 
