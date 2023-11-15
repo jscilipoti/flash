@@ -11,20 +11,23 @@ program check
     print *,""
     print *, fg_color_blue + style_bold // test_run // style_reset //"check"
     
-    if (.true.) then
-        if (pause_test) pause
- 
-        !Check if everything went OK
-        if ("string" /= "string")& 
-            &ERROR STOP ""
-        if (abs(0 - 0) > 1E-8)&
-            &ERROR STOP ""
-            
-        print *, fg_color_green + style_bold // test_ok // style_reset
 
-    else 
-        print *, fg_color_yellow + style_bold // test_disabled // style_reset
-    endif
+
+    
+    ! if (.true.) then
+    !     if (pause_test) pause
+ 
+    !     !Check if everything went OK
+    !     if ("string" /= "string")& 
+    !         &ERROR STOP ""
+    !     if (abs(0 - 0) > 1E-8)&
+    !         &ERROR STOP ""
+            
+    !     print *, fg_color_green + style_bold // test_ok // style_reset
+
+    ! else 
+    !     print *, fg_color_yellow + style_bold // test_disabled // style_reset
+    ! endif
 
 !print *, "Put some tests in here!"
 

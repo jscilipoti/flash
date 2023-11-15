@@ -84,6 +84,9 @@ program check
                 if (error_count >= 10) then
             ERROR STOP "TOO MANY ERRORS"
         end if
+        if (error_count < 9) then
+            ERROR STOP "LESS ERRORS!!!"
+        end if
         if (is_OK) then
             print *, fg_color_green + style_bold // test_ok // style_reset
         end if    

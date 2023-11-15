@@ -23,7 +23,7 @@ program check
     character(len=output_linelen), dimension(output_maxlines) :: &
     &output_new,output_old
     character(len=*), parameter :: PATH = "test/"
-    character(len=*), parameter :: flashtype = "ULL2_flash_"
+    character(len=*), parameter :: flashtype = "ULV2_2F_flash_"
     
     integer(kind=int32) :: i, j
 
@@ -31,7 +31,7 @@ program check
     
 
     print *,""
-    print *, fg_color_blue + style_bold // test_run // style_reset //"ULL2_flash_check"
+    print *, fg_color_blue + style_bold // test_run // style_reset //"ULV2_2F_flash_check"
     
     if (.true.) then
         if (pause_test) pause
@@ -81,10 +81,10 @@ program check
         
         ! if (abs(0 - 0) > 1E-8)&
         !     &ERROR STOP ""
-                if (error_count >= 5) then
+        if (error_count >= 6) then
             ERROR STOP "TOO MANY ERRORS"
         end if
-        if (error_count < 4) then
+        if (error_count < 5) then
             ERROR STOP "LESS ERRORS!!!"
         end if
         if (is_OK) then
