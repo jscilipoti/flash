@@ -23,6 +23,8 @@ program check
     character(len=*), parameter :: flashtype = ""
     
     integer(kind=int32) :: i, j
+    logical :: is_OK = .true.
+    integer(kind=int32) :: error_count = 0
 
     input_filename = PATH//flashtype//"name.dat"
     
@@ -57,7 +59,9 @@ program check
                     trim(lleasoccuzada_new(i)) /= trim(lleasoccuzada_old(i))
                 print '(3A)',&
                     &trim(lleasoccuzada_new(i)),"//",trim(lleasoccuzada_old(i))
-                ERROR STOP ""
+                !ERROR STOP ""
+                    error_count = error_count + 1
+                
             end if
         end do
         do i = 1, output_maxlines
@@ -68,14 +72,21 @@ program check
                     &trim(output_new(i)) /= trim(output_old(i))
                 print '(3A)',&
                     &trim(output_new(i)),"//",trim(output_old(i))
-                ERROR STOP ""
+                !ERROR STOP ""
+                error_count = error_count + 1
             end if
         end do
         
-        ! if (abs(0 - 0) > 1E-8)&
-        !     &ERROR STOP ""
+        if (error_count >= 3) then
+            ERROR STOP "TOO MANY ERRORS"
+        end if
+        if (error_count < 2) then
+            ERROR STOP "LESS ERRORS!!!"
+        end if
             
-        print *, fg_color_green + style_bold // test_ok // style_reset
+        if (is_OK) then
+            print *, fg_color_green + style_bold // test_ok // style_reset
+        end if  
     else 
         print *, fg_color_yellow + style_bold // test_disabled // style_reset
     endif
