@@ -1,0 +1,7 @@
+    MS,     skeletal_matrix
+    NC,     n_comp
+    RR,     rPar_array
+    QQ,     QPar_array
+    par,    intrcn_par
+    nga,    total_asocGroups
+    A,      intrcn_matrix
