@@ -32,8 +32,9 @@ SUBROUTINE PARIN2
 
     !USED:
     integer(kind = int32) :: &
-        & i, j, k, &          
-        & total_int_par ! Number of interaction parameters
+        & i, j, k, &
+        & total_groups = 0, & ! Total number of groups
+        & total_int_par = 0 ! Total number of interaction parameters
 
     integer(kind = int32), dimension(10,10,2) :: &
         ! A matrix with the group id and number of groups for each component
@@ -138,9 +139,10 @@ SUBROUTINE PARIN2
 
     if (model == 1) GOTO 21                                                                                   
 
-    ! Read the group number and parameters R and Q. 
+    ! Read the group number and interaction parameters
     read(2,*) total_groups, total_int_par                                            
 
+    ! Read the R and Q parameters
     if (total_groups /=  0) then
         rPar_array = 0.D0
         qPar_array = 0.D0
