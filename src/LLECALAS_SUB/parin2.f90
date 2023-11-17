@@ -43,7 +43,7 @@ SUBROUTINE PARIN2
         & RT = 0.D0
 
     ! Arrays with the r and q parameters. Dim = 150 because there are 150 values.
-    real(kind = real32), dimension(150) :: & !if real64, it prints slightly  different values. 
+    real(kind = real64), dimension(150) :: & !if real64, it prints slightly  different values. 
         & rPar_array = 0.D0, &
         & qPar_array = 0.D0, &
         & rPar150_data = 0.D0, &
@@ -55,7 +55,6 @@ SUBROUTINE PARIN2
 
     real(kind = real64) :: &
         & QT = 0.D0
-    
    
     ! New method to fill up intrcn32_data (new intrcnPar_matrix)
     intrcn32_unit = get_free_unit()
@@ -118,8 +117,7 @@ SUBROUTINE PARIN2
         qPar_array = 0.D0
         do i = 1, total_groups
             k = 0                                                   
-            read(2, *) k, rPar_array(k), qPar_array(k)  ! k is group number
-                                      
+            read(2, *) k, rPar_array(k), qPar_array(k)     
         end do
     end if            
 
@@ -489,4 +487,33 @@ SUBROUTINE PARIN2
 1603 format('  ASSOCIATION PARAMETERS', //, 10X, 'k(OH)   :', F7.3, /, 10X, 'E(OH)/k :', F7.1, ' k-1')
 !c------
     RETURN                                                            
-    end                   
+    end
+    
+    ! function round(val,idigits0)
+    !     use,intrinsic :: iso_fortran_env, only : dp=>real64,sp=>real32
+    !     use,intrinsic :: iso_fortran_env, only : int64
+    !     implicit none
+        
+    !     !$@(#) M_verify::round(3f): round val to specified number of significant digits
+        
+    !     real*8,intent(in)            :: val
+    !     integer,intent(in)         :: idigits0
+    !     integer(kind=int64)        :: idigits,ipow
+    !     real(kind=dp)              :: aval,rnormal
+    !     real*8                       :: round
+    !        ! make sure a reasonable number of digits has been requested
+    !        idigits=max(1,idigits0)
+    !        aval=abs(val)
+    !     !  select a power that will normalize the number (put it in the range 1 > abs(val) <= 0)
+    !        if(aval.ge.1)then
+    !           ipow=int(log10(aval)+1)
+    !        else
+    !           ipow=int(log10(aval))
+    !        endif
+    !        rnormal=val/(10.0d0**ipow)
+    !        if(rnormal.eq.1)then
+    !           ipow=ipow+1
+    !        endif
+    !        !normalize, multiply by 10*idigits to an integer, and so on
+    !        round=real(anint(val*10.d0**(idigits-ipow),kind=dp),kind=dp)*10.d0**(ipow-idigits)
+    !     end function round
