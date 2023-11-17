@@ -6,9 +6,9 @@ SUBROUTINE PARIN2
     
     IMPLICIT REAL*8(A-H, O-Z)    
   
-    common/asoc/nktt, igamt(20, 12), nytt(20, 12)
+    common/asoc/nktt, sk_idGroups_matrix, sk_nGroups_matrix
     common/grupas1/rkass(6, 12, 6, 12), enass(6, 12, 6, 12), deloh(6, 12, 6, 12)!
-    common/nga/nga, mass(12) 
+    common/nga/total_asocGroups, mass(12) 
     common/ioh2/rngoh(12, 12)
 
     common/ioh2sis/rngoht(3, 2)
@@ -18,72 +18,101 @@ SUBROUTINE PARIN2
     !DIMENSION RT(10, 10), A(100, 100), NGM(10) !, MAINSG(57)
     !DIMENSION RT(10, 10), NGM(10)
     DIMENSION NGM(10)         
-    DIMENSION MS(10, 10, 2), NY(10, 20), JH(150), IH(20)  
+    !DIMENSION skeletal_matrix(10, 10, 2), NY(10, 20), JH(150), IH(20)  
+    DIMENSION NY(10, 20), IH(20) 
 
-  DIMENSION NPUNTA(NMG), NGRUPA(NMG), NPUNT(NMG), NGRUP(NMG) 
+    DIMENSION NPUNTA(NMG), NGRUPA(NMG), NPUNT(NMG), NGRUP(NMG) 
 
-  !INTEGER CS(NMG), TS(NMG, NMS), NPUNTMG(NMG), NMAINGR(NMG), j, k, CANIL(10)
-  INTEGER CS(NMG), TS(NMG, NMS), NPUNTMG(NMG), NMAINGR(NMG), CANIL(10)
-
-    real*8::intrcn_par             
+    !INTEGER CS(NMG), TS(NMG, NMS), NPUNTMG(NMG), NMAINGR(NMG), j, k, CANIL(10)
+    INTEGER CS(NMG), TS(NMG, NMS), NPUNTMG(NMG), NMAINGR(NMG), CANIL(10)
+           
     logical VL
     external mainsgfunc, get_free_unit
     integer(int32) :: get_free_unit
 
     !USED:
     integer(kind = int32) :: &
-        & i, j, k          
+        & i, j, k, &          
+        & total_int_par ! Number of interaction parameters
+
+    integer(kind = int32), dimension(10,10,2) :: &
+        ! A matrix with the group id and number of groups for each component
+        & skeletal_matrix = 0 
+    
+    integer(kind = int32), dimension(150) :: &
+        & JH = 0
+
+    real(kind = real64) :: &
+        & intrcn_par ! A variable with a intereaction parameter
+
+    ! Arrays with the r and q parameters. Dim = 150 because there are 150 values.
+    real(kind = real64), dimension(150) :: & 
+        ! if "kind = real64", it prints slightly different values which causes
+        ! a test to fail.
+        & rPar_array = 0.D0, &
+        & qPar_array = 0.D0, &
+        & rPar150_data = 0.D0, &
+        & qPar150_data = 0.D0
+     
+    real(kind = real64), dimension(10,10) :: &
+        & RT = 0.D0
+
     ! Here the interaction parameters are dim 100 because
     ! there is a maximum of 10 different functional groups in total
     real(kind = real64), dimension(100, 100) :: &
         & intrcnPar_matrix = 0.D0, &
         & intrcn32_data = 0.D0
 
-    real(kind = real64), dimension(10,10) :: &
-        & RT = 0.D0
 
-    ! Arrays with the r and q parameters. Dim = 150 because there are 150 values.
-    real(kind = real64), dimension(150) :: & !if real64, it prints slightly  different values. 
-        & rPar_array = 0.D0, &
-        & qPar_array = 0.D0, &
-        & rPar150_data = 0.D0, &
-        & qPar150_data = 0.D0
+
+
 
     !COMMON
     integer(kind = int32) :: &
-    & n_comp ! Number of components in the system
+    & n_comp, & ! Number of components in the system
+    & total_asocGroups ! Number of associative groups
+
+
+    
+
+    integer(kind = int32), dimension(20,12) :: &
+        & sk_idGroups_matrix, & ! The id of each group for each component derived from the skeletal matrix
+        & sk_nGroups_matrix ! The quantity of each group for each component derived from the skeletal matrix
 
     real(kind = real64) :: &
         & QT = 0.D0
    
-    ! New method to fill up intrcn32_data (new intrcnPar_matrix)
-    intrcn32_unit = get_free_unit()
-    open(unit = intrcn32_unit, file = "src/database/intrcn32.mds", &
-    &status = 'old', action = 'read', form = "formatted")
-    read(intrcn32_unit, *) intrcn32_data(:32, :32)
-    close(intrcn32_unit)
+!-------------------------------------------------------------------------------
+    if (model == 1) then !ASUMO QUE ESTO ES PARA UNIQUAC. ESTE IF ES NUEVO (JPR)
+        ! New method to fill up intrcn32_data (new intrcnPar_matrix)
+        intrcn32_unit = get_free_unit()
+        open(unit = intrcn32_unit, file = "src/database/intrcn32.mds", &
+        &status = 'old', action = 'read', form = "formatted")
+        read(intrcn32_unit,*) intrcn32_data(:32, :32)
+        close(intrcn32_unit)
 
-    ! New method to fill up rPar150_data (new rPar_array matrix)
-    rPar150_unit = get_free_unit()
-    open(unit = rPar150_unit, file = "src/database/rPar150.mds", &
-    &status = 'old', action = 'read', form = "formatted")
-    read(rPar150_unit, *) rPar150_data(:)
-    close(rPar150_unit)
+        ! New method to fill up rPar150_data (new rPar_array matrix)
+        rPar150_unit = get_free_unit()
+        open(unit = rPar150_unit, file = "src/database/rPar150.mds", &
+        &status = 'old', action = 'read', form = "formatted")
+        read(rPar150_unit,*) rPar150_data(:)
+        close(rPar150_unit)
 
-    ! New method to fill up qPar150_data (new qPar_array matrix)
-    qPar150_unit = get_free_unit()
-    open(unit = qPar150_unit, file = "src/database/qPar150.mds", &
-    &status = 'old', action = 'read', form = "formatted")
-    read(qPar150_unit, *) qPar150_data(:)
-    close(qPar150_unit)
+        ! New method to fill up qPar150_data (new qPar_array matrix)
+        qPar150_unit = get_free_unit()
+        open(unit = qPar150_unit, file = "src/database/qPar150.mds", &
+        &status = 'old', action = 'read', form = "formatted")
+        read(qPar150_unit,*) qPar150_data(:)
+        close(qPar150_unit)
 
-    intrcnPar_matrix = intrcn32_data
-    rPar_array = rPar150_data
-    qPar_array = qPar150_data
+        intrcnPar_matrix = intrcn32_data
+        rPar_array = rPar150_data
+        qPar_array = qPar150_data
+    end if
 
     if (IOUT == 0) IOUT = 6
 
-    read(2, *) n_comp                                                      
+    read(2,*) n_comp                                                      
                                                           
     ! QT and RT are filled up better above
     ! do i = 1, 10                                                      
@@ -100,7 +129,7 @@ SUBROUTINE PARIN2
         NG = n_comp !REVISAR PORQUE HACE ESTO                                                             
     
         do i = 1, n_comp                                                                          
-            read(2, *) RT(i, i), QT(i, i), (P(i, j), j = 1, n_comp)
+            read(2,*) RT(i, i), QT(i, i), (P(i, j), j = 1, n_comp)
         end do
 
     end if
@@ -110,14 +139,14 @@ SUBROUTINE PARIN2
     if (model == 1) GOTO 21                                                                                   
 
     ! Read the group number and parameters R and Q. 
-    read(2, *) total_groups, total_int_par                                            
+    read(2,*) total_groups, total_int_par                                            
 
     if (total_groups /=  0) then
         rPar_array = 0.D0
         qPar_array = 0.D0
         do i = 1, total_groups
             k = 0                                                   
-            read(2, *) k, rPar_array(k), qPar_array(k)     
+            read(2,*) k, rPar_array(k), qPar_array(k)     
         end do
     end if            
 
@@ -126,91 +155,99 @@ SUBROUTINE PARIN2
         do i = 1, total_int_par
             j = 0
             k = 0                                                   
-            read(2, *) j, k, intrcn_par ! j and k are group numbers  
+            read(2,*) j, k, intrcn_par ! j and k are group numbers  
             j = mainsgfunc(j, ipareq)
             k = mainsgfunc(k, ipareq)
             intrcnPar_matrix(j, k) =  intrcn_par
         end do
     end if
                                                 
-                                                    
-  !LECTURA DE LA COMPOSICION GRUPAL ASOCIATIVA
-! AGREGAR ALGO ACÁ QUE LEA 0, 0 si no hay 10 pares de numero de grupo y cantidad
-         do ja = 1, nga
-      read(2, *) (rngoh(i, ja), i = 1, nc) 
-  end do     
-  
+    if (total_asocGroups /= 0) then
+        ! LECTURA DE LA COMPOSICION GRUPAL ASOCIATIVA
+        ! AGREGAR ALGO ACÁ QUE LEA 0, 0 si no hay 10 pares de numero de grupo y cantidad
+        do ja = 1, total_asocGroups
+            read(2,*) (rngoh(i, ja), i = 1, nc) 
+        end do     
+        ! LECTURA DEL NUMERO DE SITIOS Y PARAMETROS ASOCIATIVOS
+        ! by ALFONSINA (basado en el Aparaest)
+        !if (total_asocGroups > 0) 
+        read(2,*)(MASS(i), i = 1, total_asocGroups)
+    end if
 
+    !skeletal_matrix(:, :, :) = 0                                                       
+    !JH(:) = 0
 
-        !LECTURA DEL NUMERO DE SITIOS Y PARAMETROS ASOCIATIVOS
+    ! Now it reads for each component and for each group id, the current 
+    ! number of groups                                                             
+    do i = 1, n_comp
+        read(2,*) &
+            & (skeletal_matrix(i, j, 1), skeletal_matrix(i, j, 2), &
+            & j = 1, size(skeletal_matrix(1, :, 1))) 
+        
+        do j = 1, size(skeletal_matrix(1, :, 1))
+            sk_idGroups_matrix(j, i) = skeletal_matrix(i, j, 1)
+            sk_nGroups_matrix(j, i) = skeletal_matrix(i, j, 2)
+        end do
+    end do
 
-!CCCCCCCCCCCCCCCCCCCCCCCCCCCCC ALFONSINA (basado en el Aparaest) CCCCCCCCCCCCCCCCCCCCC
+        !****Jose S****
 
+    NUM = 0
+    NMGR = 0
+    total_asocGroups = 0
 
+    do j = 1, n_comp
+        do i = 1, 10 
+            if (skeletal_matrix(j, i, 1) == 0) cycle
+                IREC2 = skeletal_matrix(j, i, 1) + (ipareq - 1) * 150
 
-  if (NGA > 0) read(2, *)(MASS(i), i = 1, NGA)
-  MS(:, :, :) = 0                                                       
-  JH(:) = 0                                                           
-  do 50 i = 1, n_comp
-     ! do j = 1, 10
-          read(2, *) (MS(i, j, 1), MS(i, j, 2), j = 1, size(ms(1, :, 1)))    
-     ! end do
-    !  read(2, *) NGI, (MS(i, j, 1), MS(i, j, 2), j = 1, NGI)    
-      do 50 j = 1, size(ms(1, :, 1))
-          igamt(j, i) = ms(i, j, 1)
-          nytt(j, i) = ms(i, j, 2)
-50  continue	
+                read(14, 500, REC = IREC2) MGR, RRT, ICS, ITS1, ITS2            !500  FORMAT(2x, I2, 37X, D15.8, 120X, 3I2)
+                
+                if (model == 2) then ! Model is A-UNIFAC
+                    if (ICS /= 0) then !GRUPOS ASOCIATIVOS
+                        NG = skeletal_matrix(j, i, 1)
 
-!****Jose S****
+                        call buscaras (NG, NGRUPA, NMG, VL)
 
-  NUM = 0
-  NMGR = 0
-  NGA = 0
-  do j = 1, n_comp
-    do i = 1, 10 
-        if (MS(j, i, 1) == 0) cycle
-        IREC2 = MS(j, i, 1)+(ipareq-1)*150      
-            read(14, 500, REC = IREC2)MGR, RRT, ICS, ITS1, ITS2 !500  FORMAT(2x, I2, 37X, D15.8, 120X, 3I2)
-            if (model == 2) then
-            if (ICS /= 0) then !GRUPOS ASOCIATIVOS
-              NG = MS(j, i, 1)
-              call buscaras (NG, NGRUPA, NMG, VL)
-              if (VL)then
-                  if (MS(j, i, 1) == 10) then
-                      RNGOH(j, NPUNTA(NG)) = CANIL(j)
-                  else
-                      RNGOH(j, NPUNTA(NG)) = MS(j, i, 2)
-                  end if                  
-              else
-                  NGA = NGA+1
-                  NPUNTA(NG) = NGA
-                  NGRUPA(NGA) = NG
-                  CS(NGA) = ICS
-                  MASS(nga) = ICS
-                  TS(NGA, 1) = ITS1
-                  TS(NGA, 2) = ITS2
-                  if (MS(j, i, 1) == 10) then
-                      RNGOH(j, NGA) = CANIL(j)
-                  else
-                      RNGOH(j, NGA) = MS(j, i, 2)
-                  end if
-              end if
+                        if (VL) then
+                            if (skeletal_matrix(j, i, 1) == 10) then
+                                RNGOH(j, NPUNTA(NG)) = CANIL(j)
+                            else
+                                RNGOH(j, NPUNTA(NG)) = skeletal_matrix(j, i, 2)
+                            end if                  
+                        else
+                            total_asocGroups = total_asocGroups + 1
+                            NPUNTA(NG) = total_asocGroups
+                            NGRUPA(total_asocGroups) = NG
+                            CS(total_asocGroups) = ICS
+                            MASS(total_asocGroups) = ICS
+                            TS(total_asocGroups, 1) = ITS1
+                            TS(total_asocGroups, 2) = ITS2
+                        if (skeletal_matrix(j, i, 1) == 10) then
+                            RNGOH(j, total_asocGroups) = CANIL(j)
+                        else
+                            RNGOH(j, total_asocGroups) = skeletal_matrix(j, i, 2)
+                        end if
+                    end if
+                end if
+            end if        	    
+            
+            if (NPUNT(skeletal_matrix(j, i, 1)) == 0) then !Ordena todos los grupos
+                NUM = NUM + 1
+                NPUNT(skeletal_matrix(j, i, 1)) = NUM
+                NGRUP(NUM) = skeletal_matrix(j, i, 1)
+                ! rPar_array(NUM) = RRT
+
+                call buscaras (MGR, NMAINGR, NMG, VL)
+
+                if (.not. VL) then !Crea vectores NPUNTMG y NMAINGR
+                    NMGR = NMGR+1
+                    NPUNTMG(MGR) = NMGR
+                    NMAINGR(NMGR) = MGR
+                end if
             end if
-          end if        	    
-            if (NPUNT(MS(j, i, 1)) == 0) then !Ordena todos los grupos
-              NUM = NUM + 1
-              NPUNT(MS(j, i, 1)) = NUM
-              NGRUP(NUM) = MS(j, i, 1)
-             ! rPar_array(NUM) = RRT
-              call buscaras (MGR, NMAINGR, NMG, VL)
-              if (.NOT.VL) then !Crea vectores NPUNTMG y NMAINGR
-                  NMGR = NMGR+1
-                  NPUNTMG(MGR) = NMGR
-                  NMAINGR(NMGR) = MGR
-              end if
-          end if
-      end do
-  end do
+        end do
+    end do
 
 
 !C....................................................................................
@@ -221,20 +258,20 @@ SUBROUTINE PARIN2
   enass(:, :, :, :) = 0.0
   rkass(:, :, :, :) = 0.0
   if (model == 2) then
-    do j = 1, nga
-      do k = 1, nga
+    do j = 1, total_asocGroups
+      do k = 1, total_asocGroups
           do BB = 1, CS(j)
               do AA = 1, CS(k)
-                  IREC1 = MAINSGfunc(NGRUPA(k), IPAREQ)+(ipareq-1)*70
-                  if (TS(j, BB) == 1.OR.TS(k, AA) == 1)then !Si alguno de ambos sitios es del tipo 1
+                  IREC1 = MAINSGfunc(NGRUPA(k), IPAREQ) + (ipareq-1) * 70
+                  if (TS(j, BB) == 1.OR.TS(k, AA) == 1) then !Si alguno de ambos sitios es del tipo 1
                      call LEEPAR (j, IREC1, IPAREQ, NGRUPA, ENASST, RKASST)
                      ENASS(AA, k, BB, j) = ENASST
                      RKASS(AA, k, BB, j) = RKASST                        
-                  ELSEif (TS(j, BB) /= TS(k, AA)) then
+                  else if (TS(j, BB) /= TS(k, AA)) then
                      call LEEPAR (j, IREC1, IPAREQ, NGRUPA, ENASST, RKASST)
                      ENASS(AA, k, BB, j) = ENASST
                      RKASS(AA, k, BB, j) = RKASST
-                  else !ELSEif (TS(j, B) == TS(k, A)) then
+                  else !else if (TS(j, B) == TS(k, A)) then
                      ENASS(AA, k, BB, j) = 0.0
                      RKASS(AA, k, BB, j) = 0.0     
                   end if   
@@ -250,13 +287,13 @@ SUBROUTINE PARIN2
 !!C
 !!c     lectura parametros ENERG�TICOS DE asociacion
 !!c
-!	do j = 1, NGA
+!	do j = 1, total_asocGroups
 !			if (MASS(j) == 0) GO TO 201
-!		do L = 1, NGA
+!		do L = 1, total_asocGroups
 !				if (MASS(L) == 0) GO TO 103
 !			do i = 1, MASS(j)
 !				do k = 1, MASS(L)
-!						read(2, *)ENASS(i, j, k, L) 
+!						read(2,*)ENASS(i, j, k, L) 
 !				end do
 !			end do
 !  103			continue
@@ -266,13 +303,13 @@ SUBROUTINE PARIN2
 !!C
 !!c     lectura parametros VOLUM�TRICOS DE asociacion
 !!C
-!      do j = 1, NGA
+!      do j = 1, total_asocGroups
 !			if (MASS(j) == 0) GO TO 3330
-!		do L = 1, NGA
+!		do L = 1, total_asocGroups
 !				if (MASS(L) == 0) GO TO 5550
 !			do i = 1, MASS(j)
 !				do k = 1, MASS(L)
-!						read(2, *) RKASS(i, j, k, L)
+!						read(2,*) RKASS(i, j, k, L)
 ! 179						FORMAT (F16.10)
 !				end do
 !			end do
@@ -288,8 +325,8 @@ SUBROUTINE PARIN2
     IC = 1                                                              
     do 71 i = 1, n_comp                                                      
       do 70 j = 1, 10                                                      
-          if (MS(i, j, 1) == 0) GOTO 71                                        
-          IH(IC) = MS(i, j, 1)                                                  
+          if (skeletal_matrix(i, j, 1) == 0) GOTO 71                                        
+          IH(IC) = skeletal_matrix(i, j, 1)                                                  
           if (IC == 1) GOTO 69                                               
           if (IH(IC) == IH(IC-1)) GOTO 70                                    
           if (IH(IC) > IH(IC-1)) GOTO 69                                    
@@ -305,7 +342,7 @@ SUBROUTINE PARIN2
               I4 = IC-I2                                                          
               do 61 I3 = 1, I4                                                     
  61               IH(IC+1-I3) = IH(IC-I3)                                             
-              IH(I2) = MS(i, j, 1)                                                  
+              IH(I2) = skeletal_matrix(i, j, 1)                                                  
  65       continue                                                          
  69       IC = IC+1                                                           
           if (IC > 20) write(6, 607)                                         
@@ -323,9 +360,9 @@ SUBROUTINE PARIN2
  72       NY(i, j) = 0                                                         
     do 75 i = 1, n_comp                                                      
       do 74 j = 1, 10                                                      
-          if (MS(i, j, 1) == 0) GOTO 75                                        
-          N1 = MS(i, j, 1)                                                      
-          N2 = MS(i, j, 2)                                                      
+          if (skeletal_matrix(i, j, 1) == 0) GOTO 75                                        
+          N1 = skeletal_matrix(i, j, 1)                                                      
+          N2 = skeletal_matrix(i, j, 2)                                                      
           if (N1 == 0) GOTO 75                                               
           N3 = JH(N1)                                                         
  74   NY(i, N3) = N2                                                       
@@ -339,8 +376,8 @@ SUBROUTINE PARIN2
       NGM(i) = NGMNY                                                      
       NGMGL = NGMNY                                                       
     do 80 j = 1, n_comp                                                      
-    RT(i, j) = RT(i, j)+NY(j, k)*rPar_array(NSG)                                   
- 80 QT(i, j) = QT(i, j)+NY(j, k)*qPar_array(NSG)                                   
+    RT(i, j) = RT(i, j)+NY(j, k) * rPar_array(NSG)                                   
+ 80 QT(i, j) = QT(i, j)+NY(j, k) * qPar_array(NSG)                                   
     NG = i                                                              
     write(6, 608) (IH(k), k = 1, IC)                                       
     write(6, 609) (MAINSGfunc(IH(k), ipareq), k = 1, IC)                               
@@ -388,13 +425,13 @@ SUBROUTINE PARIN2
 
 
 !ccccccccccccccccc Escritura de los par�metros de asociaci�n ALFONSINAccccccccccccccccc
-     if (NGA > 0) then
+     if (total_asocGroups > 0) then
 
 !-------------------------------------------------------------------------------
 !BLOQUE ORIGINAL
   !write(1, 218) (i, i = 1, n_comp)
   !218	FORMAT(/, X, '"ASSOC GROUP COMPOSITION" ', /, 23X, 'COMPONENTES', /, ' GRUPO 	  #  SIT ASOC  ', I5, /)
-      !do ja = 1, NGA
+      !do ja = 1, total_asocGroups
         !write(1, 219) ja, MASS(ja), (rngoh(i, ja), i = 1, nc)   
       !219	FORMAT(3X, I3, 9X, I3, 6X, f5.1)
         !end do
@@ -403,8 +440,8 @@ SUBROUTINE PARIN2
  write(1, 218) (i, i = 1, n_comp)
 218	FORMAT(/, X, '"ASSOC GROUP COMPOSITION" ', /, 23X, 'COMPONENTES', /, ' GRUPO 	  #  SIT ASOC  ', 2I5, /)  
 
-  do ja = 1, NGA
-  write(1, *) ja, MASS(ja), (rngoh(i, ja), i = 1, nc)    
+  do ja = 1, total_asocGroups
+  write(1,*) ja, MASS(ja), (rngoh(i, ja), i = 1, nc)    
 219	FORMAT(3X, I3, 9X, I3, 6X, f5.1)
   end do
 !-------------------------------------------------------------------------------
@@ -413,9 +450,9 @@ SUBROUTINE PARIN2
 
 !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-  do j = 1, NGA
+  do j = 1, total_asocGroups
           if (MASS(j) == 0) GO TO 202
-      do L = 1, NGA
+      do L = 1, total_asocGroups
               if (MASS(L) == 0) GO TO 104
           do i = 1, MASS(j)
               do k = 1, MASS(L)
@@ -432,9 +469,9 @@ SUBROUTINE PARIN2
   write(1, 222)
 222	FORMAT (/, X, 'PARAMETROS DE VOLUMEN DE ASOCIACI�N (cm3/mol) ', /)
 
-  do j = 1, NGA
+  do j = 1, total_asocGroups
           if (MASS(j) == 0) GO TO 301
-      do L = 1, NGA
+      do L = 1, total_asocGroups
               if (MASS(L) == 0) GO TO 5011
           do i = 1, MASS(j)
               do k = 1, MASS(L)
@@ -474,7 +511,7 @@ SUBROUTINE PARIN2
 604 FORMAT('  INTERACTION PARAMETERS', /)                              
 605 FORMAT(' UNIFAC MOLECULAR R AND Q', /)                             
 606 FORMAT(I5, 2F15.4)                                                 
-607 FORMAT(' ** WARNING: NUMBER OF SUB GROUPS MUST NOT EXCEED 20 **') 
+607 FORMAT('** WARNING: NUMBER OF SUB GROUPS MUST NOT EXCEED 20**') 
 608 FORMAT(//, ' SUB GROUPS :', 20I3)                                   
 609 FORMAT(' MAIN GROUPS:', 20I3)                                      
 610 FORMAT(' COMPONENT')                                              
@@ -505,15 +542,15 @@ SUBROUTINE PARIN2
     !        idigits=max(1,idigits0)
     !        aval=abs(val)
     !     !  select a power that will normalize the number (put it in the range 1 > abs(val) <= 0)
-    !        if(aval.ge.1)then
+    !        if(aval.ge.1) then
     !           ipow=int(log10(aval)+1)
     !        else
     !           ipow=int(log10(aval))
     !        endif
     !        rnormal=val/(10.0d0**ipow)
-    !        if(rnormal.eq.1)then
+    !        if(rnormal.eq.1) then
     !           ipow=ipow+1
     !        endif
     !        !normalize, multiply by 10*idigits to an integer, and so on
-    !        round=real(anint(val*10.d0**(idigits-ipow),kind=dp),kind=dp)*10.d0**(ipow-idigits)
+    !        round=real(anint(val*10.d0**(idigits-ipow),kind=dp),kind=dp) * 10.d0**(ipow-idigits)
     !     end function round

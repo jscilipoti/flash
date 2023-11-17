@@ -5,3 +5,5 @@
     par,    intrcn_par
     nga,    total_asocGroups
     A,      intrcn_matrix
+    nytt,   sk_nGroups_matrix
+    igant,      sk_idGroups_matrix
