@@ -9,9 +9,13 @@ program check
         & NTEXT
 
         use unifac_input_module, only: &
-        & n_comp, &
-        & total_groups, total_int_par, &
-        & rPar_array, qPar_array
+        & n_comp, & ! The number of components in system
+        & total_groups, & ! Total number of groups
+        & total_int_par, & ! Total number of interaction parameters
+        & rPar_array, & ! Array with the R parameters.
+        & qPar_array, & ! Array with the r and q parameters. 
+        & intrcnPar_matrix, & ! The interaction parameters matrix
+        & intrcn_par ! A variable with a intereaction parameter
     
     use stdlib_ansi, only : & 
     & fg_color_green, fg_color_red, fg_color_yellow, fg_color_blue, & 
@@ -27,6 +31,11 @@ program check
     character(len=*), parameter :: flashtype = ""
     
     integer(kind=int32) :: i, j, k
+    integer, dimension(8)  :: group_indexs 
+
+    ! An external function to get the main subgroup id.
+    integer(kind=int32) :: mainsgfunc
+    external :: mainsgfunc
 
     
 
@@ -49,6 +58,14 @@ program check
                 if (rPar_array(k) /= 0) then
                     print '(I2,2(",",F5.3))', k, rPar_array(k), qPar_array(k)
                 end if     
+            end do
+            group_indexs = (/1,2,3,15,22,17,38,43/)
+            do i = 1, total_groups
+                do j = 1, total_groups
+                    print '(2(I2,","),F10.3)', group_indexs(i), &
+                        & group_indexs(j), &
+                        & intrcnPar_matrix(mainsgfunc(group_indexs(i), ipareq), mainsgfunc(group_indexs(j), ipareq)) 
+                end do
             end do
 
         end if 
