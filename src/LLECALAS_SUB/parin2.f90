@@ -58,7 +58,7 @@ SUBROUTINE PARIN2
     real(kind = real64), dimension(10,10) :: &
         & RT = 0.D0
 
-    ! Here the interaction parameters are dim 100 because
+    ! Here the interaction parameters matrix has "dim=(100,100)" because
     ! there is a maximum of 10 different functional groups in total
     real(kind = real64), dimension(100, 100) :: &
         & intrcnPar_matrix = 0.D0, &
