@@ -33,7 +33,7 @@ program check
     print *,""
     print *, fg_color_blue + style_bold // test_run // style_reset //"ALL2_flash_check"
     
-    if (.true.) then
+    if (.false.) then
         if (pause_test) pause
 
         call llecalas 

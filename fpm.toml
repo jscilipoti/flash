@@ -15,4 +15,5 @@ module-naming = false
 [install]
 library = false
 [dependencies]
-stdlib = { git="https://github.com/fortran-lang/stdlib", branch="stdlib-fpm" }
+stdlib="*"
+
