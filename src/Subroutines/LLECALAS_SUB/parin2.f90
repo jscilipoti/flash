@@ -7,7 +7,7 @@ SUBROUTINE PARIN2
     IMPLICIT REAL*8(A-H, O-Z)    
   
     common/asoc/nktt, sk_idGroups_matrix, sk_nGroups_matrix
-    common/grupas1/rkass(6, 12, 6, 12), enass(6, 12, 6, 12), deloh(6, 12, 6, 12)!
+    common/grupas1/rkass, enass, deloh(6, 12, 6, 12)!
     common/nga/total_asocGroups, mass(12) 
     common/ioh2/rngoh(12, 12)
 
@@ -68,13 +68,10 @@ SUBROUTINE PARIN2
 
 
 
-    !COMMON
+    !COMMON USED
     integer(kind = int32) :: &
     & n_comp, & ! Number of components in the system
     & total_asocGroups ! Number of associative groups
-
-
-    
 
     integer(kind = int32), dimension(20,12) :: &
         & sk_idGroups_matrix, & ! The id of each group for each component derived from the skeletal matrix
@@ -82,8 +79,14 @@ SUBROUTINE PARIN2
 
     real(kind = real64) :: &
         & QT = 0.D0
-   
-!-------------------------------------------------------------------------------
+
+    real(kind = real64), dimension(6, 12, 6, 12) :: &
+    & enass = 0.D0, &
+    & rkass = 0.D0
+
+    !COMMON NOT USED
+
+!--- START ---------------------------------------------------------------------
     if (model == 1) then !ASUMO QUE ESTO ES PARA UNIQUAC. ESTE IF ES NUEVO (JPR)
         ! New method to fill up intrcn32_data (new intrcnPar_matrix)
         intrcn32_unit = get_free_unit()
@@ -257,9 +260,9 @@ SUBROUTINE PARIN2
 !c.....de asociaci�n, respectivamente, seg�n los grupos asociativos de los componentes
 !c.....del sistema que se est� corriendo. (si el modelo elegido es A-UNIFAC)
 !C....................................................................................     
-  enass(:, :, :, :) = 0.0
-  rkass(:, :, :, :) = 0.0
-  if (model == 2) then
+!   enass(:, :, :, :) = 0.0
+!   rkass(:, :, :, :) = 0.0
+  if (model == 2) then ! Model is A-UNIFAC
     do j = 1, total_asocGroups
       do k = 1, total_asocGroups
           do BB = 1, CS(j)
@@ -528,31 +531,3 @@ SUBROUTINE PARIN2
     RETURN                                                            
     end
     
-    ! function round(val,idigits0)
-    !     use,intrinsic :: iso_fortran_env, only : dp=>real64,sp=>real32
-    !     use,intrinsic :: iso_fortran_env, only : int64
-    !     implicit none
-        
-    !     !$@(#) M_verify::round(3f): round val to specified number of significant digits
-        
-    !     real*8,intent(in)            :: val
-    !     integer,intent(in)         :: idigits0
-    !     integer(kind=int64)        :: idigits,ipow
-    !     real(kind=dp)              :: aval,rnormal
-    !     real*8                       :: round
-    !        ! make sure a reasonable number of digits has been requested
-    !        idigits=max(1,idigits0)
-    !        aval=abs(val)
-    !     !  select a power that will normalize the number (put it in the range 1 > abs(val) <= 0)
-    !        if(aval.ge.1) then
-    !           ipow=int(log10(aval)+1)
-    !        else
-    !           ipow=int(log10(aval))
-    !        endif
-    !        rnormal=val/(10.0d0**ipow)
-    !        if(rnormal.eq.1) then
-    !           ipow=ipow+1
-    !        endif
-    !        !normalize, multiply by 10*idigits to an integer, and so on
-    !        round=real(anint(val*10.d0**(idigits-ipow),kind=dp),kind=dp) * 10.d0**(ipow-idigits)
-    !     end function round
