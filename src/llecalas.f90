@@ -140,7 +140,11 @@ subroutine llecalas!(Tf, Pf, Zf)
 
                                                       
     
-    call PARIN2                                                       
+    ! if (model == 0) then 
+    !     call read_input_unifac(input_filename)
+    ! else
+        call PARIN2
+    ! end if                                                       
     
     !-----------------------------------------------------------------------
     !Testear y luego modificar

@@ -1,9 +1,9 @@
-subroutine read_input_unifac
+subroutine read_input_unifac(input_filename)
     ! This Fortran subroutine gets the info of the kind of input file it needs
     ! to read and its parameters required by the UNIFAC model.
 
 
-    use iso_fortran_env, only: int16, int32
+    use iso_fortran_env, only: int32, real64
 
     use inputData, only: &
         & flash_input_filename, &
@@ -18,7 +18,8 @@ subroutine read_input_unifac
         & rPar_array, & ! Array with the R parameters.
         & qPar_array, & ! Array with the r and q parameters. 
         & intrcnPar_matrix, & ! The interaction parameters matrix
-        & intrcn_par ! A variable with a intereaction parameter
+        & sk_idGroups_matrix, sk_nGroups_matrix, &
+        & skeletal_matrix
 
 
 
@@ -26,6 +27,9 @@ subroutine read_input_unifac
     
     
     implicit none    
+    common/asoc/nktt, sk_idGroups_matrix_common, sk_nGroups_matrix_common
+    COMMON/CUFAC/n_comp_common, NG, P(10, 10), T   
+
     integer(kind=int32) :: &
     & i, j, k, stat
 
@@ -36,16 +40,41 @@ subroutine read_input_unifac
     integer(kind=int32) :: mainsgfunc
     external :: mainsgfunc
 
+    real(kind = real64) :: &
+        & intrcn_par ! A variable with a interaction parameter
+
+    ! The name of the input_file to be read. It must contain the name of the 
+    ! flash input file and the value of search_parameters_flag.
+    character(len=*), intent(in) :: input_filename
+
+    ! COMMON USED (REMOVE)
+
+    integer(kind=int32) :: &
+        & n_comp_common = 0
+    integer(kind = int32), dimension(20,12) :: &
+        & sk_idGroups_matrix_common, &
+        & sk_nGroups_matrix_common
+
+    ! COMMON NOT USED (REMOVE)
+        
+    integer(kind = int32) :: nktt, ng
+    real(kind = real64) :: P, T
+
+
+
+
     ! --- START ----------------------------------------------------------------
 
     ! It calls "read_input_flash" subroutine in order to get the name of the 
     ! input data file and some necessary information such as the model applied.
-    call read_input_flash("name.dat")
+    close(flash_input_unit)
+    close(2)
+    call read_input_flash(input_filename)
     call open_database(model)
 
     ! Close all the files opened by "read_input_flash" 
     close(flash_input_unit)
-    close(2)
+    !close(2)
 
     ! Reopen the flash_input file.
     flash_input_unit = get_free_unit()
@@ -75,7 +104,7 @@ subroutine read_input_unifac
             read(flash_input_unit,*) k, rPar_array(k), qPar_array(k)     
         end do
     end if            
-
+    ! Read the interaction parameters
     if (total_int_par /=  0) then
         do i = 1, total_int_par
             j = 0
@@ -86,6 +115,25 @@ subroutine read_input_unifac
             intrcnPar_matrix(j, k) =  intrcn_par
         end do
     end if
+    ! Read the skeletal matrix. It shows the information related to how many
+    ! functional groups and which ones are present in each compound.
+    do i = 1, n_comp
+        read(flash_input_unit,*) &
+            & (skeletal_matrix(i, j, 1), skeletal_matrix(i, j, 2), &
+            & j = 1, size(skeletal_matrix(1, :, 1))) 
+        
+        do j = 1, size(skeletal_matrix(1, :, 1))
+            ! Save the IDs of each group of one compound.
+            sk_idGroups_matrix(j, i) = skeletal_matrix(i, j, 1)
+            ! Save the numbers of each group in one compound.
+            sk_nGroups_matrix(j, i) = skeletal_matrix(i, j, 2)
+        end do
+    end do
     
-    
+    ! Save Common variables (REMOVE)
+    n_comp_common = n_comp
+    sk_idGroups_matrix_common = sk_idGroups_matrix
+    sk_nGroups_matrix_common = sk_nGroups_matrix
+
+
 end subroutine read_input_unifac

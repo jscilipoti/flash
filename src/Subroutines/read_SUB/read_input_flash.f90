@@ -80,27 +80,6 @@ subroutine read_input_flash(input_filename)
     
     !Disabled since there are more errors below
     call open_database(model)
-    !call PARIN2(NKK, NGG, Pxx, Txx) 
-    
-    ! The following code is run whether vapor phase is not included in flash
-    ! calculations.
-    ! if(NOVAPm /= 0) then                                             
-    !     do j = 1, NKK                                                                                           
-    !         read(2,*) (ANT(k,j), k = 1, 3)                                        
-    !     end do
-    !     do j = 1, NKK                                                        
-    !         ANT(1,j) = 2.302585 * (ANT(1,j) - 2.880814)                             
-    !         ANT(2,j) = 2.302585 * ANT(2,j)
-    !     end do                                        
-    ! end if
 
-    ! ! Read the Temperature and the Pressure at the end of the flash input file
-    ! read(2,'(2F10.2)') T, P
-    
-    ! ! Read the composition of each component of the system.
-    ! read(2,*) (Z(i), i = 1, NKK) 
-    
-    !close(flash_input_unit)
-    !close(unit=2)
 
 end subroutine read_input_flash

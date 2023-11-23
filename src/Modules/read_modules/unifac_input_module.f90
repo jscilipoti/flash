@@ -13,7 +13,9 @@ module unifac_input_module
         & rPar_array, & ! Array with the R parameters.
         & qPar_array, & ! Array with the r and q parameters. 
         & intrcnPar_matrix, & ! The interaction parameters matrix
-        & intrcn_par ! A variable with a intereaction parameter
+        & sk_idGroups_matrix, & ! The id of each group for each component derived from the skeletal matrix
+        & sk_nGroups_matrix, & ! The quantity of each group for each component derived from the skeletal matrix
+        & skeletal_matrix
 
   
  
@@ -24,8 +26,15 @@ module unifac_input_module
         & total_groups = 0, & 
         & total_int_par = 0 
 
-    real(kind = real64) :: &
-        & intrcn_par ! A variable with a intereaction parameter
+    integer(kind = int32), dimension(20,12) :: &
+        & sk_idGroups_matrix, & ! The id of each group for each component derived from the skeletal matrix
+        & sk_nGroups_matrix ! The quantity of each group for each component derived from the skeletal matrix
+
+    integer(kind = int32), dimension(10,10,2) :: &
+    ! A matrix with the group id and number of groups for each component
+        & skeletal_matrix = 0 
+
+
     
     real(kind = real64), dimension(150) :: &  
         ! Dim = 150 because there is a max number of 150 
